@@ -21,3 +21,5 @@ Checked 16 October 2026 (Asia/Bangkok), local Chrome headless desktop browser.
 - Native iOS/Android and screen-reader review remain unperformed.
 
 Machine-readable local browser assertions are in [browser-checks.json](browser-checks.json). Provider delivery and live-byte checks are recorded separately after publication.
+
+Final map label layering adjustment: checked all eight label backplates above district boundaries and click-to-select from label text. Source counts unchanged.

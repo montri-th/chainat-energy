@@ -70,6 +70,8 @@ function renderMap() {
     const value=count(district), selected=state.district===district.id, index=data.districts.indexOf(district)+1;
     return `<g class="district-shape${selected?' selected':''}" data-district-id="${esc(district.id)}" role="button" tabindex="0" aria-pressed="${selected}" aria-label="${esc(district.name)} ${value ? number(value)+' รายการ' : 'ไม่พบรายการในไฟล์'}"><title>${esc(district.name)}: ${number(value)} รายการในไฟล์</title><path d="${path}" fill="${fills(value)}" fill-rule="evenodd"/><g class="map-label" transform="translate(${label[0]},${label[1]})" aria-hidden="true"><rect x="-53" y="-19" width="106" height="45" rx="8"/><text text-anchor="middle" y="-1">${esc(district.name)}</text><text class="map-value" text-anchor="middle" y="17">${value ? number(value)+' รายการ' : 'ไม่มีรายการในไฟล์'}</text></g><g class="map-mobile-label" transform="translate(${label[0]},${label[1]})" aria-hidden="true"><circle r="21"/><text text-anchor="middle" dominant-baseline="central">${index}</text></g></g>`;
   }).join('')}</svg>`;
+  const svg=container.querySelector('svg');
+  container.querySelectorAll('.map-label,.map-mobile-label').forEach(label=>{label.dataset.districtId=label.parentElement.dataset.districtId;svg.appendChild(label);});
   container.querySelectorAll('[data-district-id]').forEach(el=>{
     const activate=()=>{state.district=state.district===el.dataset.districtId?'all':el.dataset.districtId;refreshOverview();};
     el.addEventListener('click',activate);el.addEventListener('keydown',event=>{if(event.key==='Enter'||event.key===' '){event.preventDefault();activate();}});
