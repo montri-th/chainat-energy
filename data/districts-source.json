@@ -1,0 +1,153 @@
+{
+  "title": "Chainat district overview boundary provenance",
+  "retrievedDate": "2026-10-16",
+  "boundaryID": "THA-ADM2-78962969",
+  "level": "ADM2 (district)",
+  "yearRepresented": "2019",
+  "coordinateOrder": "longitude, latitude",
+  "crs": "WGS 84 (GeoJSON)",
+  "selectedFeatureCount": 8,
+  "coordinateCount": 1083,
+  "bbox": [
+    99.71976214800009,
+    14.906598938000059,
+    100.35152437900007,
+    15.417357425000034
+  ],
+  "sourceProvider": "geoBoundaries gbOpen",
+  "originalSource": "Royal Thai Survey Department, OCHA ROAP",
+  "sourceMetadataURL": "https://www.geoboundaries.org/api/current/gbOpen/THA/ADM2/",
+  "pinnedSourceURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/THA/ADM2/geoBoundaries-THA-ADM2_simplified.geojson",
+  "pinnedReleaseMetadataURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/THA/ADM2/geoBoundaries-THA-ADM2-metaData.json",
+  "sourceReleaseCommit": "9469f09",
+  "originalDatasetURL": "https://data.humdata.org/dataset/thailand-administrative-boundaries",
+  "license": "CC BY 3.0 IGO",
+  "licenseURL": "https://creativecommons.org/licenses/by/3.0/igo/",
+  "attribution": "District boundaries: Royal Thai Survey Department / OCHA ROAP, via geoBoundaries gbOpen THA ADM2 (2019), CC BY 3.0 IGO. Extracted eight Chainat districts from the source simplified geometry; Thai labels and stable demo IDs added.",
+  "changes": [
+    "Selected the eight named Chainat district features from 928 Thai ADM2 features.",
+    "Preserved source simplified polygon coordinates without additional generalisation or invented geometry.",
+    "Added Thai district labels and local stable demo IDs; retained original source shape IDs."
+  ],
+  "limitations": [
+    "Overview boundaries for demonstration and geographic navigation; not cadastral or legal boundary evidence.",
+    "Boundaries represent 2019; no claim that later administrative revisions are reflected.",
+    "District geometry does not establish the location of any individual energy record."
+  ],
+  "sourceSHA256": "faae0d9d6fe56b489a9cb3bd5b8fe100025aad99ec554bf7a9f49cbe2216bf10",
+  "outputSHA256": "65302df4596c38c25299b8328a0473cf94fcd1ffec313fb939fae7aac112e7db",
+  "districts": [
+    {
+      "id": "mueang-chainat",
+      "nameTh": "เมืองชัยนาท",
+      "nameEn": "Mueang Chai Nat",
+      "sourceShapeId": "78962969B26983912705039"
+    },
+    {
+      "id": "manorom",
+      "nameTh": "มโนรมย์",
+      "nameEn": "Manorom",
+      "sourceShapeId": "78962969B59709031749795"
+    },
+    {
+      "id": "wat-sing",
+      "nameTh": "วัดสิงห์",
+      "nameEn": "Wat Sing",
+      "sourceShapeId": "78962969B4118502895229"
+    },
+    {
+      "id": "sapphaya",
+      "nameTh": "สรรพยา",
+      "nameEn": "Sapphaya",
+      "sourceShapeId": "78962969B57770947463323"
+    },
+    {
+      "id": "sankhaburi",
+      "nameTh": "สรรคบุรี",
+      "nameEn": "Sankhaburi",
+      "sourceShapeId": "78962969B50930938834164"
+    },
+    {
+      "id": "hankha",
+      "nameTh": "หันคา",
+      "nameEn": "Hankha",
+      "sourceShapeId": "78962969B11374583847622"
+    },
+    {
+      "id": "nong-mamong",
+      "nameTh": "หนองมะโมง",
+      "nameEn": "Nong Mamong",
+      "sourceShapeId": "78962969B54386166532086"
+    },
+    {
+      "id": "noen-kham",
+      "nameTh": "เนินขาม",
+      "nameEn": "Noen Kham",
+      "sourceShapeId": "78962969B80984630851813"
+    }
+  ],
+  "apiMetadata": {
+    "boundaryID": "THA-ADM2-78962969",
+    "boundaryName": "Thailand",
+    "boundaryISO": "THA",
+    "boundaryYearRepresented": "2019",
+    "boundaryType": "ADM2",
+    "boundaryCanonical": "districts",
+    "boundarySource": "Royal Thai Survey Department, OCHA ROAP",
+    "boundaryLicense": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
+    "licenseDetail": "nan",
+    "licenseSource": "data.humdata.org/dataset/thailand-administrative-boundaries",
+    "boundarySourceURL": "data.humdata.org/dataset/thailand-administrative-boundaries",
+    "sourceDataUpdateDate": "Thu Jan 19 07:31:04 2023",
+    "buildDate": "Dec 12, 2023",
+    "Continent": "Asia",
+    "UNSDG-region": "Eastern and South-Eastern Asia",
+    "UNSDG-subregion": "South-Eastern Asia",
+    "worldBankIncomeGroup": "Upper-middle-income Countries",
+    "admUnitCount": "928",
+    "meanVertices": "6931.0",
+    "minVertices": "113",
+    "maxVertices": "58454",
+    "meanPerimeterLengthKM": "146.42529268218402",
+    "minPerimeterLengthKM": "5.703353702083364",
+    "maxPerimeterLengthKM": "483.13487287520695",
+    "meanAreaSqKM": "555.4047292056011",
+    "minAreaSqKM": "1.4087992374309997",
+    "maxAreaSqKM": "4831.436427505538",
+    "staticDownloadLink": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/THA/ADM2/geoBoundaries-THA-ADM2-all.zip",
+    "gjDownloadURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/THA/ADM2/geoBoundaries-THA-ADM2.geojson",
+    "tjDownloadURL": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/THA/ADM2/geoBoundaries-THA-ADM2.topojson",
+    "imagePreview": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/THA/ADM2/geoBoundaries-THA-ADM2-PREVIEW.png",
+    "simplifiedGeometryGeoJSON": "https://github.com/wmgeolab/geoBoundaries/raw/9469f09/releaseData/gbOpen/THA/ADM2/geoBoundaries-THA-ADM2_simplified.geojson"
+  },
+  "pinnedReleaseMetadata": {
+    "boundaryID": "THA-ADM2-78962969",
+    "boundaryISO": "THA",
+    "boundaryYear": "2019",
+    "boundaryType": "ADM2",
+    "boundarySource": "Royal Thai Survey Department, OCHA ROAP",
+    "boundaryCanonical": "districts",
+    "boundaryLicense": "Creative Commons Attribution 3.0 Intergovernmental Organisations (CC BY 3.0 IGO)",
+    "licenseDetail": "",
+    "licenseSource": "https//data.humdata.org/dataset/thailand-administrative-boundaries",
+    "boundarySourceURL": "https//data.humdata.org/dataset/thailand-administrative-boundaries",
+    "sourceDataUpdateDate": "Thu Jan 19 07:31:04 2023",
+    "buildDate": "Dec 12, 2023",
+    "admUnitCount": "928",
+    "meanVertices": "6931.0",
+    "minVertices": "113",
+    "maxVertices": "58454",
+    "meanPerimeterLengthKM": "146.42529268218402",
+    "maxPerimeterLengthKM": "483.13487287520695",
+    "minPerimeterLengthKM": "5.703353702083364",
+    "meanAreaSqKM": "555.4047292056011",
+    "minAreaSqKM": "1.4087992374309997",
+    "maxAreaSqKM": "4831.436427505538"
+  },
+  "verification": {
+    "allEightNamesMatchedExactlyOnce": true,
+    "sourceGeometryPreserved": true,
+    "licenseConfirmedFrom": "geoBoundaries current API and pinned release metadata",
+    "originalDatasetFetch": "HDX page returned HTTP 403 through web reader; original source attribution and license verified from geoBoundaries metadata."
+  }
+}

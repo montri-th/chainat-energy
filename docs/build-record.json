@@ -1,0 +1,34 @@
+{
+  "designSystem": {
+    "version": "0.9.7",
+    "releaseRef": "v0.9.7-owner.1",
+    "documentSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
+    "releaseManifestSha256": "0a936393fc1ab05f8b32110397546b2a87cc26e46f2661a712bdd2debaa58516",
+    "signature": "unsigned-owner-approved"
+  },
+  "purpose": "User-authorized public demonstration of Chainat energy data workflow",
+  "dataBoundary": "Aggregate district and category data only; all attached source files excluded; browser-only fictional admin records separate from source figures",
+  "authority": "Owner request to build and publish in montri-th/chainat-energy; plan is product reference and not an instruction to provision a production system",
+  "publication": {
+    "repository": "https://github.com/montri-th/chainat-energy",
+    "url": "https://montri-th.github.io/chainat-energy/",
+    "robots": "noindex,nofollow",
+    "audience": "public-demo"
+  },
+  "conformance": {
+    "package": "9768 integrity checks passed; analytical palette advisories retained by source",
+    "artifact": "Actual checks recorded in QA.md. Not a complete LDS conformance certification.",
+    "knownLimitations": [
+      "CityMETER product-specific icon set remains an open item in the current base asset registry; no substitute identity tile is invented. Text tab identity is retained.",
+      "No production authentication, RBAC enforcement, database, shared audit log, live source connection or backup service.",
+      "Native device behavior requires device testing; browser viewport coverage does not certify iOS."
+    ]
+  },
+  "visualDecisions": {
+    "atmosphere": "zero-atmosphere decision: task-oriented data workspace; clarity before decoration",
+    "motion": "none; state feedback via static text",
+    "navigation": "product-scoped views; no decorative colored left rails or brackets",
+    "map": "Actual district polygons, exact count scale 5 classes 1–10,11–20,21–40,41–60,61+ source rows; no individual asset coordinates",
+    "counts": "Not normalized by area or population; counts of supplied source rows only"
+  }
+}
