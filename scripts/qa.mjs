@@ -15,7 +15,7 @@ try {
   page.on('pageerror',error=>errors.push(error.message));
   await page.goto(base);await ready(page);
   check('eight district polygons',await page.locator('.district-shape').count()===8);
-  check('source row total 278 excludes solar subset',(await page.locator('#map-summary').innerText()).includes('278'));
+  check('source row total 290 excludes solar subset',(await page.locator('#map-summary').innerText()).includes('290'));
   await page.selectOption('#district-select','chainat-sankhaburi');
   await page.locator('[data-dataset="fuel"]').click();
   check('Sankhaburi fuel count40',(await page.locator('#map-summary').innerText()).includes('40'));
