@@ -1,0 +1,587 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://montri-th.github.io/chainat-energy/contracts/production-records.schema.json",
+  "title": "Proposed Yolk workspace interfaces; not implemented by static demo",
+  "$defs": {
+    "sourceRelease": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "schemaVersion",
+        "engineVersion",
+        "publishedOn",
+        "sources",
+        "rightsReviewId"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "schemaVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "publishedOn": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "rightsReviewId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sources": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "sourceId",
+              "sha256",
+              "readOn",
+              "measureKind",
+              "grain",
+              "coverageNote"
+            ],
+            "properties": {
+              "sourceId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "sha256": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              },
+              "readOn": {
+                "type": "string",
+                "format": "date"
+              },
+              "asOf": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "measureKind": {
+                "enum": [
+                  "observed",
+                  "reported",
+                  "proxy",
+                  "modelled"
+                ]
+              },
+              "grain": {
+                "enum": [
+                  "province",
+                  "district",
+                  "tambon",
+                  "lao",
+                  "building"
+                ]
+              },
+              "coverageNote": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "criterion": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "metric",
+        "p",
+        "on"
+      ],
+      "properties": {
+        "metric": {
+          "type": "string",
+          "minLength": 1
+        },
+        "p": {
+          "enum": [
+            40,
+            50,
+            60,
+            70,
+            80
+          ]
+        },
+        "on": {
+          "type": "boolean"
+        }
+      }
+    },
+    "shortlist": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "workspaceId",
+        "areaCode",
+        "dataReleaseId",
+        "engineVersion",
+        "criteriaRevision",
+        "criteria",
+        "lensIds",
+        "createdAt",
+        "revision"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "areaCode": {
+          "type": "string",
+          "pattern": "^[0-9]{6}$"
+        },
+        "dataReleaseId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "engineVersion": {
+          "type": "string",
+          "minLength": 1
+        },
+        "criteriaRevision": {
+          "type": "string",
+          "minLength": 1
+        },
+        "criteria": {
+          "type": "array",
+          "minItems": 1,
+          "maxItems": 3,
+          "items": {
+            "$ref": "#/$defs/criterion"
+          }
+        },
+        "lensIds": {
+          "type": "array",
+          "maxItems": 3,
+          "uniqueItems": true,
+          "items": {
+            "enum": [
+              "rooftop",
+              "pump",
+              "biomass",
+              "safety",
+              "efficiency",
+              "ev",
+              "outreach"
+            ]
+          }
+        },
+        "ownerMemberId": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nextAction": {
+          "type": "string",
+          "maxLength": 2000
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "legacyIncompleteProvenance": {
+          "type": "boolean"
+        }
+      }
+    },
+    "writeEnvelope": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "idempotencyKey",
+        "expectedRevision",
+        "record"
+      ],
+      "properties": {
+        "idempotencyKey": {
+          "type": "string",
+          "minLength": 16,
+          "maxLength": 128
+        },
+        "expectedRevision": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1
+        },
+        "record": {
+          "$ref": "#/$defs/shortlist"
+        }
+      }
+    },
+    "fieldOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "workspaceId",
+        "shortlistId",
+        "observedAt",
+        "actorMemberId",
+        "outcome",
+        "evidenceRefs",
+        "revision"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "shortlistId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "observedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "actorMemberId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "outcome": {
+          "enum": [
+            "confirmed_signal",
+            "no_signal",
+            "needs_more_evidence",
+            "unable_to_access"
+          ]
+        },
+        "evidenceRefs": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "privateNote": {
+          "type": "string",
+          "maxLength": 5000
+        },
+        "revision": {
+          "type": "integer",
+          "minimum": 1
+        }
+      }
+    },
+    "coordinateCandidate": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "recordId",
+        "sourceId",
+        "sourceSha256",
+        "coordinate",
+        "matchMethod",
+        "quality",
+        "rightsStatus",
+        "internalImportDecision",
+        "publicReleaseDecision",
+        "fieldVerified",
+        "reviewer",
+        "reviewedAt"
+      ],
+      "properties": {
+        "recordId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "sourceSha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "coordinate": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "lon",
+            "lat",
+            "crs"
+          ],
+          "properties": {
+            "lon": {
+              "type": "number",
+              "minimum": -180,
+              "maximum": 180
+            },
+            "lat": {
+              "type": "number",
+              "minimum": -90,
+              "maximum": 90
+            },
+            "crs": {
+              "const": "EPSG:4326"
+            }
+          }
+        },
+        "matchMethod": {
+          "enum": [
+            "registration_exact",
+            "address_inferred",
+            "field_observed"
+          ]
+        },
+        "quality": {
+          "enum": [
+            "A",
+            "B",
+            "C",
+            "unverified"
+          ]
+        },
+        "rightsStatus": {
+          "enum": [
+            "not_cleared",
+            "internal_only",
+            "public_cleared",
+            "withdrawn"
+          ]
+        },
+        "internalImportDecision": {
+          "enum": [
+            "pending",
+            "accepted",
+            "rejected"
+          ]
+        },
+        "publicReleaseDecision": {
+          "enum": [
+            "pending",
+            "accepted",
+            "rejected"
+          ]
+        },
+        "fieldVerified": {
+          "type": "boolean"
+        },
+        "reviewer": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "reviewedAt": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "format": "date-time"
+        },
+        "distanceFromExistingM": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0
+        },
+        "officeConfirmationRef": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "rightsEvidenceRef": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fieldVerificationRef": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "rightsStatus": {
+                "const": "public_cleared"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "rightsEvidenceRef"
+            ],
+            "properties": {
+              "rightsEvidenceRef": {
+                "type": "string",
+                "minLength": 1
+              },
+              "publicReleaseDecision": {
+                "const": "accepted"
+              },
+              "reviewer": {
+                "type": "string",
+                "minLength": 1
+              },
+              "reviewedAt": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "matchMethod": {
+                "const": "address_inferred"
+              },
+              "internalImportDecision": {
+                "const": "accepted"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "officeConfirmationRef"
+            ],
+            "properties": {
+              "officeConfirmationRef": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "fieldVerified": {
+                "const": true
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "fieldVerificationRef"
+            ],
+            "properties": {
+              "fieldVerificationRef": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "auditEvent": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "workspaceId",
+        "actorMemberId",
+        "action",
+        "recordId",
+        "beforeRevision",
+        "afterRevision",
+        "at",
+        "outboxStatus"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "workspaceId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "actorMemberId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "action": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recordId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "beforeRevision": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "afterRevision": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "outboxStatus": {
+          "enum": [
+            "pending",
+            "sent",
+            "failed"
+          ]
+        }
+      }
+    }
+  },
+  "oneOf": [
+    {
+      "$ref": "#/$defs/sourceRelease"
+    },
+    {
+      "$ref": "#/$defs/writeEnvelope"
+    },
+    {
+      "$ref": "#/$defs/fieldOutcome"
+    },
+    {
+      "$ref": "#/$defs/coordinateCandidate"
+    },
+    {
+      "$ref": "#/$defs/auditEvent"
+    }
+  ],
+  "description": "Proposed DTO contracts, not database migration or service selection. Server must bind actor/workspace and enforce permissions. JSON Schema validation alone cannot grant rights or confirm a field visit."
+}

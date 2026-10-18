@@ -1,0 +1,960 @@
+{
+  "contractVersion": "2.0.0",
+  "documentId": "chainat-energy-yolk-product-contract",
+  "updatedOn": "2026-10-19",
+  "status": "prototype_with_proposed_production_route",
+  "product": {
+    "name": "CityMETER: Yolk · Provincial Energy Office mode",
+    "instance": "Chai Nat",
+    "owner": "Montri",
+    "parent": "CityMETER: Yolk",
+    "portfolio": "Landometer",
+    "localeInsightUsed": false,
+    "liveUrl": "https://montri-th.github.io/chainat-energy/",
+    "repo": "https://github.com/montri-th/chainat-energy"
+  },
+  "authority": {
+    "ownerScope": "Improve web identity, basemaps and developer handoff; publish existing demo URL. No source-register coordinate import in this UI release.",
+    "base": "LDS 0.9.7",
+    "baseDocumentId": "lds-0.9.7-landometer-standalone-r1",
+    "baseSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
+    "locationProfileSha256": "5d4856041709735d3a04d4a510a88b551df86c211fdcab8a0707e8fe7c9efc3b",
+    "productDraftIsApprovedNormative": false
+  },
+  "release": {
+    "dataRelease": "cnt-energy-2026-10-18-r2",
+    "dataReadOn": "2026-10-18",
+    "engine": "Yolk สพจ. เดโม 0.1",
+    "sourceBaselineCommit": "c913c8061164973bf259f7fff983d245f97b3494",
+    "currentReleaseReceipt": "docs/release-evidence.json (when produced for final release); private handoff has separate release-evidence.json",
+    "doNotConfuseDataAndUiRelease": true,
+    "inputIdentity": {
+      "data/meta.json": {
+        "sha256": "f6d4b87dd56bb562f1242cc51dd36e26a6e021d02f3e1cfc344c259b4026db84",
+        "bytes": 6782
+      },
+      "data/areas.json": {
+        "sha256": "53229c6871b887d405ef593310fc467b4aa59092c2d6bdf51b771392748d584e",
+        "bytes": 80609
+      },
+      "data/supply.json": {
+        "sha256": "10ae38592f3f4a0bacfb10f92bb821f58013b9754b2f6271122171df94764c60",
+        "bytes": 249043
+      },
+      "data/plan.json": {
+        "sha256": "f862c05295964b22a7269f31203a541d09f16f613f2d50d117284b7fee0bee77",
+        "bytes": 10355
+      },
+      "data/vehicles.json": {
+        "sha256": "dc863e4f52fe59f420bdf84c8881758fa6ea73efed3ea69b198944f82c02297d",
+        "bytes": 3031
+      },
+      "data/cars.json": {
+        "sha256": "e265f0c96608c54ecf6612532fded97bcca592b8bc593598ff70b564887f989f",
+        "bytes": 18678
+      },
+      "data/buildings/index.json": {
+        "sha256": "3156e069439d61e3aaa12798d304401bb19d75f5ede9706d19db3ce69fed330f",
+        "bytes": 2847
+      }
+    }
+  },
+  "currentArchitecture": {
+    "artifact": "multi_file_static_site",
+    "hosting": "GitHub Pages",
+    "branch": "main",
+    "publishDirectory": "/",
+    "staticServerRequired": true,
+    "backend": false,
+    "authentication": false,
+    "serverRbac": false,
+    "sharedWorkspace": false,
+    "networkWrites": false,
+    "buildStep": "none in source baseline; consult package.json if development scripts are added",
+    "engineReuse": "Equivalent workflow and rules implemented in page JavaScript; production engine is not called",
+    "componentOwners": {
+      "dataSemanticsAndUrl": "js/core.js",
+      "mapAndBasemaps": "js/map.js",
+      "renderAndCopy": "js/views.js",
+      "navigationAndInteractions": "js/app.js",
+      "pageShellAndMetadata": "index.html",
+      "uiStyle": "styles.css"
+    },
+    "productionReferenceLinks": [
+      "https://landometer.com/v3/yolk/demo/market?brand=bangchak",
+      "https://montri-th.github.io/yolk/"
+    ],
+    "referenceLinkMeansSharedRuntime": false
+  },
+  "capabilities": {
+    "viewAreaMetrics": "implemented_static",
+    "buildingDrilldown": "implemented_static",
+    "criteriaAndOpportunityQueue": "implemented_static",
+    "shortlist": "browser_local_with_memory_fallback",
+    "csvExport": "implemented_browser_download",
+    "basemapSelection": "implemented_display_context_four_modes_with_fallback",
+    "identityFaviconSocialPreview": "implemented_exact_assets_pending_final_live_receipt",
+    "officeAdoption": "not_established",
+    "fieldVerification": "not_implemented",
+    "siteCoordinates": "withheld_not_cleared",
+    "teamAssignment": "not_implemented",
+    "authRbac": "not_implemented",
+    "auditTrailAndOutbox": "not_implemented",
+    "privateMedia": "not_implemented",
+    "masterSheetWrite": "not_authorized_for_this_release"
+  },
+  "data": {
+    "counts": {
+      "tambon": 53,
+      "lao": 59,
+      "district": 8,
+      "buildingFeatures": 177647,
+      "registerFuel": 203,
+      "registerControlled": 18,
+      "registerProjects": 69,
+      "registerTotal": 290
+    },
+    "metrics": [
+      {
+        "id": "elec_total",
+        "group": "demand",
+        "label": "ไฟฟ้าทุกประเภทผู้ใช้",
+        "unit": "kWh ต่อปี",
+        "family": "activity",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "elec_res",
+        "group": "demand",
+        "label": "ไฟฟ้า บ้านอยู่อาศัย",
+        "unit": "kWh ต่อปี",
+        "family": "activity",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "elec_biz",
+        "group": "demand",
+        "label": "ไฟฟ้า กิจการทุกขนาด",
+        "unit": "kWh ต่อปี",
+        "family": "activity",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "elec_agri",
+        "group": "demand",
+        "label": "ไฟฟ้า สูบน้ำเพื่อการเกษตร",
+        "unit": "kWh ต่อปี",
+        "family": "activity",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "elec_hh",
+        "group": "demand",
+        "label": "ไฟฟ้าบ้านต่อครัวเรือน",
+        "unit": "kWh ต่อครัวเรือนต่อเดือน",
+        "family": "density-household",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "fuel_diesel",
+        "group": "demand",
+        "label": "น้ำมันดีเซล",
+        "unit": "ลิตรต่อเดือน",
+        "family": "activity",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "fuel_gasohol",
+        "group": "demand",
+        "label": "แก๊สโซฮอล์ 95 และ 91",
+        "unit": "ลิตรต่อเดือน",
+        "family": "activity",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "lpg",
+        "group": "demand",
+        "label": "LPG ภาคครัวเรือน",
+        "unit": "กก. ต่อเดือน",
+        "family": "activity",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "veh_total",
+        "group": "demand",
+        "label": "รถจดทะเบียนสะสม",
+        "unit": "คัน",
+        "family": "count",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "veh_ev",
+        "group": "demand",
+        "label": "รถไฟฟ้าและไฮบริด",
+        "unit": "คัน",
+        "family": "count",
+        "measure": "modelled",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "pop",
+        "group": "demand",
+        "label": "ประชากร",
+        "unit": "คน",
+        "family": "count",
+        "measure": "proxy",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "buildings",
+        "group": "demand",
+        "label": "อาคาร",
+        "unit": "หลัง",
+        "family": "count",
+        "measure": "observed",
+        "grains": [
+          "tambon",
+          "lao"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "sup_fuel",
+        "group": "supply",
+        "label": "กิจการน้ำมันเชื้อเพลิงในทะเบียน",
+        "unit": "ราย",
+        "family": "count",
+        "measure": "observed",
+        "grains": [
+          "tambon"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "sup_fuel_small",
+        "group": "supply",
+        "label": "ประเภท ค และตู้หยอดเหรียญ",
+        "unit": "ราย",
+        "family": "count",
+        "measure": "observed",
+        "grains": [
+          "tambon"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "sup_projects",
+        "group": "supply",
+        "label": "โครงการพลังงานทดแทน",
+        "unit": "รายการ",
+        "family": "count",
+        "measure": "observed",
+        "grains": [
+          "tambon"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "sup_solar_kw",
+        "group": "supply",
+        "label": "สูบน้ำโซลาร์ กำลังติดตั้งรวม",
+        "unit": "กิโลวัตต์",
+        "family": "count",
+        "measure": "observed",
+        "grains": [
+          "tambon"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      },
+      {
+        "id": "sup_controlled",
+        "group": "supply",
+        "label": "อาคารและโรงงานควบคุม",
+        "unit": "แห่ง",
+        "family": "count",
+        "measure": "observed",
+        "grains": [
+          "tambon"
+        ],
+        "sourceOfTruth": "js/core.js#METRICS"
+      }
+    ],
+    "sourceMeasureKinds": [
+      "observed",
+      "reported",
+      "proxy",
+      "modelled"
+    ],
+    "claimKinds": [
+      "observed",
+      "benchmark",
+      "inference",
+      "hypothesis"
+    ],
+    "valueStateModel": {
+      "currentRenderer": [
+        "measured",
+        "measured_zero",
+        "no_data"
+      ],
+      "reservedExceptionalStates": [
+        "suppressed",
+        "not_yet",
+        "out_of_scope",
+        "unverified"
+      ],
+      "productionSchema": "contracts/evidence-value.schema.json",
+      "rule": "Do not coerce missing/suppressed/unverified into zero; value state is independent from measure kind."
+    },
+    "provenanceRequired": [
+      "dataset",
+      "source",
+      "readOn_or_asOf",
+      "boundary",
+      "measureKind",
+      "releaseId"
+    ],
+    "geography": {
+      "tambonCodePattern": "^[0-9]{6}$",
+      "laoCodePattern": "^[0-9]{8}$",
+      "buildingIdPattern": "^[0-9]{8}-[0-9]{5}$",
+      "buildingIdStability": "Order-based within this source release; never use as cross-release permanent cadastral identifier."
+    },
+    "grainGuardrails": [
+      "Supply register aggregates exist at tambon grain only; LAO has no register supply total.",
+      "Cars registrations are province grain only; never distribute provincial EV share to tambons or use as charging-demand observations.",
+      "Population/factories/hotel rooms are contextual proxy weights, not official counts or eligibility.",
+      "Building energy and area energy are modelled; geometry is source observation, not measured energy.",
+      "District values are calculated from tambon sums except population and source building counts; no silent cross-grain substitution."
+    ],
+    "cars": {
+      "months": 80,
+      "range": [
+        "2020-01",
+        "2026-08"
+      ],
+      "benchmarkWindow": [
+        "2025-09",
+        "2026-08"
+      ],
+      "universe": 77,
+      "ordering": "descending EV share",
+      "lowCountProvinces": [
+        "นนทบุรี",
+        "ปทุมธานี",
+        "สมุทรปราการ"
+      ],
+      "parallelUniverseExcludingLowCount": 74,
+      "engineOrder": [
+        "ELECTRIC",
+        "GASOLINE-PHEV",
+        "GASOLINE-HYBRID",
+        "GASOLINE",
+        "DIESEL"
+      ],
+      "categoricalSlots": {
+        "DIESEL": [
+          "01",
+          "circle"
+        ],
+        "GASOLINE": [
+          "02",
+          "square"
+        ],
+        "GASOLINE-HYBRID": [
+          "03",
+          "triangle"
+        ],
+        "GASOLINE-PHEV": [
+          "04",
+          "diamond"
+        ],
+        "ELECTRIC": [
+          "05",
+          "cross"
+        ]
+      }
+    }
+  },
+  "decisionModel": {
+    "demand": {
+      "maxActiveConditions": 3,
+      "allowedPercentiles": [
+        40,
+        50,
+        60,
+        70,
+        80
+      ],
+      "defaultConditions": [
+        {
+          "metric": "elec_total",
+          "p": 60,
+          "on": true
+        },
+        {
+          "metric": "fuel_diesel",
+          "p": 60,
+          "on": true
+        },
+        {
+          "metric": "veh_total",
+          "p": 50,
+          "on": true
+        }
+      ],
+      "cutMethod": "linear interpolation: position=(n-1)*p/100; interpolate sorted non-null values",
+      "passRule": "value != null AND value > 0 AND value >= cut",
+      "membership": "At least one active condition passes; no active conditions yields no members",
+      "tier": "activeConditions - passedConditions + 1 for members; null outside Demand",
+      "supplyAndLensMayChangeDemandMembership": false,
+      "source": "js/core.js#computeTiers"
+    },
+    "opportunity": {
+      "maxLenses": 3,
+      "lensIds": [
+        "rooftop",
+        "pump",
+        "biomass",
+        "safety",
+        "efficiency",
+        "ev",
+        "outreach"
+      ],
+      "defaultLenses": [
+        "rooftop",
+        "safety",
+        "efficiency"
+      ],
+      "statuses": [
+        "candidate",
+        "evidence",
+        "none"
+      ],
+      "labels": {
+        "candidate": "ชวนสำรวจ",
+        "evidence": "ต้องเพิ่มหลักฐาน",
+        "none": "ยังไม่พบสัญญาณ"
+      },
+      "rankMethod": "mid-rank percentile of 53 tambons; see rankP",
+      "membership": "Demand members only",
+      "aggregateStatus": "candidate if any selected lens is candidate; otherwise evidence if any evidence; otherwise none",
+      "sort": [
+        "candidateLensCount DESC",
+        "tier ASC",
+        "firstCandidateLensIndex ASC",
+        "sortValue DESC",
+        "tambonCode ASC"
+      ],
+      "source": "js/core.js#LENSES,#computeQueue",
+      "definitions": [
+        {
+          "id": "rooftop",
+          "short": "โซลาร์รูฟท็อปกิจการ",
+          "plan": "แผนงานที่ 1",
+          "title": "โซลาร์รูฟท็อปสำหรับกิจการ",
+          "rule": "ชวนสำรวจเมื่อไฟฟ้ากิจการ ≥ P70 และหลังคาอาคารตั้งแต่ 300 ตร.ม. ≥ P60 · ต้องเพิ่มหลักฐานเมื่อผ่านเฉพาะไฟฟ้ากิจการ",
+          "mandate": [
+            4
+          ],
+          "formulaAuthority": "js/core.js#LENSES",
+          "thresholdStatus": "demo_example_not_office_approved"
+        },
+        {
+          "id": "pump",
+          "short": "สูบน้ำโซลาร์เกษตร",
+          "plan": "แผนงานที่ 1",
+          "title": "ระบบสูบน้ำพลังงานแสงอาทิตย์เพื่อการเกษตร",
+          "rule": "ชวนสำรวจเมื่อไฟฟ้าสูบน้ำเกษตร ≥ P60 และมีระบบชำรุดหรือยังไม่มีระบบในไฟล์ · ต้องเพิ่มหลักฐานเมื่อ ≥ P60 และมีระบบใช้งานอยู่",
+          "mandate": [
+            4
+          ],
+          "formulaAuthority": "js/core.js#LENSES",
+          "thresholdStatus": "demo_example_not_office_approved"
+        },
+        {
+          "id": "biomass",
+          "short": "ชีวมวลและก๊าซชีวภาพ",
+          "plan": "แผนงานที่ 1",
+          "title": "ชีวมวลและก๊าซชีวภาพจากภาคเกษตร",
+          "rule": "ชวนสำรวจเมื่อพื้นที่นอกอาคาร ≥ P60 มีอาคารหรือโรงงานควบคุมในไฟล์ และอำเภอยังไม่มีโรงไฟฟ้าชีวมวลตามแผน · ต้องเพิ่มหลักฐานเมื่อผ่านเฉพาะพื้นที่นอกอาคาร",
+          "mandate": [
+            4
+          ],
+          "formulaAuthority": "js/core.js#LENSES",
+          "thresholdStatus": "demo_example_not_office_approved"
+        },
+        {
+          "id": "safety",
+          "short": "ตรวจความปลอดภัยน้ำมัน",
+          "plan": "แผนงานที่ 2",
+          "title": "ตรวจความปลอดภัยสถานประกอบการน้ำมัน",
+          "rule": "ชวนสำรวจเมื่อจำนวนกิจการน้ำมัน หรือประเภท ค และตู้หยอดเหรียญ ≥ P60 · ต้องเพิ่มหลักฐานเมื่อมีกิจการแต่ต่ำกว่านั้น · ยังไม่พบสัญญาณเมื่อไม่มีกิจการในไฟล์",
+          "mandate": [
+            2,
+            3
+          ],
+          "formulaAuthority": "js/core.js#LENSES",
+          "thresholdStatus": "demo_example_not_office_approved"
+        },
+        {
+          "id": "efficiency",
+          "short": "อาคารควบคุมและภาครัฐ",
+          "plan": "แผนงานที่ 3",
+          "title": "อาคารควบคุมและหน่วยงานรัฐลดใช้พลังงาน",
+          "rule": "ชวนสำรวจเมื่อมีอาคารหรือโรงงานควบคุมในไฟล์ · ต้องเพิ่มหลักฐานเมื่อไฟฟ้ากิจการขนาดกลางและใหญ่ ≥ P80",
+          "mandate": [
+            4,
+            7
+          ],
+          "formulaAuthority": "js/core.js#LENSES",
+          "thresholdStatus": "demo_example_not_office_approved"
+        },
+        {
+          "id": "ev",
+          "short": "จุดอัดประจุรถไฟฟ้า",
+          "plan": "สถานการณ์ในแผน หน้า 1",
+          "title": "จุดอัดประจุรถไฟฟ้า",
+          "rule": "ชวนสำรวจเมื่อรถไฟฟ้าและไฮบริด ≥ P80 และไฟฟ้ากิจการ ≥ P60 · ต้องเพิ่มหลักฐานเมื่อรถไฟฟ้าและไฮบริด ≥ P60",
+          "mandate": [
+            1
+          ],
+          "formulaAuthority": "js/core.js#LENSES",
+          "thresholdStatus": "demo_example_not_office_approved"
+        },
+        {
+          "id": "outreach",
+          "short": "ศูนย์ข้อมูลพลังงานเคลื่อนที่",
+          "plan": "แผนงานที่ 3",
+          "title": "ศูนย์บริการข้อมูลพลังงานเคลื่อนที่",
+          "rule": "ชวนสำรวจเมื่อไฟฟ้าบ้านต่อครัวเรือน ≥ P70 และยังไม่มีโครงการในไฟล์ · ต้องเพิ่มหลักฐานเมื่อ ≥ P70 และมีโครงการแล้ว",
+          "mandate": [
+            7
+          ],
+          "formulaAuthority": "js/core.js#LENSES",
+          "thresholdStatus": "demo_example_not_office_approved"
+        }
+      ]
+    },
+    "choropleth": {
+      "method": "mid-rank percentile: p=(averageRank-1)/(n-1), LUT index=round(40*p)",
+      "sampleCount": 41,
+      "measuredZeroIndex": 0,
+      "nonDataStatesHaveAnalyticalColour": false,
+      "dataHexAcrossThemes": "identical; no inversion/transformation/opacity",
+      "categoricalThemeColours": "use existing approved light/dark categorical values",
+      "unchangedHistoricalWarning": "Demand quantile and lens mid-rank are different methods; do not unify as cleanup."
+    },
+    "referenceBaselineNotFreshPass": {
+      "tiers": {
+        "1": 9,
+        "2": 15,
+        "3": 12,
+        "outsideDemand": 17
+      },
+      "queue": {
+        "candidate": 28,
+        "evidence": 8,
+        "none": 0
+      },
+      "authority": "Supplied v1 handoff, reverify before final release"
+    }
+  },
+  "stateAndActions": {
+    "views": [
+      "overview",
+      "demand",
+      "supply",
+      "opportunity",
+      "shortlist",
+      "requests",
+      "sources"
+    ],
+    "defaultState": {
+      "view": "overview",
+      "level": "tambon",
+      "district": null,
+      "area": null,
+      "building": null,
+      "metric": "elec_total",
+      "supplyMetric": "sup_fuel",
+      "lenses": [
+        "rooftop",
+        "safety",
+        "efficiency"
+      ],
+      "queue": "candidate",
+      "supplyFilter": "all",
+      "carsGroup": "1"
+    },
+    "url": {
+      "v": "one of views; invalid -> overview",
+      "lvl": "lao or default tambon",
+      "d": "known 4-digit district code",
+      "a": "known code matching level",
+      "b": "8-digit LAO + hyphen + 5-digit building sequence; resolve against loaded building list",
+      "m": "known metric or tier; grain correction enforced by renderMap",
+      "lens": "comma-separated known lens IDs, max 3",
+      "q": "candidate|evidence|none",
+      "c": "metric>=Pnn separated by |, allowed percentile and known metric, max 3",
+      "carsGroup": "not serialized; resets on fresh page load"
+    },
+    "actions": [
+      {
+        "id": "navigate",
+        "effect": "updates view and browser history",
+        "networkWrite": false
+      },
+      {
+        "id": "changeCriteria",
+        "effect": "recomputes Demand tiers and queue",
+        "networkWrite": false
+      },
+      {
+        "id": "changeLenses",
+        "effect": "recomputes queue within existing Demand membership",
+        "networkWrite": false
+      },
+      {
+        "id": "selectArea",
+        "effect": "loads buildings lazily and opens detail",
+        "networkWrite": false
+      },
+      {
+        "id": "selectBuilding",
+        "effect": "opens source geometry and modelled energy card",
+        "networkWrite": false
+      },
+      {
+        "id": "toggleShortlist",
+        "effect": "adds/removes browser-local record",
+        "networkWrite": false
+      },
+      {
+        "id": "editOwnerAndNext",
+        "effect": "edits browser-local free text; not a real team assignment",
+        "networkWrite": false
+      },
+      {
+        "id": "exportCsv",
+        "effect": "download quoted cells with formula neutralization",
+        "networkWrite": false
+      },
+      {
+        "id": "selectTheme",
+        "effect": "auto/light/dark setting only",
+        "networkWrite": false
+      }
+    ],
+    "persistence": {
+      "shortlistKey": "cm-yolk-shortlist-v1",
+      "maxShortlist": 60,
+      "themeKey": "cm-yolk-theme",
+      "storageFailure": "in-memory shortlist until page closes; visible message",
+      "tenantIsolation": "not applicable in public demo; browser storage is not authentication or secure tenant isolation for the planned five users",
+      "savedSnapshotMustRetain": [
+        "dataRelease",
+        "engine",
+        "criteriaRevision",
+        "savedAt"
+      ],
+      "legacyRecords": "preserve and label incomplete legacy provenance; do not invent release IDs",
+      "privacy": "Do not type private field notes or personal data into public demo shortlist."
+    },
+    "failureStates": [
+      "core data loading error with retry",
+      "map unavailable with list fallback",
+      "building loading failure preserves area totals and allows retry",
+      "basemap provider unavailable must preserve analytical overlays or offer neutral map",
+      "storage denied uses memory fallback",
+      "invalid URL falls back to valid state"
+    ],
+    "displayPreferences": {
+      "basemap": "analysis",
+      "areaColours": true
+    },
+    "displayPersistence": {
+      "key": "chainat-energy-map-display-v1",
+      "urlSerialized": false,
+      "notTeamAction": true
+    }
+  },
+  "publicBoundary": {
+    "allowed": [
+      "existing approved static aggregate register projection",
+      "source geometry and modelled area/building metrics with labels",
+      "public branding assets with provenance",
+      "generic developer contracts and synthetic fixtures"
+    ],
+    "neverBundleInPublicSite": [
+      "uncleared Fuel Now coordinates",
+      "master register or dry-run coordinate file",
+      "raw office XLSX",
+      "personal phone numbers",
+      "private commercial terms or LOI",
+      "signed private media URLs",
+      "secrets or credentials",
+      "private Drive document IDs"
+    ],
+    "coordinateImportGates": [
+      "owner-approved register access",
+      "reviewed per-record source evidence and explicit internal import approval",
+      "data-owner identity confirmation when registration was inferred from address"
+    ],
+    "siteCoordinatePublication": "Separate explicit owner/data-rights release; internal import does not clear publication.",
+    "media": "Project photos previously published are not proof of new face-consent clearance; do not use faces in new social image.",
+    "noindex": "noindex,nofollow is indexing preference, not access control."
+  },
+  "productionTarget": {
+    "status": "proposed_not_implemented",
+    "principle": "Reuse verified shared Yolk capabilities after actual source-contract review; mode-specific metrics/lenses remain separate.",
+    "stackSelection": "Do not select a new backend/auth service from this document alone. Read active production repository entrypoint first.",
+    "sharedLayer": [
+      "source release and provenance",
+      "criteria/tier engine with versioned semantics",
+      "workspace identity/auth/RBAC",
+      "revision checks and event outbox",
+      "audited imports and rights controls",
+      "shared accessible navigation and map primitives"
+    ],
+    "modeSpecificLayer": [
+      "energy metrics and unit conversions",
+      "provincial plan and mandate evidence",
+      "energy opportunity lens definitions",
+      "office data-request templates",
+      "province source mapping"
+    ],
+    "schemas": [
+      "contracts/evidence-value.schema.json",
+      "contracts/production-records.schema.json"
+    ],
+    "proposedApiInterfaces": [
+      {
+        "id": "workspaceRead",
+        "operation": "read scoped workspace records",
+        "status": "contract_proposal_no_deployed_endpoint",
+        "authorization": "server workspace member read permission"
+      },
+      {
+        "id": "shortlistWrite",
+        "operation": "create/update with idempotencyKey and expectedRevision",
+        "status": "contract_proposal_no_deployed_endpoint",
+        "authorization": "Yolk Editor/Admin scoped target and criteria permissions from inherited role contract; server-enforced"
+      },
+      {
+        "id": "fieldOutcomeWrite",
+        "operation": "append field outcome and evidence metadata",
+        "status": "contract_proposal_no_deployed_endpoint",
+        "authorization": "Yolk Editor/Admin scoped evidence permissions from inherited role contract; server-enforced"
+      },
+      {
+        "id": "coordinateImport",
+        "operation": "validate reviewed import plan; explicit apply in separate permissioned action",
+        "status": "blocked_by_D4_D5_D10_and_data_rights",
+        "authorization": "No new Chainat role permission invented; map the actual production import capability under the existing Yolk authorization model after separate owner/data-rights approvals. No public client direct Sheet write."
+      }
+    ],
+    "roles": [
+      "Admin",
+      "Editor",
+      "Viewer"
+    ],
+    "securityAcceptance": [
+      "Server derives actor and workspace membership; never trust client-supplied role.",
+      "All reads/writes scoped by workspace and tested across two tenants.",
+      "Reject stale expectedRevision; preserve both revisions for review.",
+      "Idempotency key yields one record and one audit/outbox event.",
+      "Private media object store denies public/anonymous access; expiry is not consent.",
+      "Rights-cleared public projection is built separately; raw records never become frontend assets.",
+      "Coordinate release requires per-record rights, provenance and review; no inference from public web availability.",
+      "Provision exactly 5 owner-authorized users: Admin 1, Editor 2, Viewer 2; require explicit account identity bindings before provisioning.",
+      "Only role seat counts differ from Yolk: Admin1/Editor2/Viewer2; inherit all Yolk role permissions verbatim.",
+      "Test all 5 users plus anonymous/revoked/wrong-workspace. Viewer can keep a self-only draft but cannot Apply or write shared records, create ShareGrant or widen audience.",
+      "Admin/member changes preserve the last Admin as required by the inherited Yolk implementation task."
+    ],
+    "userConfiguration": {
+      "status": "owner_required_same_yolk_permissions_counts_override_only_not_implemented",
+      "totalUsers": 5,
+      "roleCounts": {
+        "Admin": 1,
+        "Editor": 2,
+        "Viewer": 2
+      },
+      "identityBindings": null,
+      "identitiesRequiredBeforeProvisioning": true,
+      "doNotInferIdentitiesFromDriveOrSheetPermissions": true,
+      "currentDemoEnforcement": false,
+      "seatOverrideOnly": true,
+      "upstreamSeatCountsHistorical": {
+        "admin": 1,
+        "editor": 3,
+        "viewer": 6
+      },
+      "permissionAuthority": {
+        "repository": "https://github.com/montri-th/yolk",
+        "version": "1.9.13",
+        "path": "contracts/full-product.v1.9.13.json",
+        "jsonPath": "$.production.rbac",
+        "sha256": "95d7bda630bdf6ed7491a95452020d9d5f4ea2bbe75d75fa2f642cd5db921073",
+        "entrypoint": "START_HERE.md explicitly links this full-product contract",
+        "sourceStatus": "PROPOSED_SERVER_ENFORCED"
+      },
+      "inheritedPermissionsVerbatim": {
+        "admin": "Manage workspace/members/custom field definitions plus editor actions",
+        "editor": "Branch/target/evidence/media CRUD and scoped criteria Apply; permitted sharing",
+        "viewer": "Read permitted data, maps/details/feed; personal filters/theme/locale and notification read state; no shared writes",
+        "checks": "Tenant+role+entity scope at every API/storage/signed URL/share path; do not trust actor selectors or client canEdit",
+        "viewerPrivateDraft": "Permitted self-only preview/draft, never Apply/shared mutation",
+        "reviewer": "Assigned capability within editor/admin, not an extra seat role",
+        "viewerForwarding": "May copy/forward an existing link only within its authorized audience. Cannot create a new ShareGrant or grant new access."
+      },
+      "separationRule": "Use the exact Yolk role permissions; only seat counts change. Permissions never replace data-rights approvals or source evidence."
+    },
+    "inheritedRbacSource": {
+      "repository": "https://github.com/montri-th/yolk",
+      "version": "1.9.13",
+      "path": "contracts/full-product.v1.9.13.json",
+      "jsonPath": "$.production.rbac",
+      "sha256": "95d7bda630bdf6ed7491a95452020d9d5f4ea2bbe75d75fa2f642cd5db921073",
+      "entrypoint": "START_HERE.md explicitly links this full-product contract",
+      "sourceStatus": "PROPOSED_SERVER_ENFORCED"
+    }
+  },
+  "acceptance": {
+    "meaningfulTests": [
+      "Baseline same-release totals and queue outputs remain unchanged after identity/map changes.",
+      "Zero/no-data/suppressed fixtures never share the same analytical treatment.",
+      "Invalid view, codes, metric and percentile URLs recover without exceptions.",
+      "Changing basemap/theme keeps Demand membership, selection and saved criteria.",
+      "Provider failure preserves list workflow; navigation and focus work by keyboard.",
+      "Shortlist storage denied shows temporary persistence; CSV formula text cannot execute.",
+      "Narrow and desktop Thai/English actual content has no overlap; visible keyboard focus; no decorative bracket/colored left rail.",
+      "Icons/favicons/social image return correct bytes, MIME and dimensions at live canonical URL.",
+      "Public output excludes prohibited datasets and credentials.",
+      "Production-specific tests are pending until backend exists; never claim pass from static demo."
+    ],
+    "testEvidence": "Final release QA/byte-parity receipts bound to source SHA; prior counts are historical only."
+  },
+  "orderedTasks": "contracts/task-graph.json",
+  "internPrompt": "Read Product Brief and this contract, then active production repo START_HERE/AGENTS. Implement one taskId and dependencies only. Preserve data release, Demand semantics, evidence states and saved work. Never publish private data, write master Sheet, introduce secrets, swap stack or mark unimplemented backend as complete. Run task acceptance, record exact evidence and open gates, and return a focused diff.",
+  "uiRelease": {
+    "id": "chainat-yolk-ui-2026-10-19-v2",
+    "dataReleaseChanged": false,
+    "identityManifest": "docs/identity-manifest.json",
+    "identity": {
+      "logo": "exact retained Yolk 1.9.13 native Landometer artwork",
+      "logoSha256": "989f58583bc54e4b9a743d0f04308df92fb7cf0bb2ae3ba9398ec9c03c481554",
+      "portfolioIcons": [
+        16,
+        32,
+        48,
+        180,
+        192,
+        512
+      ],
+      "iconAuthority": "Artifact-specific retained Yolk set selected for this demo; not a new generic CityMETER product tile",
+      "roundedGlyphFontSha256": "2998791392b42334dbff07b513d28b794462db6392885dfb0fd0968e90919187",
+      "demandIcon": "single egg",
+      "opportunityIcon": "three eggs",
+      "storeIcon": "retained Yolk storefront exception",
+      "navbar": "brand + menu; theme control inside grouped navigation; Escape/outside close and focus restore",
+      "share": {
+        "path": "assets/identity/chainat-energy-share-7856ad154cb5.jpg",
+        "width": 1200,
+        "height": 630,
+        "mime": "image/jpeg",
+        "sha256": "7856ad154cb54e6342a942f726f1a22edf937a1bf416dbe1c8d182464b7e6969",
+        "bytes": 44544
+      }
+    },
+    "basemaps": {
+      "source": "js/basemaps.js",
+      "ids": [
+        "analysis",
+        "simplified",
+        "detailed",
+        "satellite"
+      ],
+      "default": "analysis",
+      "roads": {
+        "url": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+        "maxZoom": 19,
+        "attribution": "© OpenStreetMap contributors",
+        "purpose": "context only"
+      },
+      "satellite": {
+        "provider": "ESA WorldCover / Terrascope",
+        "layer": "esa-worldcover-s2rgbnir-10m-2021-v2_tcc",
+        "date": "2021",
+        "resolutionM": 10,
+        "maxZoom": 14,
+        "usesOsmUnderlay": true,
+        "purpose": "context only; not live imagery or site confirmation"
+      },
+      "failure": "error or 15000ms timeout -> analysis fallback; keep selected provider for explicit retry",
+      "displayStorageKey": "chainat-energy-map-display-v1",
+      "displayState": {
+        "basemap": "analysis",
+        "areaColours": true
+      },
+      "urlSerialized": false,
+      "changesDemandOrCriteria": false,
+      "areaColours": "display-only checkbox; invisible hit layer preserves area selection",
+      "theme": "context raster paint only; never analytical LUT values",
+      "noPrefetchOrOfflineArchive": true
+    }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "chainat.ui-release/1.0",
+  "uiReleaseId": "chainat-yolk-ui-2026-10-19-v2",
+  "preparedAt": "2026-10-18T17:22:01.545716+00:00",
+  "status": "local_verified_provider_receipt_external",
+  "sourceBaselineCommit": "c913c8061164973bf259f7fff983d245f97b3494",
+  "sourceBinding": {
+    "kind": "exact-runtime-file-sha256",
+    "files": [
+      {
+        "path": "index.html",
+        "bytes": 35119,
+        "sha256": "7911d735f9aa5ebcb75089ccd14d935b57853d8adc458b5d5ca2d12e55a9a268"
+      },
+      {
+        "path": "styles.css",
+        "bytes": 44169,
+        "sha256": "0396849f9108475c14e8e679e587562057e2169656c9b42bc1664cffdf88d5c8"
+      },
+      {
+        "path": "identity.css",
+        "bytes": 5616,
+        "sha256": "7de960d68dbfa8b2d2de226c2d8931e216fc310fbc1bfaecb266c624ff796215"
+      },
+      {
+        "path": "icons.css",
+        "bytes": 5753,
+        "sha256": "c197e3448ee5d3f4c14ea4de3807eb114ae8bf0bf03b49132766d1732f46aaa0"
+      },
+      {
+        "path": "site.webmanifest",
+        "bytes": 789,
+        "sha256": "d095e4f912a5d87bce81d9a1f66b7b62cc63c39c50913b809ec98c0865aee011"
+      },
+      {
+        "path": "js/app.js",
+        "bytes": 16112,
+        "sha256": "9e3183996d78c4e9c1e0253368e689f22713a8f0b8d8fd98d798888f18aee418"
+      },
+      {
+        "path": "js/basemaps.js",
+        "bytes": 6346,
+        "sha256": "bce27791b9db75cfe18f2e144d1af234037d2e3a8770beddb632babeb1051d48"
+      },
+      {
+        "path": "js/core.js",
+        "bytes": 39475,
+        "sha256": "be31c7c11824cfdcf85ae26b654900f6b4342850ce92aa5ce012bb44c1607c28"
+      },
+      {
+        "path": "js/icons.js",
+        "bytes": 5356,
+        "sha256": "207f9deea1a3e4e4e52962f7d5897bd319952579f1feccff88519bf9e8f72016"
+      },
+      {
+        "path": "js/identity.js",
+        "bytes": 1767,
+        "sha256": "317f412107bcd275240e9d30b625a97e4ac405fb21d05fbe2bf2c3c1ea9cf533"
+      },
+      {
+        "path": "js/map.js",
+        "bytes": 15119,
+        "sha256": "cf16cba0eee4f45cd541151ef469dd1fce642e28690b9b463845f1bdf2f5453e"
+      },
+      {
+        "path": "js/views.js",
+        "bytes": 69562,
+        "sha256": "6be984f66554a3bf87e2121a1da2cfb7fe1594300d13b18da92992b7a50b9c02"
+      },
+      {
+        "path": "contracts/evidence-value.schema.json",
+        "bytes": 3675,
+        "sha256": "8b17a40180b7e95821cb34cf42ce741ae66a00d3d0aa247b0faacf1a61255b48"
+      },
+      {
+        "path": "contracts/product-contract.json",
+        "bytes": 36993,
+        "sha256": "185c254a8bb3322d87d170cb85a17d941cb4e521c18307deb7b81e69714e4101"
+      },
+      {
+        "path": "contracts/production-records.schema.json",
+        "bytes": 13070,
+        "sha256": "165e4b0edcb9adab9ce282423e74211d98aad2d2957c4895dc4a3b47358a829d"
+      },
+      {
+        "path": "contracts/task-graph.json",
+        "bytes": 9685,
+        "sha256": "3bec39eac980286546a7173f920e0d870da19d3731755ea169602a36a7184d30"
+      },
+      {
+        "path": "contracts/yolk-rbac-source.json",
+        "bytes": 1503,
+        "sha256": "0ed9a99161dcd9967c34accf8d2153cad3824e1999c1c410afd5cca5d42dc851"
+      }
+    ],
+    "note": "Final Git commit and provider terminal/live evidence are attested separately after publishing; no self-referential commit hash."
+  },
+  "dataRelease": "cnt-energy-2026-10-18-r2",
+  "dataReadOn": "2026-10-18",
+  "localQa": {
+    "status": "passed",
+    "passed": 85,
+    "failed": 0,
+    "ranAt": "2026-10-18T17:20:38.733Z",
+    "report": "docs/ui-v2-browser-checks.json",
+    "scope": "56 route/viewport/theme fixtures, metric/grain, navigation, keyboard and basemap regressions; external tiles mocked"
+  },
+  "additionalChecks": {
+    "coreAndContract": 11,
+    "portableServer": 4,
+    "status": "passed"
+  },
+  "manualVisual": {
+    "status": "passed_bounded",
+    "views": "Identity/menu and map settings, Thai/English fragments at narrow/desktop, light/dark; actual OSM and Sentinel-2 image observed via CUA",
+    "notTested": [
+      "physical iOS/maskable installation",
+      "screen-reader audit",
+      "external share-platform cache refresh",
+      "office production pilot"
+    ]
+  },
+  "preserved": [
+    "Claude page/story and data release",
+    "Demand/tiers/opportunity formulas and defaults",
+    "all 7 data source hashes",
+    "noindex,nofollow policy"
+  ],
+  "production": {
+    "authAndRbacImplemented": false,
+    "rolesInheritedFromYolk": true,
+    "users": 5,
+    "seats": {
+      "Admin": 1,
+      "Editor": 2,
+      "Viewer": 2
+    }
+  },
+  "dataBoundary": {
+    "masterCoordinatesWritten": false,
+    "qualityOrFieldVerificationChanged": false,
+    "unclearedCoordinatesPublished": false,
+    "pendingDecisions": [
+      "D4",
+      "D5",
+      "D10"
+    ]
+  },
+  "liveReceipt": "Stored with the private handoff after matching source SHA to GitHub Pages terminal success and live bytes."
+}

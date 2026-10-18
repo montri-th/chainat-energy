@@ -15,7 +15,7 @@ function themeMeta() {
 function showView() {
   const key = MAP_VIEWS.includes(S.view) ? 'map' : S.view;
   $$('main > .view').forEach(v => { v.hidden = v.id !== `view-${key}`; });
-  $$('.rail a').forEach(a => { if (a.dataset.view === S.view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
+  $$('a[data-view]').forEach(a => { if (a.dataset.view === S.view) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current'); });
   setTitle();
 }
 /* keep keyboard focus on the same control when a panel is re-rendered */
@@ -77,7 +77,7 @@ async function renderMap(opts = {}) {
 function showMapFallback() {
   const w = $('#map'); if (!w) return;
   w.innerHTML = `<div class="map-fallback" role="note"><p>แผนที่แสดงผลไม่ได้ในเบราว์เซอร์นี้ ข้อมูลทุกพื้นที่ยังอ่านได้ในแผงรายละเอียด</p></div>`;
-  $$('.map-tools').forEach(el => { el.hidden = true; });
+  $$('.map-tools, .map-settings').forEach(el => { el.hidden = true; });
 }
 async function go(changes = {}, { push = true, fit = false } = {}) {
   const prevView = S.view;

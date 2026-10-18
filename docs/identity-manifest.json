@@ -1,0 +1,347 @@
+{
+  "schemaVersion": "chainat.identity-manifest/1.0",
+  "product": "CityMETER: Yolk · Provincial Energy Office mode",
+  "artifact": "chainat-energy-public-demo",
+  "date": "2026-10-19",
+  "designSystem": {
+    "version": "0.9.7",
+    "releaseRef": "v0.9.7-owner.1",
+    "standaloneSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
+    "signatureStatus": "unsigned-owner-approved",
+    "artifactConformanceClaimed": false
+  },
+  "canonicalUrl": "https://montri-th.github.io/chainat-energy/",
+  "indexing": "noindex,nofollow; unchanged",
+  "iconSet": {
+    "scope": "Artifact-specific reuse of the same six-size Landometer portfolio set retained by Yolk 1.9.13, explicitly selected by owner for this demo",
+    "source": "Verified current LDS 0.9.7 portfolio icon files, identical retained Yolk bytes",
+    "sizes": [
+      16,
+      32,
+      48,
+      180,
+      192,
+      512
+    ],
+    "canonicalProductTileClaimed": false,
+    "changesPerRoute": false,
+    "approvalBoundary": "No new CityMETER gradient tile, symbol variant or general identity policy is created"
+  },
+  "share": {
+    "path": "assets/identity/chainat-energy-share-7856ad154cb5.jpg",
+    "width": 1200,
+    "height": 630,
+    "mime": "image/jpeg",
+    "sha256": "7856ad154cb54e6342a942f726f1a22edf937a1bf416dbe1c8d182464b7e6969",
+    "bytes": 44544
+  },
+  "assets": [
+    {
+      "id": "chainat.chainat-energy-share-7856ad154cb5",
+      "path": "assets/identity/chainat-energy-share-7856ad154cb5.jpg",
+      "sha256": "7856ad154cb54e6342a942f726f1a22edf937a1bf416dbe1c8d182464b7e6969",
+      "bytes": 44544,
+      "role": "social_preview",
+      "sourceVersion": "Chainat energy identity refresh 2026-10-19",
+      "transformation": "Full 1200x630 browser-rendered editorial composition; screenshot JPEG bytes retained unchanged",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/jpeg",
+      "width": 1200,
+      "height": 630,
+      "transparentCanvas": false,
+      "sourceRef": "assets/identity/share-source.html",
+      "altOrTextEquivalent": {
+        "th": "CityMETER: Yolk พลังงานชัยนาท · เลือกพื้นที่ เข้าใจเหตุผล วางแผนลงพื้นที่ · ต้นแบบสาธิต",
+        "en": "CityMETER: Yolk, Chainat energy demonstration. Explore areas, understand the evidence and plan a field visit."
+      },
+      "privacyReview": "Contains approved logo and public editorial text only; no faces, private locations, owner identifiers or restricted source records",
+      "renderer": "ChatGPT in-app browser via CUA; 1200x630 viewport; actual JPEG output"
+    },
+    {
+      "id": "chainat.icon-portfolio-16",
+      "path": "assets/identity/icon-portfolio-16.png",
+      "sha256": "c100627d5e8fc9d21d168dbf15f9fdab7f5d6931b04df5164e58137df77feca8",
+      "bytes": 768,
+      "role": "favicon",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/png",
+      "width": 16,
+      "height": 16,
+      "transparentCanvas": true,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "chainat.icon-portfolio-180",
+      "path": "assets/identity/icon-portfolio-180.png",
+      "sha256": "41ac1e302345d29d791fcc26a5e7111aeb3a4e222dff63685743b43d0fdd6ef0",
+      "bytes": 8893,
+      "role": "apple_touch_icon",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/png",
+      "width": 180,
+      "height": 180,
+      "transparentCanvas": false,
+      "alphaExtrema": [
+        255,
+        255
+      ]
+    },
+    {
+      "id": "chainat.icon-portfolio-192",
+      "path": "assets/identity/icon-portfolio-192.png",
+      "sha256": "1d8bbd3d8656a83f33c51364d333bba7ca328faf3ae713238fa9450f7810bf8e",
+      "bytes": 11929,
+      "role": "app_icon",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/png",
+      "width": 192,
+      "height": 192,
+      "transparentCanvas": true,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "chainat.icon-portfolio-32",
+      "path": "assets/identity/icon-portfolio-32.png",
+      "sha256": "5cd19dee724f1a72b2bdcd41467a26e03f76a4bc2d7bd1fe12de6b8b5de665c9",
+      "bytes": 1773,
+      "role": "favicon",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/png",
+      "width": 32,
+      "height": 32,
+      "transparentCanvas": true,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "chainat.icon-portfolio-48",
+      "path": "assets/identity/icon-portfolio-48.png",
+      "sha256": "443857069292f6910b9e5cc0383cab6da4273acf1e18a47745864729fc46e08e",
+      "bytes": 2897,
+      "role": "favicon",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/png",
+      "width": 48,
+      "height": 48,
+      "transparentCanvas": true,
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "chainat.icon-portfolio-512",
+      "path": "assets/identity/icon-portfolio-512.png",
+      "sha256": "d8939f6cc7891c47bbb3dce1ddb04d4c30ce4c7e78e29f6fb0061858dafc881f",
+      "bytes": 28124,
+      "role": "maskable_icon",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/png",
+      "width": 512,
+      "height": 512,
+      "transparentCanvas": false,
+      "alphaExtrema": [
+        255,
+        255
+      ]
+    },
+    {
+      "id": "chainat.landometer-logo-horizontal-v12-889",
+      "path": "assets/identity/landometer-logo-horizontal-v12-889.png",
+      "sha256": "989f58583bc54e4b9a743d0f04308df92fb7cf0bb2ae3ba9398ec9c03c481554",
+      "bytes": 31691,
+      "role": "header_logo",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "Retained native PNG projection: full source 23324x6402 proportionally resized to 889x244 with no crop; exact existing Yolk bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/png",
+      "width": 889,
+      "height": 244,
+      "transparentCanvas": true,
+      "sourceSha256": "8d706f8021bc4b4fdc0e89117244b54868687b74045be54002321de7aaa7ef92",
+      "altOrTextEquivalent": {
+        "th": "Landometer",
+        "en": "Landometer"
+      },
+      "themeStrategy": "Unfiltered native logo; dark wordmark uses source alpha mask clipped at 24% in transparent symbol/wordmark gap, preserving exact letterforms and original colour symbol",
+      "minimumSizeClaim": "No canonical numeric minimum supplied; actual 132px desktop and 112px narrow width reviewed",
+      "alphaExtrema": [
+        0,
+        255
+      ]
+    },
+    {
+      "id": "chainat.material-symbols-Apache-2.0",
+      "path": "assets/identity/material-symbols-Apache-2.0.txt",
+      "sha256": "58d1e17ffe5109a7ae296caafcadfdbe6a7d176f0bc4ab01e12a689b0499d8bd",
+      "bytes": 11357,
+      "role": "license",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "text/plain"
+    },
+    {
+      "id": "chainat.material-symbols-outlined-storefront-400-ec781c4db5",
+      "path": "assets/identity/material-symbols-outlined-storefront-400-ec781c4db5.svg",
+      "sha256": "ec781c4db5d5651337b66a5813e02b471c68f61c6a8ff8e6684515c40ac5b5dd",
+      "bytes": 749,
+      "role": "interface_icon_source",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "image/svg+xml",
+      "width": 24,
+      "height": 24,
+      "transparentCanvas": true,
+      "licenseOrPermission": "Apache-2.0; scoped owner-selected storefront Outlined 400 exception"
+    },
+    {
+      "id": "chainat.material-symbols-rounded-yolk-300-v1.8.0",
+      "path": "assets/identity/material-symbols-rounded-yolk-300-v1.8.0.woff2",
+      "sha256": "2998791392b42334dbff07b513d28b794462db6392885dfb0fd0968e90919187",
+      "bytes": 6820,
+      "role": "interface_icon_font",
+      "sourceVersion": "Yolk 1.9.13 retained asset / LDS 0.9.7",
+      "transformation": "none; exact retained bytes",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "font/woff2",
+      "glyphCount": 39,
+      "axes": {
+        "FILL": 0,
+        "wght": 300,
+        "GRAD": 0,
+        "opsz": 24
+      },
+      "licenseOrPermission": "Apache-2.0; see material-symbols-Apache-2.0.txt"
+    },
+    {
+      "id": "chainat.share-source",
+      "path": "assets/identity/share-source.html",
+      "sha256": "24e5ba82f0d50f6ceaa6ea1befca67e0abb2cd1d4cc74d2acfe73f308f427cee",
+      "bytes": 2496,
+      "role": "social_preview_source",
+      "sourceVersion": "Chainat energy identity refresh 2026-10-19",
+      "transformation": "New editorial composition using current LDS fonts and measure.deep atmosphere; no dataset pixels",
+      "publicationPermission": true,
+      "approvalScope": "This CityMETER: Yolk Chainat public demo and developer handoff only; owner request 2026-10-19",
+      "prohibitedRoles": [
+        "evidence_for_energy_measurements",
+        "generic_CityMETER_product_tile"
+      ],
+      "mime": "text/html"
+    },
+    {
+      "id": "chainat.icons.js",
+      "path": "js/icons.js",
+      "sha256": "207f9deea1a3e4e4e52962f7d5897bd319952579f1feccff88519bf9e8f72016",
+      "bytes": 5356,
+      "role": "interface_icon_adapter",
+      "mime": "text/javascript",
+      "sourceVersion": "Yolk 1.9.13",
+      "transformation": "none; exact retained icon API",
+      "publicationPermission": true,
+      "approvalScope": "Owner request 2026-10-19, this public Chainat demo and handoff"
+    },
+    {
+      "id": "chainat.icons.css",
+      "path": "icons.css",
+      "sha256": "c197e3448ee5d3f4c14ea4de3807eb114ae8bf0bf03b49132766d1732f46aaa0",
+      "bytes": 5753,
+      "role": "interface_icon_adapter",
+      "mime": "text/css",
+      "sourceVersion": "Yolk 1.9.13",
+      "transformation": "Only local font URL adapted to assets/identity; glyph geometry and font axes unchanged",
+      "publicationPermission": true,
+      "approvalScope": "Owner request 2026-10-19, this public Chainat demo and handoff"
+    }
+  ],
+  "delivery": {
+    "firstPartyPaths": true,
+    "externalHotlinks": false,
+    "dynamicMetadataForPrivateState": false,
+    "hostLevelFaviconOwnership": "This release controls the chainat-energy project path; browser/search hostname cache ownership is outside this release",
+    "thirdPartyShareCaches": "Origin metadata and bytes verified separately; no claim that social platform caches are purged"
+  },
+  "verificationBoundary": {
+    "packageIntegrity": "LDS verifier passed 9768 checks; warnings retained by parent release record",
+    "assetHashParity": "Exact local bytes recorded; live fetch parity is a release step",
+    "visual": "Header/rail/menu Thai reviewed in light/dark at 360px and 1200px; share reviewed at1200x630. Native iOS home-screen/maskable devices not tested",
+    "claim": "No full LDS, universal accessibility, native-device or production-readiness certification"
+  }
+}

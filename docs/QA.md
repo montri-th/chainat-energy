@@ -1,5 +1,17 @@
 # QA · CityMETER: Yolk โหมดสำนักงานพลังงานจังหวัด
 
+## UI v2 · 19 ต.ค. 2569
+
+คงข้อมูลรอบ `cnt-energy-2026-10-18-r2` และวิธีคำนวณเดิม ปรับเฉพาะ identity/navigation, พื้นหลังแผนที่ และ developer handoff
+
+- ชุด browser/static ปัจจุบันผ่าน **85/85** ข้อ รวม 56 route × viewport/theme fixtures และ 8 basemap regressions; ดู [ผลดิบ UI v2](ui-v2-browser-checks.json)
+- ตรวจ core/contract 11 ข้อ และ portable server 4 ข้อผ่าน; tier 9/15/12 และ opportunity queue 28/8/0 ตรง baseline
+- ตรวจจริงผ่าน CUA บนจอแคบและ desktop ธีมสว่าง/มืด ทั้งข้อความไทย/อังกฤษใหม่ เมนู focus/Escape และภาพ OSM/Sentinel-2 2021; provider tests อัตโนมัติใช้ภาพจำลอง ไม่ยิง tile จำนวนมาก
+- [Release evidence](release-evidence.json) bind hash ของไฟล์ที่ทดสอบ ส่วน final source SHA, provider และ live parity เก็บใน private handoff หลัง deploy
+- ยังไม่ได้ตรวจอุปกรณ์ iOS จริง, maskable installation, screen reader แบบเต็ม, social-platform cache หรือ office pilot ไม่อ้างว่าระบบ production/auth/RBAC พร้อมแล้ว
+
+ผลรอบ 18 ต.ค. ด้านล่างเป็นประวัติของ source รุ่นก่อน UI v2
+
 รอบข้อมูล `cnt-energy-2026-10-18-r2` (18 ต.ค. 2569) · ผลละเอียดอยู่ใน [browser-checks.json](browser-checks.json) · รันซ้ำได้ด้วย `node scripts/qa.mjs`
 
 ## ผลตรวจบนเครื่อง (local)

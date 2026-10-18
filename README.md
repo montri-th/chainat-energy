@@ -44,11 +44,24 @@
 ## เปิดบนเครื่องและตรวจ
 
 ```sh
-python3 -m http.server 4173 --bind 127.0.0.1
-node scripts/qa.mjs
+npm ci
+npx playwright install chromium
+npm run dev
 ```
 
-`scripts/qa.mjs` ต้องมี Playwright (ตั้ง `PLAYWRIGHT_MODULE` เป็น path ของ `playwright/index.mjs` ได้) ตรวจไฟล์ ข้อมูล ความเป็นส่วนตัว สีตาม LUT41 ธีม ขนาดปุ่ม และทุกมุมมองที่ 1440 768 และ 390 พิกเซล ใช้ `BASE_URL=https://montri-th.github.io/chainat-energy/` เพื่อตรวจหน้าเว็บจริง ผลล่าสุดอยู่ใน [docs/QA.md](docs/QA.md)
+เปิด http://127.0.0.1:4173/ ใช้ Node ตาม `package.json` และ lockfile เดียวกันทั้งทีม จากนั้นใช้ `npm run check` ตรวจข้อมูล/สัญญา และ `npm run qa` ตรวจเบราว์เซอร์ ดูขั้นตอนรวมใน [คู่มือ dev](docs/DEVELOPMENT.md) และ [แผน production](docs/PRODUCTION_PLAN.md) พร้อม [machine-readable contract](contracts/product-contract.json) และ [ลำดับงาน intern](contracts/task-graph.json) ผลตรวจแต่ละรอบต้องดูวันและรุ่น source ในรายงาน ไม่ถือว่าผลเก่ารับรองการแก้ใหม่
+
+## แผนที่พื้นหลังและตัวตนเว็บ · UI v2, 19 ต.ค. 2569
+
+คงโครงหน้า แหล่งข้อมูล สูตร เกณฑ์ 17 ตัววัด และ 7 มุมมองเดิมของ Claude เพิ่มโลโก้และไอคอนที่ตรวจเทียบต้นแบบ Yolk, เมนูรวม, favicon และภาพแชร์สำหรับชัยนาท โดยภาพแชร์ไม่มีใบหน้าหรือพิกัดที่ยังไม่ได้รับอนุญาต ดูขอบเขตและ hash ใน [identity manifest](docs/identity-manifest.json)
+
+เลือกพื้นวิเคราะห์เดิม ถนนแบบเรียบ ถนนละเอียด หรือดาวเทียม Sentinel-2 ปี 2021 ความละเอียด 10 เมตรได้ การปิดสีพื้นที่เป็นการแสดงผลเท่านั้น ไม่เปลี่ยนคะแนน เกณฑ์ หรือคิว ข้อมูลอาคารและค่าที่แสดงยังเป็นชุดเดิม ภาพและถนนไม่ยืนยันพิกัดสถานที่หรือสถานะภาคสนาม
+
+- ถนน: [OpenStreetMap contributors](https://www.openstreetmap.org/copyright) ใช้ tile ปกติตาม [นโยบาย OSM](https://operations.osmfoundation.org/policies/tiles/) ไม่ดาวน์โหลดล่วงหน้าหรือเก็บเพื่อใช้ offline
+- ดาวเทียม: © ESA WorldCover project 2021 / Contains modified Copernicus Sentinel data (2021) processed by ESA WorldCover consortium ผ่าน [Terrascope WMTS](https://docs.terrascope.be/Developers/WebServices/OGC/WMTSv2.html) และ [ESA data access](https://esa-worldcover.org/en/data-access) ภายใต้ CC BY 4.0 มีพื้นถนนรองรับส่วนภาพโปร่งใส
+- ค่าเริ่มต้นไม่เรียกผู้ให้บริการภายนอก เมื่อเลือกพื้นหลังภายนอก เบราว์เซอร์จะขอภาพตามมุมมองปัจจุบันโดยตรง บริการภายนอกอาจไม่พร้อมใช้งาน ระบบกลับไปพื้นวิเคราะห์พร้อมปุ่มลองใหม่และคงพื้นที่/กล้องเดิม
+
+วันที่ปรับหน้าตาไม่ใช่วันที่อัปเดตข้อมูล: คง data release `cnt-energy-2026-10-18-r2` ไม่รับพิกัด Fuel Now เข้าทะเบียนในรอบนี้ ผู้ใช้ production วางไว้ 5 คน (Admin 1 / Editor 2 / Viewer 2) โดยสิทธิ์ตาม Yolk เดิม ระบบ static ปัจจุบันยังไม่ได้บังคับสิทธิ์เหล่านี้
 
 ## โครงสร้าง
 

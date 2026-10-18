@@ -8,37 +8,79 @@
   <meta name="robots" content="noindex,nofollow">
   <link rel="canonical" href="https://montri-th.github.io/chainat-energy/">
   <meta name="color-scheme" content="light dark">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="th_TH">
+  <meta property="og:site_name" content="CityMETER: Yolk">
+  <meta property="og:title" content="พลังงานชัยนาท · CityMETER: Yolk">
+  <meta property="og:description" content="ความต้องการ → กิจการพลังงาน → โอกาส → คิวลงพื้นที่ · ต้นแบบสาธิตสำหรับชัยนาท ข้อมูลความต้องการรายพื้นที่เป็นแบบจำลอง">
+  <meta property="og:url" content="https://montri-th.github.io/chainat-energy/">
+  <meta property="og:image" content="https://montri-th.github.io/chainat-energy/assets/identity/chainat-energy-share-7856ad154cb5.jpg">
+  <meta property="og:image:type" content="image/jpeg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="CityMETER: Yolk พลังงานชัยนาท · เลือกพื้นที่ เข้าใจเหตุผล วางแผนลงพื้นที่ · ต้นแบบสาธิต">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="พลังงานชัยนาท · CityMETER: Yolk">
+  <meta name="twitter:description" content="ความต้องการ → กิจการพลังงาน → โอกาส → คิวลงพื้นที่ · ความต้องการรายพื้นที่เป็นแบบจำลอง">
+  <meta name="twitter:image" content="https://montri-th.github.io/chainat-energy/assets/identity/chainat-energy-share-7856ad154cb5.jpg">
+  <meta name="twitter:image:alt" content="CityMETER: Yolk พลังงานชัยนาท · ต้นแบบสาธิต">
+  <link rel="icon" type="image/png" sizes="16x16" href="./assets/identity/icon-portfolio-16.png?v=c100627d5e8f">
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/identity/icon-portfolio-32.png?v=5cd19dee724f">
+  <link rel="icon" type="image/png" sizes="48x48" href="./assets/identity/icon-portfolio-48.png?v=443857069292">
+  <link rel="apple-touch-icon" sizes="180x180" href="./assets/identity/icon-portfolio-180.png?v=41ac1e302345">
+  <link rel="icon" type="image/png" sizes="192x192" href="./assets/identity/icon-portfolio-192.png?v=1d8bbd3d8656">
+  <link rel="icon" type="image/png" sizes="512x512" href="./assets/identity/icon-portfolio-512.png?v=d8939f6cc789">
+  <link rel="manifest" href="./site.webmanifest">
   <meta name="theme-color" data-media="light" media="(prefers-color-scheme: light)" content="#F6F7F3">
   <meta name="theme-color" data-media="dark" media="(prefers-color-scheme: dark)" content="#11191D">
   <script>(function(){try{var t=localStorage.getItem('cm-yolk-theme');if(t==='light'||t==='dark'){document.documentElement.setAttribute('data-theme',t);}}catch(e){}})();</script>
   <link rel="stylesheet" href="./styles.css">
+  <link rel="stylesheet" href="./icons.css">
+  <link rel="stylesheet" href="./identity.css">
   <link rel="stylesheet" href="./assets/lds/build-kit/motif/landometer-motifs.css">
   <link rel="stylesheet" href="./assets/lds/build-kit/motif/motif-frame.css">
   <script src="./vendor/maplibre-gl/4.7.1/maplibre-gl.js" defer></script>
   <script src="./assets/lds/build-kit/motif/landometer-motifs.js" defer></script>
   <script src="./assets/lds/build-kit/motif/motion-controller.js" defer></script>
   <script src="./assets/lds/build-kit/motif/motif-frame.js" defer></script>
+  <script src="./js/icons.js" defer></script>
+  <script src="./js/identity.js" defer></script>
   <script type="module" src="./js/app.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">ข้ามไปยังเนื้อหา</a>
   <header class="topbar">
-    <a class="identity" href="./">Landometer</a>
-    <div class="product"><span class="product-name">CityMETER: Yolk</span><span class="mission">โหมดสำนักงานพลังงานจังหวัด · ชัยนาท</span></div>
+    <a class="identity" href="./" aria-label="Landometer · ภาพรวมพลังงานชัยนาท"><span class="logo-contrast"><img src="./assets/identity/landometer-logo-horizontal-v12-889.png?v=989f58583bc5" alt="Landometer" width="889" height="244"></span></a>
+    <div class="product"><span class="product-name"><span class="product-prefix">CityMETER: </span><span data-yolk-wordmark>Yolk</span></span><span class="mission">โหมดสำนักงานพลังงานจังหวัด · ชัยนาท</span></div>
     <div class="topbar-tools">
       <span class="demo-badge">เดโม</span>
-      <label class="theme-field"><span class="theme-label">ธีม</span><select id="theme-select" class="select" aria-label="ธีมการแสดงผล"><option value="auto">อัตโนมัติตามเครื่อง</option><option value="light">สว่าง</option><option value="dark">มืด</option></select></label>
+      <button id="nav-trigger" class="nav-trigger" type="button" aria-label="เมนูและการแสดงผล" aria-expanded="false" aria-controls="nav-panel" hidden><span data-icon="menu" aria-hidden="true"></span><span>เมนู</span></button>
+    </div>
+    <div id="nav-panel" class="nav-panel" hidden>
+      <nav aria-label="เมนู CityMETER: Yolk">
+        <div class="nav-group"><h2>พลังงานชัยนาท</h2><div class="nav-pages">
+          <a href="?v=overview" data-view="overview" aria-current="page"><span data-icon="map" aria-hidden="true"></span>ภาพรวม</a>
+          <a href="?v=demand" data-view="demand"><span data-icon="demand" aria-hidden="true"></span>ความต้องการ</a>
+          <a href="?v=supply" data-view="supply"><span data-icon="store" aria-hidden="true"></span>กิจการพลังงาน</a>
+          <a href="?v=opportunity" data-view="opportunity"><span data-icon="opportunity" aria-hidden="true"></span>โอกาส</a>
+          <a href="?v=shortlist" data-view="shortlist"><span data-icon="bookmark_added" aria-hidden="true"></span>เล็งไว้</a>
+          <a href="?v=requests" data-view="requests"><span data-icon="fact_check" aria-hidden="true"></span>ขอข้อมูล</a>
+          <a href="?v=sources" data-view="sources"><span data-icon="history" aria-hidden="true"></span>ที่มา</a>
+        </div></div>
+        <div class="nav-group"><h2>การแสดงผล</h2><label class="theme-field"><span class="theme-label">ธีม</span><select id="theme-select" class="select" aria-label="ธีมการแสดงผล"><option value="auto">อัตโนมัติตามเครื่อง</option><option value="light">สว่าง</option><option value="dark">มืด</option></select></label></div>
+        <div class="nav-group"><h2>ในเครือ Landometer</h2><div class="nav-ecosystem"><a href="https://landometer.com/v3/citymeter">CityMETER<span data-icon="open_in_new" aria-hidden="true"></span></a><a href="https://landometer.com/">Landometer<span data-icon="open_in_new" aria-hidden="true"></span></a></div></div>
+      </nav>
     </div>
   </header>
   <div class="shell">
     <nav class="rail" aria-label="โมดูล">
-      <a href="?v=overview" data-view="overview" aria-current="page"><span class="rail-no">01</span><span>ภาพรวม</span></a>
-      <a href="?v=demand" data-view="demand"><span class="rail-no">02</span><span>ความต้องการ</span></a>
-      <a href="?v=supply" data-view="supply"><span class="rail-no">03</span><span>กิจการพลังงาน</span></a>
-      <a href="?v=opportunity" data-view="opportunity"><span class="rail-no">04</span><span>โอกาส</span></a>
-      <a href="?v=shortlist" data-view="shortlist"><span class="rail-no">05</span><span>เล็งไว้</span></a>
-      <a href="?v=requests" data-view="requests"><span class="rail-no">06</span><span>ขอข้อมูล</span></a>
-      <a href="?v=sources" data-view="sources"><span class="rail-no">07</span><span>ที่มา</span></a>
+      <a href="?v=overview" data-view="overview" aria-current="page"><span data-icon="map" aria-hidden="true"></span><span>ภาพรวม</span></a>
+      <a href="?v=demand" data-view="demand"><span data-icon="demand" aria-hidden="true"></span><span>ความต้องการ</span></a>
+      <a href="?v=supply" data-view="supply"><span data-icon="store" aria-hidden="true"></span><span>กิจการพลังงาน</span></a>
+      <a href="?v=opportunity" data-view="opportunity"><span data-icon="opportunity" aria-hidden="true"></span><span>โอกาส</span></a>
+      <a href="?v=shortlist" data-view="shortlist"><span data-icon="bookmark_added" aria-hidden="true"></span><span>เล็งไว้</span></a>
+      <a href="?v=requests" data-view="requests"><span data-icon="fact_check" aria-hidden="true"></span><span>ขอข้อมูล</span></a>
+      <a href="?v=sources" data-view="sources"><span data-icon="history" aria-hidden="true"></span><span>ที่มา</span></a>
       <p class="rail-foot">ต้นแบบสาธิต<br>ไม่ใช่ระบบราชการที่เปิดใช้งานจริง</p>
     </nav>
     <main id="main" tabindex="-1">
@@ -109,6 +151,11 @@
             <div class="segmented" role="group" aria-label="ระดับพื้นที่บนแผนที่"><button type="button" data-level="tambon" aria-pressed="true">ตำบล</button><button type="button" data-level="lao" aria-pressed="false">อปท.</button></div>
           </div>
           <nav class="drill" id="drill" aria-label="ระดับพื้นที่ที่เลือก"></nav>
+          <div class="map-settings" aria-label="การแสดงแผนที่">
+            <div class="map-settings-controls"><label for="basemap-select">พื้นหลัง <select id="basemap-select"><option value="analysis">พื้นวิเคราะห์</option><option value="simplified">ถนนแบบเรียบ</option><option value="detailed">ถนนละเอียด</option><option value="satellite">ดาวเทียม 2021 · 10 ม.</option></select></label><label class="map-colour-toggle"><input type="checkbox" id="map-area-colours" checked> แสดงสีพื้นที่</label><button type="button" class="btn btn-small" id="basemap-retry" hidden>ลองโหลดพื้นหลังอีกครั้ง</button></div>
+            <p id="basemap-status" role="status">พื้นวิเคราะห์ · สีพื้นที่แสดงค่าตัวชี้วัด</p>
+            <p id="basemap-attrib">พื้นวิเคราะห์ใช้ขอบเขต CityMETER</p>
+          </div>
           <div class="map-wrap">
             <div id="map" role="region" aria-label="แผนที่จังหวัดชัยนาท เลือกพื้นที่หรืออาคารได้ ข้อมูลชุดเดียวกันอ่านได้ในแผงรายละเอียด"></div>
             <div class="map-tools"><button type="button" class="icon" id="zoom-in" aria-label="ขยายแผนที่">+</button><button type="button" class="icon" id="zoom-out" aria-label="ย่อแผนที่">−</button><button type="button" id="map-3d" aria-pressed="false">3D</button><button type="button" id="map-reset">ทั้งจังหวัด</button></div>

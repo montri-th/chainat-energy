@@ -1,0 +1,283 @@
+{
+  "schemaVersion": 1,
+  "status": "implementation_plan_not_production_completion",
+  "safeStartingTask": "T01",
+  "taskRule": "Take one task with dependencies closed; attach actual diff and evidence. Do not infer a task passed from this plan.",
+  "tasks": [
+    {
+      "id": "T01",
+      "phase": "P0_demo",
+      "title": "Reproduce baseline and bind source identity",
+      "dependsOn": [],
+      "inputs": [
+        "README.md",
+        "contracts/product-contract.json",
+        "docs/asset-manifest.json"
+      ],
+      "outputs": [
+        "local QA receipt",
+        "source and data hash report"
+      ],
+      "acceptance": [
+        "Serve over HTTP; visit all seven views.",
+        "Same data release preserves 53 tambons,59 LAOs,290 register records and baseline tier/queue outputs."
+      ],
+      "tests": [
+        "Existing scripts/qa.mjs with installed Chromium",
+        "Contract/data invariants after identity changes"
+      ],
+      "owner": "receiving developer",
+      "status": "verify_release_receipt"
+    },
+    {
+      "id": "T02",
+      "phase": "P0_demo",
+      "title": "Identity and basemap regression",
+      "dependsOn": [
+        "T01"
+      ],
+      "inputs": [
+        "index.html",
+        "js/map.js",
+        "LDS 0.9.7 exact assets"
+      ],
+      "outputs": [
+        "identity assets",
+        "provider attribution and fallback proof",
+        "screenshots"
+      ],
+      "acceptance": [
+        "Favicon/social preview is readable and contains no uncleared coordinate or face.",
+        "Switch basemap preserves analytical fills, selected area, criteria, overlays and keyboard workflow.",
+        "Provider failure retains list and neutral fallback."
+      ],
+      "tests": [
+        "Desktop/narrow light/dark screenshots",
+        "Network failure/attribution check",
+        "Live asset bytes MIME dimensions"
+      ],
+      "owner": "web developer",
+      "status": "verify_release_receipt"
+    },
+    {
+      "id": "T03",
+      "phase": "P1_integration",
+      "title": "Resolve actual production entrypoint and shared modules",
+      "dependsOn": [
+        "T01"
+      ],
+      "inputs": [
+        "active production repository AGENTS and START_HERE",
+        "product contract"
+      ],
+      "outputs": [
+        "architecture decision record",
+        "module reuse map",
+        "approved stack and workspace model"
+      ],
+      "acceptance": [
+        "Identify actual shared engine/source release/nav/map interfaces by exact commit.",
+        "Keep energy metrics/lenses mode-specific; do not import F&B assumptions.",
+        "Record formula mismatch before implementation; do not silently unify quantile methods."
+      ],
+      "tests": [
+        "Review actual source imports and active contracts",
+        "Same-release engine parity fixture"
+      ],
+      "owner": "production lead",
+      "status": "planned"
+    },
+    {
+      "id": "T04",
+      "phase": "P1_integration",
+      "title": "Version source releases and evidence values",
+      "dependsOn": [
+        "T03"
+      ],
+      "inputs": [
+        "evidence-value.schema.json",
+        "production-records.schema.json#sourceRelease",
+        "public static data"
+      ],
+      "outputs": [
+        "validated source release adapter",
+        "data dictionaries",
+        "source/hash/rights ledger"
+      ],
+      "acceptance": [
+        "Every metric retains unit,grain,source,asOf/readOn,measure kind,release and denominator.",
+        "Null,suppressed,not_yet,out_of_scope and unverified stay distinct from observed zero.",
+        "Cross-city comparison requires compatible schema/release or visible incompatibility."
+      ],
+      "tests": [
+        "Valid/invalid evidence fixtures",
+        "Reject modelled value without methodId",
+        "Reject suppressed numeric value"
+      ],
+      "owner": "data engineer",
+      "status": "planned"
+    },
+    {
+      "id": "T05",
+      "phase": "P1_integration",
+      "title": "Server workspace authentication and role permissions",
+      "dependsOn": [
+        "T03"
+      ],
+      "inputs": [
+        "approved existing auth integration",
+        "workspace role contract",
+        "Owner count override only: Admin1/Editor2/Viewer2; exact Yolk role permissions from full-product.v1.9.13.json $.production.rbac"
+      ],
+      "outputs": [
+        "server authorization",
+        "tenant isolation",
+        "membership lifecycle"
+      ],
+      "acceptance": [
+        "Anonymous cannot read private workspace or media.",
+        "Viewer cannot perform shared writes or Apply; self-only draft is permitted. Editor is workspace scoped.",
+        "Server derives actor and role; client supplied IDs never grant rights.",
+        "Exactly 5 authorized accounts have counts Admin1/Editor2/Viewer2; never derive roles from Drive/Sheet permissions.",
+        "Inherit Yolk permissions exactly, changing only role counts; preserve last Admin.",
+        "Viewer self-only preview/draft permitted, but never Apply/shared writes/new ShareGrant or widening audience.",
+        "Editor retains branch/target/evidence/media CRUD, scoped criteria Apply and permitted sharing; Admin adds workspace/members/custom-field management."
+      ],
+      "tests": [
+        "Two-tenant read/write isolation",
+        "Role escalation rejection",
+        "Expired/revoked access",
+        "All 5 users: role allow/deny matrix",
+        "Anonymous user denied",
+        "Account removal/revocation and wrong-workspace denial"
+      ],
+      "owner": "backend engineer",
+      "status": "planned"
+    },
+    {
+      "id": "T06",
+      "phase": "P1_integration",
+      "title": "Shared shortlist with safe migration",
+      "dependsOn": [
+        "T04",
+        "T05"
+      ],
+      "inputs": [
+        "browser-local saved entries",
+        "production-records.schema.json#writeEnvelope"
+      ],
+      "outputs": [
+        "permissioned shortlist API adapter",
+        "migration preview",
+        "conflict UI",
+        "audit/outbox events"
+      ],
+      "acceptance": [
+        "Preview migration and preserve legacy records; missing provenance remains explicitly incomplete.",
+        "Use expectedRevision to reject stale writes and idempotency key to avoid duplicate mutations.",
+        "One accepted mutation creates one audit event and durable outbox event."
+      ],
+      "tests": [
+        "Concurrent edit rejection",
+        "Retry produces one saved record",
+        "Unauthorized read/write rejection",
+        "Browser saved criteria preserved"
+      ],
+      "owner": "full stack engineer",
+      "status": "planned"
+    },
+    {
+      "id": "T07",
+      "phase": "P2_data",
+      "title": "Reviewed coordinate import in private workspace",
+      "dependsOn": [
+        "T04",
+        "T05"
+      ],
+      "inputs": [
+        "owner-approved access decision",
+        "per-record evidence and rights review",
+        "private dry-run plan"
+      ],
+      "outputs": [
+        "dry-run comparison",
+        "approved import receipt or blocked gate list"
+      ],
+      "acceptance": [
+        "No import until owner decision closes applicable gates and current destination values match the approved plan.",
+        "Address-inferred identity needs office confirmation.",
+        "Internal import and public coordinate release remain separate decisions; keep fieldVerified false unless field evidence exists."
+      ],
+      "tests": [
+        "Reject stale destination and duplicate record",
+        "Reject missing rights evidence for public projection",
+        "Master unchanged during dry-run"
+      ],
+      "owner": "data steward and data owner",
+      "status": "blocked_by_owner_and_data_evidence"
+    },
+    {
+      "id": "T08",
+      "phase": "P2_learning",
+      "title": "Field outcomes and protected media",
+      "dependsOn": [
+        "T05",
+        "T06"
+      ],
+      "inputs": [
+        "production-records.schema.json#fieldOutcome",
+        "approved retention and consent rules"
+      ],
+      "outputs": [
+        "field outcome workflow",
+        "private media storage",
+        "audit evidence"
+      ],
+      "acceptance": [
+        "Record observedAt,actor,evidence and outcome; do not recast model estimates as field observations.",
+        "Private object cannot be fetched anonymously; signed URL expiry is not consent.",
+        "Rights withdrawal removes public projections on next governed release."
+      ],
+      "tests": [
+        "Role and tenant isolation",
+        "Private media denied anonymously",
+        "Append-only outcome history"
+      ],
+      "owner": "product, backend and data owner",
+      "status": "planned"
+    },
+    {
+      "id": "T09",
+      "phase": "P3_release",
+      "title": "Office pilot and production release decision",
+      "dependsOn": [
+        "T04",
+        "T05",
+        "T06"
+      ],
+      "inputs": [
+        "office criteria review",
+        "rights approvals",
+        "security and accessibility QA",
+        "baseline pilot metrics"
+      ],
+      "outputs": [
+        "release decision",
+        "rollback plan",
+        "operator runbook"
+      ],
+      "acceptance": [
+        "Office acceptance is documented; no adoption claim before evidence.",
+        "Physical device/screen reader gates recorded separately from browser simulation.",
+        "Source -> provider terminal success -> live bytes -> release attestation all bind same source."
+      ],
+      "tests": [
+        "Production security and recovery",
+        "Actual office workflow pilot",
+        "Live source/asset parity and rollback rehearsal"
+      ],
+      "owner": "Montri, office owner and production lead",
+      "status": "planned"
+    }
+  ]
+}

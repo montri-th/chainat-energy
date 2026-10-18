@@ -1,0 +1,70 @@
+/* Exact Yolk 1.9.13 identity assets; Chainat owns only this navigation adapter.
+   Data paints and analytical rules remain in the LDS / dataset layer. */
+.topbar { gap: var(--s4); }
+.identity { flex: none; min-height: 64px; padding: 8px 0; margin: 0; }
+.logo-contrast { position: relative; display: block; width: 132px; aspect-ratio: 889/244; }
+.logo-contrast > img { display: block; width: 100%; height: auto; }
+/* Retained LOGO-01 treatment: exact native alpha, wordmark region only.
+   The original coloured symbol is never filtered or recoloured. */
+.logo-contrast::after { content: ""; display: none; position: absolute; inset: 0; background: var(--text-primary); mask: url("./assets/identity/landometer-logo-horizontal-v12-889.png?v=989f58583bc5") center/100% 100% no-repeat; clip-path: inset(0 0 0 24%); pointer-events: none; }
+html[data-theme="dark"] .logo-contrast::after { display: block; }
+@media (prefers-color-scheme: dark) { html:not([data-theme="light"]) .logo-contrast::after { display: block; } }
+.product { flex-direction: column; align-items: flex-start; gap: 0; }
+.product-name { display: inline-flex; align-items: baseline; gap: 5px; font-family: var(--font-display); font-size: 20px; line-height: 1.3; }
+.product-prefix { font: 600 var(--fs-body-sm)/1.4 var(--font-body); }
+.mission { font-size: var(--fs-caption); }
+.yolk-wordmark { display: inline-flex; align-items: center; vertical-align: baseline; font: inherit; color: inherit; gap: 0; white-space: nowrap; }
+.yolk-wordmark b { font: inherit; }
+.yolk-wordmark .yolk-letter-o { display: inline-flex; width: .61em; height: .72em; align-items: center; justify-content: center; font-style: normal; margin: 0 .035em; }
+.yolk-wordmark .yolk-letter-o .yl-icon { font-size: .75em; width: 1em; height: 1em; line-height: 1; color: inherit; margin: 0; }
+.yolk-wordmark .yolk-letter-o::before { content: "o"; }
+.yolk-wordmark .yolk-letter-o .yl-icon { display: none; }
+.yolk-icons-ready .yolk-wordmark .yolk-letter-o::before { display: none; }
+.yolk-icons-ready .yolk-wordmark .yolk-letter-o .yl-icon { display: inline-block; }
+[data-icon] { display: inline-flex; align-items: center; justify-content: center; flex: none; }
+[data-icon] > .yl-icon { margin: 0; color: currentColor; }
+.rail a { gap: var(--s2); }
+.rail a > [data-icon] { width: 28px; height: 28px; }
+.rail a > [data-icon] > .yl-icon { font-size: 26px; }
+.yl-icon.yolk-demand-icon, .yl-icon.yolk-opportunity-icon { color: currentColor; }
+.nav-trigger { min-height: 44px; padding: 0 var(--s4); display: inline-flex; align-items: center; justify-content: center; gap: var(--s2); border: 1px solid var(--border-default); border-radius: var(--r-pill); background: var(--surface-card); color: var(--text-primary); font-size: var(--fs-body-sm); font-weight: 600; }
+.nav-trigger:hover, .nav-trigger[aria-expanded="true"] { background: var(--surface-soft); border-color: var(--border-emphasis); }
+.nav-trigger > [data-icon] { width: 24px; height: 24px; }
+.nav-trigger[hidden] { display: none; }
+.nav-panel { position: absolute; top: calc(100% + 8px); right: var(--s5); width: min(440px, calc(100vw - 32px)); max-height: calc(100dvh - var(--topbar) - 24px); overflow: auto; background: var(--surface-card); color: var(--text-primary); border: 1px solid var(--border-default); border-radius: var(--r-lg); padding: var(--s5); }
+.nav-panel[hidden] { display: none; }
+.nav-panel nav { display: grid; gap: var(--s5); }
+.nav-group { display: grid; gap: var(--s2); }
+.nav-group + .nav-group { border-top: 1px solid var(--border-hairline); padding-top: var(--s4); }
+.nav-group h2 { font: 600 var(--fs-label)/1.5 var(--font-body); color: var(--text-metadata); }
+.nav-pages { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s1); }
+.nav-pages a, .nav-ecosystem a { min-height: 44px; display: flex; align-items: center; gap: var(--s2); padding: var(--s2) var(--s3); border-radius: var(--r-sm); text-decoration: none; color: var(--text-secondary); font-size: var(--fs-body-sm); }
+.nav-pages a:hover, .nav-ecosystem a:hover { background: var(--surface-soft); color: var(--text-primary); }
+.nav-pages a[aria-current="page"] { background: var(--surface-blue-tint); color: var(--text-primary); font-weight: 600; }
+.nav-ecosystem { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: var(--s1); }
+.nav-ecosystem a { justify-content: space-between; }
+.nav-ecosystem .yl-icon { font-size: 20px; }
+.nav-panel .theme-field { display: grid; grid-template-columns: auto minmax(0, 1fr); }
+.nav-panel .theme-label { display: inline; }
+.nav-panel .select { width: 100%; }
+.nav-trigger:focus-visible, .nav-panel a:focus-visible, .nav-panel select:focus-visible, .identity:focus-visible { outline: 3px solid var(--interaction-focus-ring); outline-offset: 3px; }
+@media (max-width: 899px) {
+  .topbar .product { display: flex; }
+  .topbar .mission, .product-prefix { display: none; }
+  .logo-contrast { width: 112px; }
+  .product-name { font-size: 22px; }
+  .nav-trigger { padding-inline: var(--s3); }
+  .nav-panel { right: var(--s4); }
+  .rail a { gap: var(--s2); }
+  .rail a > [data-icon] { width: 24px; height: 24px; }
+  .rail a > [data-icon] > .yl-icon { font-size: 24px; }
+}
+@media (max-width: 359px) {
+  .nav-trigger > [data-icon] { display: none; }
+  .nav-pages, .nav-ecosystem { grid-template-columns: minmax(0, 1fr); }
+}
+@media (forced-colors: active) {
+  .nav-pages a[aria-current="page"] { outline: 2px solid CanvasText; outline-offset: -2px; }
+  .logo-contrast::after { forced-color-adjust: none; }
+}
+@media print { .nav-panel { display: none !important; } }

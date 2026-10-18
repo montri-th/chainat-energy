@@ -1,6 +1,7 @@
-/* Map: MapLibre GL 4.7.1 (vendored, BSD-3-Clause) with CityMETER boundaries and buildings. No basemap tiles.
+/* Map: MapLibre GL 4.7.1 (vendored, BSD-3-Clause) with CityMETER boundaries and buildings.
    Analytical fills come from the exact LDS LUT; boundary, casing and selection colours come from LDS foundation/map tokens. */
 import { D, $, esc, n0, token, loadBuildings, effectiveTheme } from './core.js';
+import { initBasemaps } from './basemaps.js';
 
 let map = null, ready = null, markers = [], hoverCode = null, pick = () => {}, is3d = true, current = { level: 'tambon', area: null, district: null };
 const EMPTY = { type: 'FeatureCollection', features: [] };
@@ -47,6 +48,8 @@ export function initMap(container, onPick) {
           layers: [
             { id: 'bg', type: 'background', paint: { 'background-color': c.bg } },
             { id: 'land', type: 'fill', source: 'province', paint: { 'fill-color': c.land } },
+            // Invisible hit target keeps area picking available when presentation colours are hidden.
+            { id: 'units-hit', type: 'fill', source: 'units', paint: { 'fill-color': c.land, 'fill-opacity': 0 } },
             { id: 'units-fill', type: 'fill', source: 'units', paint: { 'fill-color': ['coalesce', ['get', 'fill'], c.land] } },
             { id: 'units-casing', type: 'line', source: 'units', paint: { 'line-color': c.casing, 'line-width': 3 } },
             { id: 'units-line', type: 'line', source: 'units', paint: { 'line-color': c.line, 'line-width': 1 } },
@@ -64,19 +67,19 @@ export function initMap(container, onPick) {
         }
       });
     } catch (e) { reject(e); return; }
-    map.on('load', () => resolve(map));
+    map.on('load', () => { initBasemaps(map); resolve(map); });
     // the 3D button reports the camera as it is, including after a fit that flattens the view
     map.on('pitchend', () => { const b = document.getElementById('map-3d'); if (b) b.setAttribute('aria-pressed', String(map.getPitch() > 5)); });
     // on narrow screens the page scrolls past the map: one finger scrolls the page, two fingers move the map
     NARROW.addEventListener('change', () => { try { if (NARROW.matches) map.cooperativeGestures.enable(); else map.cooperativeGestures.disable(); } catch (e) { /* older runtime */ } });
     if ('ResizeObserver' in window) new ResizeObserver(() => map && map.resize()).observe(container);
     map.on('error', e => console.warn('[map]', e && e.error && e.error.message));
-    map.on('mousemove', 'units-fill', e => { const f = e.features && e.features[0]; const code = f ? f.properties.code : null; if (code !== hoverCode) { hoverCode = code; map.setFilter('units-hover', ['==', ['get', 'code'], code || '']); map.getCanvas().style.cursor = code ? 'pointer' : ''; } });
-    map.on('mouseleave', 'units-fill', () => { hoverCode = null; map.setFilter('units-hover', ['==', ['get', 'code'], '']); map.getCanvas().style.cursor = ''; });
+    map.on('mousemove', 'units-hit', e => { const f = e.features && e.features[0]; const code = f ? f.properties.code : null; if (code !== hoverCode) { hoverCode = code; map.setFilter('units-hover', ['==', ['get', 'code'], code || '']); map.getCanvas().style.cursor = code ? 'pointer' : ''; } });
+    map.on('mouseleave', 'units-hit', () => { hoverCode = null; map.setFilter('units-hover', ['==', ['get', 'code'], '']); map.getCanvas().style.cursor = ''; });
     map.on('click', e => {
       const b = map.queryRenderedFeatures(e.point, { layers: ['bld'] });
       if (b.length) { pick({ type: 'building', id: b[0].properties.id }); return; }
-      const u = map.queryRenderedFeatures(e.point, { layers: ['units-fill'] });
+      const u = map.queryRenderedFeatures(e.point, { layers: ['units-hit'] });
       if (u.length) pick({ type: 'area', code: u[0].properties.code });
     });
     map.on('zoomend', placeLabels);
@@ -86,7 +89,7 @@ export function initMap(container, onPick) {
   return ready;
 }
 function applyTheme() {
-  if (!map || !map.isStyleLoaded()) return;
+  if (!map || !map.getLayer('land')) return;
   const c = T();
   map.setPaintProperty('bg', 'background-color', c.bg);
   map.setPaintProperty('land', 'fill-color', c.land);
@@ -112,6 +115,7 @@ export function setUnits(level, unitStyles, { selected = null, hideFillFor = nul
     return { type: 'Feature', id: f.properties.code, geometry: f.geometry, properties: { code: f.properties.code, name: f.properties.name, fill: f.properties.code === hideFillFor ? null : (s.fill || null), zero: !!s.zero && f.properties.code !== hideFillFor, dash: !!s.dash && f.properties.code !== hideFillFor, strong: !!s.strong } };
   });
   map.getSource('units').setData({ type: 'FeatureCollection', features: feats });
+  map.setFilter('units-fill', hideFillFor ? ['!=', ['get', 'code'], hideFillFor] : null);
   map.setFilter('units-sel', ['==', ['get', 'code'], selected || '']);
   current.level = level; current.labels = unitStyles; current.selected = selected;
   placeLabels();

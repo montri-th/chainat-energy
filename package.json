@@ -1,0 +1,20 @@
+{
+  "name": "chainat-energy-yolk",
+  "version": "2.0.0",
+  "private": true,
+  "description": "CityMETER Yolk provincial energy-office public preview and developer handoff.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "check": "node scripts/check-core.mjs && node --test --test-timeout=15000 scripts/serve.test.mjs && node scripts/qa.mjs --static-only",
+    "qa": "node scripts/run-qa.mjs",
+    "qa:static": "node scripts/qa.mjs --static-only",
+    "setup:browsers": "playwright install chromium"
+  },
+  "devDependencies": {
+    "playwright": "1.62.1"
+  }
+}

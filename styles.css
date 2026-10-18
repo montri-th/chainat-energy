@@ -173,7 +173,15 @@ main { min-width: 0; outline: none; }
 
 /* ---------- map workspace ---------- */
 .workspace { display: grid; grid-template-columns: minmax(0, 1fr) minmax(360px, 440px); gap: 0; height: calc(100vh - var(--topbar)); }
-.map-card { position: relative; display: grid; grid-template-rows: auto auto minmax(0, 1fr); min-height: 0; border-right: 1px solid var(--border-hairline); background: var(--surface-canvas); }
+.map-card { position: relative; display: grid; grid-template-rows: auto auto auto minmax(0, 1fr); min-height: 0; border-right: 1px solid var(--border-hairline); background: var(--surface-canvas); }
+.map-settings { display: grid; gap: var(--s1); padding: 0 var(--s5) var(--s3); min-width: 0; }
+.map-settings-controls { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2) var(--s4); }
+.map-settings-controls label { display: flex; align-items: center; flex-wrap: wrap; gap: var(--s2); font-size: var(--fs-body-sm); min-height: 44px; }
+.map-settings-controls select { max-width: 100%; min-height: 44px; padding: var(--s2); background: var(--surface-card); color: var(--text-primary); border: 1px solid var(--border-default); border-radius: var(--r-sm); }
+.map-colour-toggle { cursor: pointer; }
+.map-colour-toggle input { width: 20px; height: 20px; margin: 0; }
+#basemap-status, #basemap-attrib { font-size: var(--fs-caption); color: var(--text-secondary); overflow-wrap: anywhere; line-height: 1.5; }
+#basemap-attrib a { color: var(--interaction-accent); }
 .map-head { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--s4); padding: var(--s4) var(--s5) var(--s2); }
 .map-head h1 { font-size: var(--fs-h3); line-height: 1.4; padding-top: .1em; }
 .map-kicker { margin-bottom: var(--s1); font-family: var(--font-data); font-size: var(--fs-caption); letter-spacing: .06em; color: var(--interaction-accent); }

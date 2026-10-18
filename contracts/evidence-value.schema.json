@@ -1,0 +1,205 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://montri-th.github.io/chainat-energy/contracts/evidence-value.schema.json",
+  "title": "Evidence-bound metric value (proposed production interface)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "metricId",
+    "value",
+    "state",
+    "measureKind",
+    "unit",
+    "grain",
+    "boundaryCode",
+    "sourceId",
+    "releaseId",
+    "readOn",
+    "asOf",
+    "denominator",
+    "label"
+  ],
+  "properties": {
+    "metricId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "value": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "state": {
+      "enum": [
+        "measured",
+        "measured_zero",
+        "no_data",
+        "suppressed",
+        "not_yet",
+        "out_of_scope",
+        "unverified"
+      ]
+    },
+    "measureKind": {
+      "enum": [
+        "observed",
+        "reported",
+        "proxy",
+        "modelled"
+      ]
+    },
+    "unit": {
+      "type": "string",
+      "minLength": 1
+    },
+    "grain": {
+      "enum": [
+        "province",
+        "district",
+        "tambon",
+        "lao",
+        "building"
+      ]
+    },
+    "boundaryCode": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "releaseId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "readOn": {
+      "type": "string",
+      "format": "date"
+    },
+    "asOf": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "denominator": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "label": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reason": {
+      "type": "string",
+      "minLength": 1
+    },
+    "methodId": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "coverage": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "minimum": 0,
+      "maximum": 1
+    },
+    "uncertaintyNote": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "measured"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "type": "number",
+            "not": {
+              "const": 0
+            }
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "const": "measured_zero"
+          }
+        }
+      },
+      "then": {
+        "properties": {
+          "value": {
+            "const": 0
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "enum": [
+              "no_data",
+              "suppressed",
+              "not_yet",
+              "out_of_scope",
+              "unverified"
+            ]
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "reason"
+        ],
+        "properties": {
+          "value": {
+            "const": null
+          }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "measureKind": {
+            "const": "modelled"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "methodId"
+        ],
+        "properties": {
+          "methodId": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      }
+    }
+  ],
+  "description": "Schema proposal, not an already deployed API. State measured means a numeric value is available; measureKind still distinguishes observed vs modelled. Unknown and rights-withheld values must remain null."
+}

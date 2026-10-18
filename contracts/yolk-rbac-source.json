@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "source": {
+    "repository": "https://github.com/montri-th/yolk",
+    "version": "1.9.13",
+    "path": "contracts/full-product.v1.9.13.json",
+    "jsonPath": "$.production.rbac",
+    "sha256": "95d7bda630bdf6ed7491a95452020d9d5f4ea2bbe75d75fa2f642cd5db921073",
+    "entrypoint": "START_HERE.md explicitly links this full-product contract",
+    "sourceStatus": "PROPOSED_SERVER_ENFORCED"
+  },
+  "permissionStatus": "PROPOSED_SERVER_ENFORCED",
+  "permissionsVerbatim": {
+    "admin": "Manage workspace/members/custom field definitions plus editor actions",
+    "editor": "Branch/target/evidence/media CRUD and scoped criteria Apply; permitted sharing",
+    "viewer": "Read permitted data, maps/details/feed; personal filters/theme/locale and notification read state; no shared writes",
+    "checks": "Tenant+role+entity scope at every API/storage/signed URL/share path; do not trust actor selectors or client canEdit",
+    "viewerPrivateDraft": "Permitted self-only preview/draft, never Apply/shared mutation",
+    "reviewer": "Assigned capability within editor/admin, not an extra seat role",
+    "viewerForwarding": "May copy/forward an existing link only within its authorized audience. Cannot create a new ShareGrant or grant new access."
+  },
+  "upstreamSeatCountsHistorical": {
+    "admin": 1,
+    "editor": 3,
+    "viewer": 6
+  },
+  "effectiveChainatSeats": {
+    "admin": 1,
+    "editor": 2,
+    "viewer": 2
+  },
+  "onlyOverride": "seats",
+  "demoEnforcesThis": false
+}

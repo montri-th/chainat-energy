@@ -1,8 +1,8 @@
 // QA for CityMETER: Yolk · โหมดสำนักงานพลังงานจังหวัด (Chainat energy demo)
 //
-//   python3 -m http.server 4173 --bind 127.0.0.1      # from the repository root
-//   node scripts/qa.mjs                                # static + browser checks against the local server
-//   BASE_URL=https://montri-th.github.io/chainat-energy/ node scripts/qa.mjs --label live
+//   npm run check                                      # data/model/contract/static checks
+//   npm run qa                                         # starts an isolated loopback server + browser checks
+//   BASE_URL=https://montri-th.github.io/chainat-energy/ npm run qa -- --label live
 //
 // Options: --write <file.json> saves the results · --shots <dir> saves screenshots · --static-only skips the browser.
 // Playwright is resolved from PLAYWRIGHT_MODULE (path to playwright/index.mjs) or the "playwright" package.
@@ -10,6 +10,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
@@ -143,17 +144,48 @@ check('colour', 'engine categories use landometer-series-10-v8 soft fills, light
 // documentation of the release
 const html = read('index.html');
 check('page', 'noindex, color-scheme and two theme-color metas', /noindex/.test(html) && /name="color-scheme"/.test(html) && (html.match(/name="theme-color"/g) || []).length === 2);
-check('page', 'no favicon or unapproved product tile is linked', !/rel="(icon|apple-touch-icon|shortcut icon)"/.test(html));
+const identity = exists('docs/identity-manifest.json') ? json('docs/identity-manifest.json') : { assets: [], iconSet: {}, share: {} };
+const identityBad = (identity.assets || []).filter(a => !exists(a.path) || sha(a.path) !== a.sha256 || fs.statSync(path.join(ROOT, a.path)).size !== a.bytes || a.publicationPermission !== true || !a.approvalScope);
+check('identity', 'identity assets have exact bytes, hashes and artifact-scoped permission', identity.assets.length >= 10 && !identityBad.length && identity.iconSet.canonicalProductTileClaimed === false, identityBad.map(a => a.path).join(', '));
+const iconRows = identity.assets.filter(a => /^assets\/identity\/icon-portfolio-\d+\.png$/.test(a.path));
+const iconSizes = [16, 32, 48, 180, 192, 512];
+check('identity', 'all six exact approved portfolio icons are linked and retain actual PNG dimensions', iconSizes.every(size => {
+  const a = iconRows.find(row => row.width === size && row.height === size); if (!a || !exists(a.path)) return false;
+  const b = fs.readFileSync(path.join(ROOT, a.path));
+  return b.subarray(1, 4).toString() === 'PNG' && b.readUInt32BE(16) === size && b.readUInt32BE(20) === size && new RegExp(`sizes="${size}x${size}"[^>]+${path.basename(a.path).replaceAll('.', '\\.')}`).test(html);
+}));
+const webManifest = exists('site.webmanifest') ? json('site.webmanifest') : {};
+check('identity', 'web manifest binds the scoped 192 and 512 maskable icons with relative app URLs', /rel="manifest"/.test(html) && webManifest.scope === './' && webManifest.start_url === './' && ['192x192', '512x512'].every(size => webManifest.icons?.some(i => i.sizes === size && iconRows.some(a => i.src.split('?')[0].replace(/^\.\//, '') === a.path) && (size !== '512x512' || i.purpose === 'maskable'))));
+const share = identity.share;
+check('identity', 'social preview metadata binds the truthful Chainat 1200×630 asset', share.width === 1200 && share.height === 630 && identity.assets.some(a => a.role === 'social_preview' && a.path === share.path) && html.includes(`content="https://montri-th.github.io/chainat-energy/${share.path}"`) && html.includes(`property="og:image:type" content="${share.mime}"`) && /property="og:image:width" content="1200"/.test(html) && /property="og:image:height" content="630"/.test(html) && /name="twitter:card" content="summary_large_image"/.test(html));
 check('page', 'pause control precedes the motif frame', html.indexOf('lds-motion-pause') > 0 && html.indexOf('lds-motion-pause') < html.indexOf('lds-motif-frame'));
 check('page', 'motif scripts load in order: motifs → motion controller → frame', html.indexOf('landometer-motifs.js') < html.indexOf('motion-controller.js') && html.indexOf('motion-controller.js') < html.indexOf('motif-frame.js'));
 
 /* ---------------- browser checks ---------------- */
 let shotsDir = opt('--shots');
+// Synthetic 256px raster fixture for bounded provider-adapter tests. Never prefetch real tiles.
+function syntheticTile() {
+  const crc = data => { let c = -1; for (const byte of data) { c ^= byte; for (let k = 0; k < 8; k++) c = (c >>> 1) ^ ((c & 1) ? 0xedb88320 : 0); } return (c ^ -1) >>> 0; };
+  const chunk = (name, data) => { const tag = Buffer.from(name), size = Buffer.alloc(4), sum = Buffer.alloc(4); size.writeUInt32BE(data.length); sum.writeUInt32BE(crc(Buffer.concat([tag, data]))); return Buffer.concat([size, tag, data, sum]); };
+  const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(256, 0); ihdr.writeUInt32BE(256, 4); ihdr[8] = 8; ihdr[9] = 6;
+  return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(Buffer.alloc((256 * 4 + 1) * 256))), chunk('IEND', Buffer.alloc(0))]);
+}
 async function browserChecks() {
   let pw;
   try { pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright'); } catch (e) { check('browser', 'playwright available', false, e.message); return; }
   const { chromium } = pw;
-  const browser = await chromium.launch({ headless: true, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  // Use Playwright's version-matched full Chromium in headless mode; no machine-specific path.
+  const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || chromium.executablePath(), headless: true, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const assetContext = await browser.newContext();
+  const deliveryBad = [];
+  for (const asset of identity.assets) {
+    const response = await assetContext.request.get(new URL(asset.path, BASE).href);
+    const bytes = await response.body(), mime = (response.headers()['content-type'] || '').split(';')[0];
+    const acceptedMime = asset.mime === 'text/javascript' ? ['text/javascript', 'application/javascript'] : [asset.mime];
+    if (!response.ok() || bytes.length !== asset.bytes || crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256 || !acceptedMime.includes(mime)) deliveryBad.push(`${asset.path}: HTTP ${response.status()}, ${mime}, ${bytes.length} bytes`);
+  }
+  check('identity', 'served identity assets match the reviewed bytes and MIME (first-party only)', !deliveryBad.length, deliveryBad.slice(0, 4).join(' | '));
+  await assetContext.close();
   const ROUTES = ['', '?v=demand', '?v=demand&m=tier', '?v=demand&a=180101', '?v=demand&lvl=lao&a=04180102&b=04180102-00001', '?v=supply', '?v=supply&a=180606', '?v=supply&lvl=lao&a=04180102', '?v=demand&lvl=lao&a=04180102&m=tier', '?v=opportunity', '?v=shortlist', '?v=requests', '?v=sources', '?v=unknown&a=zzz&b=1'];
   const MATRIX = [{ scheme: 'light', w: 1440, h: 900 }, { scheme: 'dark', w: 1440, h: 900 }, { scheme: 'light', w: 390, h: 844 }, { scheme: 'dark', w: 768, h: 1024 }];
   for (const m of MATRIX) {
@@ -305,6 +337,67 @@ async function browserChecks() {
   if (firstB) { await firstB.focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(2000); }
   const bcard = await page.evaluate(() => ({ url: location.search, card: !!document.querySelector('#h-bld') }));
   check('keyboard', 'a building card opens from the non-map building list with the keyboard', !!firstB && bcard.card && /b=\d{8}-\d{5}/.test(bcard.url), JSON.stringify(bcard));
+
+  // Basemap adapters use synthetic responses here, so CI never bulk-requests OSM/ESA imagery.
+  let providerFailure = false, providerRequests = 0;
+  const tile = syntheticTile();
+  await page.route(/^https:\/\/(?:tile\.openstreetmap\.org|wmts\.terrascope\.be)\//, async route => {
+    providerRequests++;
+    if (providerFailure) return route.abort('failed');
+    return route.fulfill({ status: 200, contentType: 'image/png', body: tile });
+  });
+  await page.goto(BASE + '?v=demand&m=pop', { waitUntil: 'networkidle' });
+  await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  await page.waitForTimeout(1200);
+  async function mapSnapshot() {
+    return page.evaluate(async () => {
+      const core = await import(new URL('js/core.js', document.baseURI).href), mapModule = await import(new URL('js/map.js', document.baseURI).href), m = await mapModule.mapReady();
+      const tiers = core.computeTiers(core.S.criteria);
+      if (!window.__chainatQaMap) window.__chainatQaMap = m;
+      const raster = m.getStyle().layers.filter(layer => /^context-(roads|satellite)-/.test(layer.id)).map(layer => layer.id), roads = raster.find(id => id.startsWith('context-roads-'));
+      return { sameMap: window.__chainatQaMap === m, camera: [m.getCenter().lng, m.getCenter().lat, m.getZoom(), m.getPitch(), m.getBearing()], state: JSON.stringify(core.S), url: location.search, tiers: JSON.stringify([...tiers.res].map(([id, row]) => [id, row.tier])), fills: JSON.stringify(m.getStyle().sources.units.data.features.map(f => [f.properties.code, f.properties.fill])), paint: JSON.stringify(m.getPaintProperty('units-fill', 'fill-color')), visibility: m.getLayoutProperty('units-fill', 'visibility'), raster, roadBrightness: roads ? m.getPaintProperty(roads, 'raster-brightness-max') : null, list: document.querySelectorAll('.area-list button[data-area]').length, status: document.querySelector('#basemap-status').textContent };
+    });
+  }
+  const beforeDisplay = await mapSnapshot(), basemapProblems = [];
+  check('basemap', 'analysis is the default and makes no provider tile requests', !beforeDisplay.raster.length && providerRequests === 0 && await page.inputValue('#basemap-select') === 'analysis', `${providerRequests} synthetic requests`);
+  for (const mode of ['simplified', 'detailed', 'satellite', 'analysis']) {
+    await page.selectOption('#basemap-select', mode); await page.waitForTimeout(350);
+    const after = await mapSnapshot();
+    for (const field of ['camera', 'state', 'url', 'tiers', 'fills', 'paint']) if (JSON.stringify(after[field]) !== JSON.stringify(beforeDisplay[field])) basemapProblems.push(`${mode}: ${field} changed`);
+    if (!after.sameMap || after.raster.length !== (mode === 'analysis' ? 0 : mode === 'satellite' ? 2 : 1)) basemapProblems.push(`${mode}: instance/raster sources`);
+  }
+  check('basemap', 'all four styles preserve the map, camera, criteria, URL, membership and exact analytical paints', !basemapProblems.length, basemapProblems.join(' | '));
+  await page.selectOption('#basemap-select', 'detailed');
+  const staleProvider = (await mapSnapshot()).raster[0];
+  await page.selectOption('#basemap-select', 'simplified');
+  await page.evaluate(async sourceId => { const module = await import(new URL('js/map.js', document.baseURI).href); const m = await module.mapReady(); m.fire('error', { sourceId, error: new Error('Synthetic stale provider failure') }); }, staleProvider);
+  const freshProvider = await mapSnapshot();
+  check('basemap', 'late errors from a removed provider generation cannot replace the current style', freshProvider.raster.length === 1 && !freshProvider.raster.includes(staleProvider) && !freshProvider.status.includes('ไม่สำเร็จ') && await page.isHidden('#basemap-retry'));
+  await page.uncheck('#map-area-colours');
+  const hidden = await mapSnapshot();
+  await page.check('#map-area-colours');
+  const shown = await mapSnapshot();
+  check('basemap', 'colour toggle changes visibility only, restoring identical data HEX and list access', hidden.visibility === 'none' && shown.visibility === 'visible' && hidden.fills === beforeDisplay.fills && shown.fills === beforeDisplay.fills && shown.paint === beforeDisplay.paint && hidden.list === 53 && shown.list === 53);
+  await page.evaluate(() => { const s = document.getElementById('theme-select'); s.value = 'dark'; s.dispatchEvent(new Event('change', { bubbles: true })); });
+  await page.waitForTimeout(300);
+  const darkDisplay = await mapSnapshot();
+  check('basemap', 'theme changes retain exact analytical source colors and Demand members', darkDisplay.fills === beforeDisplay.fills && darkDisplay.tiers === beforeDisplay.tiers && darkDisplay.state === beforeDisplay.state);
+  await page.emulateMedia({ colorScheme: 'dark' });
+  await page.evaluate(() => { const s = document.getElementById('theme-select'); s.value = 'auto'; s.dispatchEvent(new Event('change', { bubbles: true })); });
+  await page.waitForTimeout(150);
+  const autoDark = await mapSnapshot();
+  await page.emulateMedia({ colorScheme: 'light' }); await page.waitForTimeout(150);
+  const autoLight = await mapSnapshot();
+  check('basemap', 'Auto follows OS appearance for provider styling while exact analytical colors stay fixed', autoDark.roadBrightness === .72 && autoLight.roadBrightness === 1 && autoDark.fills === autoLight.fills && autoLight.tiers === beforeDisplay.tiers);
+  providerFailure = true;
+  await page.selectOption('#basemap-select', 'detailed');
+  await page.waitForFunction(() => !document.getElementById('basemap-retry').hidden, null, { timeout: 15000 });
+  const fallback = await mapSnapshot();
+  check('basemap', 'provider failure keeps the same analytical map/list and exposes retry', fallback.sameMap && !fallback.raster.length && fallback.list === 53 && fallback.fills === beforeDisplay.fills && fallback.status.includes('ใช้พื้นวิเคราะห์ชั่วคราว'));
+  providerFailure = false;
+  await page.click('#basemap-retry'); await page.waitForTimeout(500);
+  const retried = await mapSnapshot();
+  check('basemap', 'manual retry restores the selected provider with camera, criteria and data intact', retried.raster.length === 1 && retried.sameMap && JSON.stringify(retried.camera) === JSON.stringify(beforeDisplay.camera) && retried.state === beforeDisplay.state && retried.fills === beforeDisplay.fills && await page.isHidden('#basemap-retry'));
   await ctx.close();
   await browser.close();
 }
@@ -312,7 +405,7 @@ async function browserChecks() {
 if (!args.includes('--static-only')) await browserChecks();
 const failed = results.filter(r => !r.ok);
 const summary = { label: LABEL, base: BASE, ranAt: new Date().toISOString(), passed: results.length - failed.length, failed: failed.length, results };
-const out = opt('--write'); if (out) fs.writeFileSync(path.resolve(out), JSON.stringify(summary, null, 2) + '\n');
+const out = opt('--write'); if (out) { fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true }); fs.writeFileSync(path.resolve(out), JSON.stringify(summary, null, 2) + '\n'); }
 for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  [${r.group}] ${r.name}${r.ok || !r.detail ? '' : `  — ${r.detail}`}`);
 console.log(`\n${summary.passed} passed · ${summary.failed} failed · ${LABEL} ${BASE}`);
 process.exit(failed.length ? 1 : 0);
