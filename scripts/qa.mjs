@@ -355,7 +355,7 @@ async function browserChecks() {
       const tiers = core.computeTiers(core.S.criteria);
       if (!window.__chainatQaMap) window.__chainatQaMap = m;
       const raster = m.getStyle().layers.filter(layer => /^context-(roads|satellite)-/.test(layer.id)).map(layer => layer.id), roads = raster.find(id => id.startsWith('context-roads-'));
-      return { sameMap: window.__chainatQaMap === m, camera: [m.getCenter().lng, m.getCenter().lat, m.getZoom(), m.getPitch(), m.getBearing()], state: JSON.stringify(core.S), url: location.search, tiers: JSON.stringify([...tiers.res].map(([id, row]) => [id, row.tier])), fills: JSON.stringify(m.getStyle().sources.units.data.features.map(f => [f.properties.code, f.properties.fill])), paint: JSON.stringify(m.getPaintProperty('units-fill', 'fill-color')), visibility: m.getLayoutProperty('units-fill', 'visibility'), raster, roadBrightness: roads ? m.getPaintProperty(roads, 'raster-brightness-max') : null, list: document.querySelectorAll('.area-list button[data-area]').length, status: document.querySelector('#basemap-status').textContent };
+      return { sameMap: window.__chainatQaMap === m, camera: [m.getCenter().lng, m.getCenter().lat, m.getZoom(), m.getPitch(), m.getBearing()], state: JSON.stringify(core.S), url: location.search, tiers: JSON.stringify([...tiers.res].map(([id, row]) => [id, row.tier])), fills: JSON.stringify(m.getStyle().sources.units.data.features.map(f => [f.properties.code, f.properties.fill])), paint: JSON.stringify(m.getPaintProperty('units-fill', 'fill-color')), visibility: m.getLayoutProperty('units-fill', 'visibility'), raster, roadBrightness: roads ? m.getPaintProperty(roads, 'raster-brightness-max') : null, themeChoice: core.getThemeChoice(), themeAttribute: document.documentElement.dataset.theme || null, mediaDark: matchMedia('(prefers-color-scheme: dark)').matches, effectiveTheme: core.effectiveTheme(), list: document.querySelectorAll('.area-list button[data-area]').length, status: document.querySelector('#basemap-status').textContent };
     });
   }
   const beforeDisplay = await mapSnapshot(), basemapProblems = [];
@@ -384,11 +384,18 @@ async function browserChecks() {
   check('basemap', 'theme changes retain exact analytical source colors and Demand members', darkDisplay.fills === beforeDisplay.fills && darkDisplay.tiers === beforeDisplay.tiers && darkDisplay.state === beforeDisplay.state);
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.evaluate(() => { const s = document.getElementById('theme-select'); s.value = 'auto'; s.dispatchEvent(new Event('change', { bubbles: true })); });
-  await page.waitForTimeout(150);
+  const waitForAuto = expected => page.waitForFunction(async expectedState => {
+    const module = await import(new URL('js/map.js', document.baseURI).href), m = await module.mapReady();
+    const roads = m.getStyle().layers.find(layer => layer.id.startsWith('context-roads-'));
+    return !document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches === expectedState.dark && !!roads && m.getPaintProperty(roads.id, 'raster-brightness-max') === expectedState.brightness;
+  }, expected, { timeout: 5000 }).then(() => true).catch(() => false);
+  const autoDarkSettled = await waitForAuto({ dark: true, brightness: .72 });
   const autoDark = await mapSnapshot();
-  await page.emulateMedia({ colorScheme: 'light' }); await page.waitForTimeout(150);
+  await page.emulateMedia({ colorScheme: 'light' });
+  const autoLightSettled = await waitForAuto({ dark: false, brightness: 1 });
   const autoLight = await mapSnapshot();
-  check('basemap', 'Auto follows OS appearance for provider styling while exact analytical colors stay fixed', autoDark.roadBrightness === .72 && autoLight.roadBrightness === 1 && autoDark.fills === autoLight.fills && autoLight.tiers === beforeDisplay.tiers);
+  const autoDetail = snapshot => ({ choice: snapshot.themeChoice, attr: snapshot.themeAttribute, mediaDark: snapshot.mediaDark, effective: snapshot.effectiveTheme, roadBrightness: snapshot.roadBrightness });
+  check('basemap', 'Auto follows OS appearance for provider styling while exact analytical colors stay fixed', autoDarkSettled && autoLightSettled && autoDark.roadBrightness === .72 && autoLight.roadBrightness === 1 && autoDark.fills === autoLight.fills && autoLight.tiers === beforeDisplay.tiers, JSON.stringify({ darkSettled: autoDarkSettled, lightSettled: autoLightSettled, dark: autoDetail(autoDark), light: autoDetail(autoLight), fillsUnchanged: autoDark.fills === autoLight.fills, tiersUnchanged: autoLight.tiers === beforeDisplay.tiers }));
   providerFailure = true;
   await page.selectOption('#basemap-select', 'detailed');
   await page.waitForFunction(() => !document.getElementById('basemap-retry').hidden, null, { timeout: 15000 });
