@@ -71,4 +71,4 @@ GitHub Pages ใช้สาขา `main` โฟลเดอร์ `/` พร้
 - รถจดทะเบียนสะสม: กรมการขนส่งทางบก ผ่าน MOT Data Catalog
 - รถจดทะเบียนรายเดือน: CityMETER: Cars (Landometer) จากข้อมูลทะเบียนรถของกรมการขนส่งทางบก
 - MapLibre GL JS © MapLibre contributors ภายใต้ BSD-3-Clause ดู `vendor/maplibre-gl/4.7.1/LICENSE.txt`
-- ฟอนต์ภายใต้ SIL Open Font License ตามไฟล์ใน `assets/lds/build-kit/assets/`
+- ฟอนต์ Arvo · Bai Jamjuree · IBM Plex Sans Thai · IBM Plex Sans Thai Looped · JetBrains Mono ภายใต้ SIL Open Font License และ Material Symbols ภายใต้ Apache-2.0 ตามไฟล์ใบอนุญาตใน `assets/lds/build-kit/assets/`
