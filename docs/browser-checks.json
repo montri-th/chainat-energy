@@ -387,7 +387,8 @@
           "detail": "{\"url\":\"?v=demand&a=180101&b=04180102-02413\",\"card\":true}"
         }
       ],
-      "commit": "818c95e (tree before push)"
+      "commit": "818c95e (tree before push)",
+      "release": "cnt-energy-2026-10-18"
     },
     {
       "label": "live",
@@ -775,7 +776,456 @@
           "detail": "{\"url\":\"?v=demand&a=180101&b=04180102-02413\",\"card\":true}"
         }
       ],
-      "commit": "818c95e"
+      "commit": "818c95e",
+      "release": "cnt-energy-2026-10-18"
+    },
+    {
+      "label": "local",
+      "base": "http://127.0.0.1:4173/",
+      "ranAt": "2026-10-18T15:30:00.379Z",
+      "passed": 73,
+      "failed": 0,
+      "results": [
+        {
+          "group": "files",
+          "name": "required files present",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "data",
+          "name": "8 districts · 53 tambons · 59 LAOs",
+          "ok": true,
+          "detail": "8/53/59"
+        },
+        {
+          "group": "data",
+          "name": "one building file per LAO and totals match meta",
+          "ok": true,
+          "detail": "59 files · 177647 vs meta 177647"
+        },
+        {
+          "group": "data",
+          "name": "building index covers every LAO",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "data",
+          "name": "modelled electricity sums back to the plan total (±0.01%)",
+          "ok": true,
+          "detail": "model 632404902 · plan 632404905"
+        },
+        {
+          "group": "data",
+          "name": "supply registers: 203 fuel · 18 controlled · 69 projects",
+          "ok": true,
+          "detail": "203/18/69"
+        },
+        {
+          "group": "data",
+          "name": "solar pumping: 58 rows · 103 systems · 360.04 kW parsed from W, kW and system counts",
+          "ok": true,
+          "detail": "58 rows · 103 systems · 360.04 kW"
+        },
+        {
+          "group": "data",
+          "name": "tambon pump capacity sums to the project total",
+          "ok": true,
+          "detail": "360.04 vs 360.04"
+        },
+        {
+          "group": "data",
+          "name": "modelled vehicles are whole numbers and sum to the DLT total at tambon, LAO and district level",
+          "ok": true,
+          "detail": "176445 · 176445 · 176445 vs 176445"
+        },
+        {
+          "group": "data",
+          "name": "district values equal the sum of their tambons",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "cars",
+          "name": "monthly registrations: one row of five engine counts per month for every vehicle type",
+          "ok": true,
+          "detail": "80 months 2020-01–2026-08 · 1,2,3,12,13,14,17"
+        },
+        {
+          "group": "cars",
+          "name": "June 2026 passenger cars (รย.1) total 78, as shown on the CityMETER: Cars page",
+          "ok": true,
+          "detail": "78"
+        },
+        {
+          "group": "cars",
+          "name": "benchmark: 77 provinces, rank and median recompute from the rows, Chainat window equals its monthly sums",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "cars",
+          "name": "low-count provinces follow the stated rule and the rank without them recomputes",
+          "ok": true,
+          "detail": "นนทบุรี,ปทุมธานี,สมุทรปราการ "
+        },
+        {
+          "group": "cars",
+          "name": "e-motorcycles registered Jan 2020–Feb 2026 equal the DLT stock at 28 Feb 2026 (monthly values are new registrations)",
+          "ok": true,
+          "detail": "{\"type\":\"12\",\"engine\":\"ELECTRIC\",\"registered\":638,\"from\":\"2020-01\",\"to\":\"2026-02\",\"stock\":638,\"stockAsOf\":\"2026-02-28\"}"
+        },
+        {
+          "group": "data",
+          "name": "every project photo exists and matches its SHA-256",
+          "ok": true,
+          "detail": "64 photos · 0 missing/mismatched"
+        },
+        {
+          "group": "privacy",
+          "name": "no phone numbers in published supply or cars data",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "privacy",
+          "name": "no 13-digit numbers outside juristic registration fields",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "privacy",
+          "name": "no per-site coordinates in supply or cars data",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "privacy",
+          "name": "individual operators carry no registration number",
+          "ok": true,
+          "detail": "0"
+        },
+        {
+          "group": "privacy",
+          "name": "no price or quotation text in published files",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "privacy",
+          "name": "no credentials or tokens in published files",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "colour",
+          "name": "no literal hex colours in scripts (all colours resolve from LDS tokens)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "colour",
+          "name": "no ungoverned colour functions in our CSS/JS",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "colour",
+          "name": "only on-deep identity inks are literal in CSS (#FFFFFF #F1F4EF #182327)",
+          "ok": true,
+          "detail": "#FFFFFF #F1F4EF #182327"
+        },
+        {
+          "group": "colour",
+          "name": "LUT41 light and dark tokens are identical for every family used",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "colour",
+          "name": "engine categories use landometer-series-10-v8 soft fills, light and dark (DATAVIZ-05)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "page",
+          "name": "noindex, color-scheme and two theme-color metas",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "page",
+          "name": "no favicon or unapproved product tile is linked",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "page",
+          "name": "pause control precedes the motif frame",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "page",
+          "name": "motif scripts load in order: motifs → motion controller → frame",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 1440: every route reaches ready=true",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 1440: no horizontal overflow",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 1440: direct targets ≥ 44×44 CSS px",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 1440: every view has an h1",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 1440: no console errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 1440: every route reaches ready=true",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 1440: no horizontal overflow",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 1440: direct targets ≥ 44×44 CSS px",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 1440: every view has an h1",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 1440: no console errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 390: every route reaches ready=true",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 390: no horizontal overflow",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 390: direct targets ≥ 44×44 CSS px",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 390: every view has an h1",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "light 390: no console errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 768: every route reaches ready=true",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 768: no horizontal overflow",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 768: direct targets ≥ 44×44 CSS px",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 768: every view has an h1",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "browser",
+          "name": "dark 768: no console errors",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "choropleth",
+          "name": "every metric maps to LUT41 by mid-rank percentile (29 metric×grain)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "choropleth",
+          "name": "a unique maximum always reaches the top LUT sample (index 40); tied maxima share their mid-rank",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "theme",
+          "name": "Dark switches body to LDS canvas dark (#11191D)",
+          "ok": true,
+          "detail": "{\"attr\":\"dark\",\"bg\":\"rgb(17, 25, 29)\",\"lut\":\"#25659A\"}"
+        },
+        {
+          "group": "theme",
+          "name": "Light switches body to LDS canvas light (#F6F7F3)",
+          "ok": true,
+          "detail": "{\"attr\":\"light\",\"bg\":\"rgb(246, 247, 243)\"}"
+        },
+        {
+          "group": "theme",
+          "name": "analytical LUT HEX identical in both themes",
+          "ok": true,
+          "detail": "#25659A vs #25659A"
+        },
+        {
+          "group": "evidence",
+          "name": "every overview number carries dataset · source · date · boundary",
+          "ok": true,
+          "detail": "6/6"
+        },
+        {
+          "group": "evidence",
+          "name": "new-registration section: four-part stamp, five shape cues, table alternative with labelled cells, labelled claims",
+          "ok": true,
+          "detail": "{\"stamp\":true,\"cues\":5,\"rows\":7,\"table\":7,\"labels\":true,\"claims\":9}"
+        },
+        {
+          "group": "motif",
+          "name": "hero motif mounts on the declared atmosphere ground (no MOTIF-06 refusal)",
+          "ok": true,
+          "detail": "{\"state\":\"mounted\",\"err\":\"\"}"
+        },
+        {
+          "group": "keyboard",
+          "name": "first Tab reaches a visible skip link with a focus outline",
+          "ok": true,
+          "detail": "{\"cls\":\"skip-link\",\"outline\":\"solid\",\"visible\":true}"
+        },
+        {
+          "group": "keyboard",
+          "name": "vehicle group buttons switch the chart and keep focus on the pressed button",
+          "ok": true,
+          "detail": "{\"pressed\":\"true\",\"focus\":\"12\",\"title\":\"จักรยานยนต์ (รย.12) ที่จดทะเบียนใหม่ในแต่ละปี แยกเชื้อเพลิง\"}"
+        },
+        {
+          "group": "evidence",
+          "name": "no-benchmark notes are true per group (all types: compare by type · trucks: no BEV registered)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "group": "map",
+          "name": "non-map alternative lists all 53 tambons",
+          "ok": true,
+          "detail": "53"
+        },
+        {
+          "group": "map",
+          "name": "building permalink opens the building card with breadcrumbs",
+          "ok": true,
+          "detail": "{\"card\":true,\"crumbs\":4,\"url\":\"?v=demand&lvl=lao&a=04180102&b=04180102-00001\"}"
+        },
+        {
+          "group": "states",
+          "name": "measured zero has its own legend row and is shown as 0 (not blank)",
+          "ok": true,
+          "detail": "{\"legend\":true,\"zeroLabel\":true}"
+        },
+        {
+          "group": "supply",
+          "name": "source photo gallery shows all 64 project photos",
+          "ok": true,
+          "detail": "64"
+        },
+        {
+          "group": "states",
+          "name": "vehicle table cells declare value state and are not clipped",
+          "ok": true,
+          "detail": "13 cells"
+        },
+        {
+          "group": "evidence",
+          "name": "per-household electricity shows the province ratio (~152), not a sum",
+          "ok": true,
+          "detail": "จังหวัดชัยนาท · ทั้งพื้นที่ 152 kWh ต่อครัวเรือนต่อเดือน · แบบจำลอง"
+        },
+        {
+          "group": "yolk",
+          "name": "only Demand members enter the opportunity queue",
+          "ok": true,
+          "detail": "{\"n\":36,\"demand\":36}"
+        },
+        {
+          "group": "yolk",
+          "name": "tier notes follow the active conditions (2 on → 2 tiers)",
+          "ok": true,
+          "detail": "{\"1\":\"ผ่านครบ 2 เงื่อนไข\",\"2\":\"ผ่าน 1 จาก 2 เงื่อนไข\"}"
+        },
+        {
+          "group": "history",
+          "name": "Back restores the previous view and its metric",
+          "ok": true,
+          "detail": "{\"url\":\"?v=demand&m=pop\",\"title\":\"ประชากร\"}"
+        },
+        {
+          "group": "keyboard",
+          "name": "focus stays on the metric select after the panel re-renders",
+          "ok": true,
+          "detail": "metric-select"
+        },
+        {
+          "group": "keyboard",
+          "name": "a building card opens from the non-map building list with the keyboard",
+          "ok": true,
+          "detail": "{\"url\":\"?v=demand&a=180101&b=04180102-02413\",\"card\":true}"
+        }
+      ],
+      "release": "cnt-energy-2026-10-18-r2"
     }
   ]
 }

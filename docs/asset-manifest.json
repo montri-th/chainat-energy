@@ -1,7 +1,7 @@
 {
   "generatedOn": "2026-10-18",
   "scope": "Every file in the published tree except this manifest. SHA-256 of the bytes in the repository.",
-  "count": 177,
+  "count": 178,
   "files": [
     {
       "path": ".gitignore",
@@ -15,8 +15,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 10227,
-      "sha256": "595668ca651f6a9b352ff4512f13b93762cb54ddeb792a3e23605bf0d901fe43"
+      "bytes": 12042,
+      "sha256": "85f969db00140d7b620a9fb9ad7c5ac4232c044b687353af85294b773bea48d2"
     },
     {
       "path": "assets/lds/build-kit/assets/arvo-OFL.txt",
@@ -480,13 +480,13 @@
     },
     {
       "path": "data/DATA_QA.md",
-      "bytes": 15594,
-      "sha256": "7ce2bf365980c4a66d939146a91f0d0c8f77a7964baacdc8a635170d72fbb0d1"
+      "bytes": 26531,
+      "sha256": "c2a7d2eea3354ca35d2ffe3cc5853f899878d8e4581b56486db413962261b184"
     },
     {
       "path": "data/areas.json",
-      "bytes": 80552,
-      "sha256": "a5272953e1d1ea70df642680d7788c0e79fc44d98061f947d246acb9ad66ba42"
+      "bytes": 80609,
+      "sha256": "53229c6871b887d405ef593310fc467b4aa59092c2d6bdf51b771392748d584e"
     },
     {
       "path": "data/buildings/04180102.json",
@@ -789,6 +789,11 @@
       "sha256": "3156e069439d61e3aaa12798d304401bb19d75f5ede9706d19db3ce69fed330f"
     },
     {
+      "path": "data/cars.json",
+      "bytes": 18678,
+      "sha256": "e265f0c96608c54ecf6612532fded97bcca592b8bc593598ff70b564887f989f"
+    },
+    {
       "path": "data/geo/district.geojson",
       "bytes": 117654,
       "sha256": "9ca742dd75393797a51774347190ae02528a33e51300f24dec5d223f10cb014f"
@@ -810,8 +815,8 @@
     },
     {
       "path": "data/meta.json",
-      "bytes": 5580,
-      "sha256": "1b4ec2dca4c819c057b737cde2b7da63128c5bc401c0ea50c71c6d96d38aefc3"
+      "bytes": 6782,
+      "sha256": "f6d4b87dd56bb562f1242cc51dd36e26a6e021d02f3e1cfc344c259b4026db84"
     },
     {
       "path": "data/plan.json",
@@ -830,33 +835,33 @@
     },
     {
       "path": "docs/QA.md",
-      "bytes": 6498,
-      "sha256": "9381a64dc0d11d1119b4f7d709277aecf459479b403544b6159f99a61efdf4a9"
+      "bytes": 10182,
+      "sha256": "38b37fa3818a4882644822c972e801710115b87b2a71e2d34458585e2c725cf2"
     },
     {
       "path": "docs/browser-checks.json",
-      "bytes": 23568,
-      "sha256": "ac9c3fa11821da90a4341df01b24d810daf151303cd01b567bc7aa1ca2af12b7"
+      "bytes": 38015,
+      "sha256": "2fcdcaa7f1739d2dd81b7a77912ec28cd1c31bce847ba7327180969f3bf10473"
     },
     {
       "path": "docs/build-record.json",
-      "bytes": 5467,
-      "sha256": "8c5b75ac13a68d9f4a91ffc3ed947a6f450fbbb54cd0a8e73405d96e41d8216f"
+      "bytes": 9310,
+      "sha256": "224acadcab54b557ee0369240da95156491df76cde443c56572ec0852c0c041b"
     },
     {
       "path": "index.html",
-      "bytes": 26732,
-      "sha256": "8a4fbc4779cb0564af91531a3d67ee19888318ed6f901d9631aeb87a0dce3583"
+      "bytes": 28781,
+      "sha256": "3aab8e313883425ac111fc0e7bebb859aa7406fc28517942e87d0a46c9d29c2c"
     },
     {
       "path": "js/app.js",
-      "bytes": 15990,
-      "sha256": "747d22bbfee1a76da673575d5f923276e0e575ed38c33c0e1efbfad0c03562f7"
+      "bytes": 16092,
+      "sha256": "0b291e1adb5e0c7b9dc250c89e7a081d5ea687b42bbf7bdcb7f00a4dfdea2fa5"
     },
     {
       "path": "js/core.js",
-      "bytes": 36362,
-      "sha256": "ddf70c90bcc686a24fef53a9f303929851c9db1ec78ceefad864b992f8797050"
+      "bytes": 39475,
+      "sha256": "be31c7c11824cfdcf85ae26b654900f6b4342850ce92aa5ce012bb44c1607c28"
     },
     {
       "path": "js/map.js",
@@ -865,18 +870,18 @@
     },
     {
       "path": "js/views.js",
-      "bytes": 54418,
-      "sha256": "f9600be7aed3793a68261fe07d26fb173d4da7449cbed76d14fb981b19a41ea8"
+      "bytes": 69562,
+      "sha256": "6be984f66554a3bf87e2121a1da2cfb7fe1594300d13b18da92992b7a50b9c02"
     },
     {
       "path": "scripts/qa.mjs",
-      "bytes": 25905,
-      "sha256": "6d8553963a42021da602d504e0ce97f9896c9d47840187dc245eb5372d826694"
+      "bytes": 32651,
+      "sha256": "c1c6366f511c6e46c369f136b17189070b53b842710f67fe6cec57fcd4c8f4c6"
     },
     {
       "path": "styles.css",
-      "bytes": 39062,
-      "sha256": "d3b893c5bc8c01b84f3fea6dc42ff63d5f4b42f3e7109c5140c7894192e89356"
+      "bytes": 43291,
+      "sha256": "df0ca9d21b57e2e4e17074b931ed829210b90211beb500cb7fc4883c777bcb70"
     },
     {
       "path": "vendor/maplibre-gl/4.7.1/LICENSE.txt",

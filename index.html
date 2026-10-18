@@ -62,7 +62,7 @@
           </section>
 
           <section aria-labelledby="h-missions">
-            <div class="section-head"><p class="kicker" lang="en">ONE PRODUCT · TWO MISSIONS</p><h2 id="h-missions"><span class="phrase">เครื่องคิดเดียว</span> <span class="phrase">ใช้ได้ทั้งธุรกิจสาขา</span><span class="phrase">และสำนักงานพลังงานจังหวัด</span></h2><p>ขั้นตอนเหมือนกันทุกภารกิจ: ความต้องการ → กิจการที่มีอยู่ → โอกาส → คิวลงพื้นที่ ต่างกันที่ตัววัดและเกณฑ์</p></div>
+            <div class="section-head"><p class="kicker" lang="en">ONE PRODUCT · TWO MISSIONS</p><h2 id="h-missions"><span class="phrase">ลำดับคิดเดียว</span> <span class="phrase">ใช้ได้ทั้งธุรกิจสาขา</span><span class="phrase">และสำนักงานพลังงานจังหวัด</span></h2><p>ขั้นตอนเหมือนกันทุกภารกิจ: ความต้องการ → กิจการที่มีอยู่ → โอกาส → คิวลงพื้นที่ ต่างกันที่ตัววัดและเกณฑ์ เดโมนี้เขียนตามกติกาของ Yolk ยังไม่ได้ใช้เครื่องคิดของ production</p></div>
             <div class="missions" style="margin-top:var(--s5)">
               <article class="mission-card"><span class="kicker">ภารกิจขยายสาขา</span><h3>ทีมขยายสาขาของธุรกิจหลายสาขา</h3><table class="mission-table"><tbody><tr><th scope="row">ความต้องการ</th><td>สัญญาณลูกค้าในพื้นที่ จัดเป็นไข่แดงเข้ม ไข่แดง ไข่ขาว</td></tr><tr><th scope="row">กิจการที่มีอยู่</th><td>สาขาเรา คู่แข่งที่ระบุได้ และยังไม่ทราบแบรนด์</td></tr><tr><th scope="row">โอกาส</th><td>มุมมองกลยุทธ์ขยายสาขา เลือกได้สูงสุด 3</td></tr><tr><th scope="row">ผลลัพธ์</th><td>คิวทำเลชวนสำรวจ พร้อมเหตุผลและงานแรก</td></tr></tbody></table></article>
               <article class="mission-card" data-active="true"><span class="kicker">ภารกิจสำนักงานพลังงานจังหวัด · หน้านี้</span><h3>สำนักงานพลังงานจังหวัดชัยนาท</h3><table class="mission-table"><tbody><tr><th scope="row">ความต้องการ</th><td>การใช้ไฟฟ้า น้ำมัน LPG และรถจดทะเบียนในพื้นที่</td></tr><tr><th scope="row">กิจการที่มีอยู่</th><td>ทะเบียนน้ำมันเชื้อเพลิง อาคารและโรงงานควบคุม โครงการพลังงานทดแทน โรงไฟฟ้า</td></tr><tr><th scope="row">โอกาส</th><td>7 มุมมองตามแผนปฏิบัติราชการ 2566–2570 และอำนาจหน้าที่ เลือกได้สูงสุด 3</td></tr><tr><th scope="row">ผลลัพธ์</th><td>คิวตำบลชวนสำรวจ และรายการข้อมูลที่ต้องขอเชื่อมโยง</td></tr></tbody></table></article>
@@ -72,6 +72,11 @@
           <section aria-labelledby="h-kpis">
             <div class="section-head"><p class="kicker" lang="en">WHAT WE HAVE TODAY</p><h2 id="h-kpis">ข้อมูลที่มีอยู่วันนี้</h2><p>ตัวเลขระดับจังหวัดมาจากแหล่งจริง ทุกตัวบอกชุดข้อมูล แหล่ง วันที่ และขอบเขต</p></div>
             <div class="kpis" id="kpis" style="margin-top:var(--s5)"></div>
+          </section>
+
+          <section aria-labelledby="h-cars" id="cars">
+            <div class="section-head"><p class="kicker" lang="en">NEW REGISTRATIONS · CityMETER: Cars</p><h2 id="h-cars"><span class="phrase">รถใหม่ในชัยนาท</span> <span class="phrase">เปลี่ยนเชื้อเพลิงเร็วแค่ไหน</span></h2><p>จำนวนรถที่จดทะเบียนใหม่ในแต่ละเดือน แยกประเภทรถ เชื้อเพลิง และยี่ห้อ จากข้อมูลทะเบียนรถของกรมการขนส่งทางบกใน CityMETER: Cars เป็นรถใหม่ ไม่ใช่ยอดสะสม (ตรวจกับยอดสะสมของกรมการขนส่งทางบกแล้ว ดูหน้าที่มา) และมีถึงระดับจังหวัดเท่านั้น</p></div>
+            <div class="cars" id="cars-body" style="margin-top:var(--s5)"></div>
           </section>
 
           <section aria-labelledby="h-plans">
@@ -140,9 +145,9 @@
             </div>
           </article>
           <article class="request">
-            <div class="request-head"><div><p class="kicker">ชุดที่ 3 · ยานพาหนะ</p><h2 class="request-title">รถจดทะเบียนรายเดือน แยกรุ่นและเชื้อเพลิง</h2><p class="muted">ขอจาก กรมการขนส่งทางบก · ระดับจังหวัดเปิดเป็นข้อมูลสาธารณะแล้ว ตามตารางด้านล่าง · ใช้กับมุมมองจุดอัดประจุรถไฟฟ้า</p></div><span class="status" data-q="candidate">ระดับจังหวัดมีแล้ว</span></div>
+            <div class="request-head"><div><p class="kicker">ชุดที่ 3 · ยานพาหนะ</p><h2 class="request-title">รถจดทะเบียนรายอำเภอและรายตำบล</h2><p class="muted">ระดับจังหวัดมีแล้ว: รถจดทะเบียนรายเดือน แยกประเภทรถ เชื้อเพลิง และยี่ห้อ ม.ค. 2563–ส.ค. 2569 จาก <a href="https://landometer.com/v3/citymeter/Central/CNT?d=cars" rel="noopener">CityMETER: Cars</a> (ดูในหน้าภาพรวม) และยอดสะสมแยกเชื้อเพลิง ณ 28 ก.พ. 2569 จาก MOT Data Catalog ตามตารางด้านล่าง · ที่ยังต้องขอจากกรมการขนส่งทางบกคือยอดรายอำเภอหรือรายตำบลตามที่อยู่ผู้ครอบครอง · ใช้กับมุมมองจุดอัดประจุรถไฟฟ้า</p></div><span class="status" data-q="evidence">ยังไม่ได้รับรายอำเภอและรายตำบล</span></div>
             <div class="request-grid">
-              <div><h3 class="field-head">ช่องข้อมูล</h3><ul class="fields"><li><span>เดือนที่จดทะเบียน จดใหม่และสะสม</span><span class="privacy" data-p="open">แสดงได้</span></li><li><span>ประเภทรถ ชนิดเชื้อเพลิง ยี่ห้อ และรุ่น</span><span class="privacy" data-p="open">แสดงได้</span></li><li><span>อำเภอและตำบลตามที่อยู่ผู้ครอบครอง</span><span class="privacy" data-p="mask">รวมยอดรายตำบล</span></li><li><span>ชื่อเจ้าของและเลขทะเบียนรถ</span><span class="privacy" data-p="mask">ไม่ขอ ไม่แสดง</span></li></ul></div>
+              <div><h3 class="field-head">ช่องข้อมูล</h3><ul class="fields"><li><span>เดือนที่จดทะเบียน ประเภทรถ เชื้อเพลิง และยี่ห้อ ระดับจังหวัด</span><span class="privacy" data-p="open">มีแล้ว ใน CityMETER: Cars</span></li><li><span>ยอดสะสมแยกเชื้อเพลิง ระดับจังหวัด</span><span class="privacy" data-p="open">มีแล้ว ถึง 28 ก.พ. 2569</span></li><li><span>อำเภอและตำบลตามที่อยู่ผู้ครอบครอง แยกเชื้อเพลิงรายเดือน</span><span class="privacy" data-p="mask">ยังต้องขอ · รวมยอดรายตำบล</span></li><li><span>ชื่อเจ้าของและเลขทะเบียนรถ</span><span class="privacy" data-p="mask">ไม่ขอ ไม่แสดง</span></li></ul></div>
               <div class="table-wrap" id="veh-table"></div>
             </div>
           </article>

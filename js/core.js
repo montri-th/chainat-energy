@@ -16,17 +16,17 @@ export function big(v, unit = '') {
 export const MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', 'พ.ค.', 'มิ.ย.', 'ก.ค.', 'ส.ค.', 'ก.ย.', 'ต.ค.', 'พ.ย.', 'ธ.ค.'];
 
 /* ---------- data ---------- */
-export const D = { meta: null, areas: null, supply: null, plan: null, vehicles: null, geo: {}, bindex: null, buildings: new Map() };
+export const D = { meta: null, areas: null, supply: null, plan: null, vehicles: null, cars: null, geo: {}, bindex: null, buildings: new Map() };
 /* data files change with each release: the release id in the query keeps returning viewers on the current data */
-export const DATA_RELEASE = 'cnt-energy-2026-10-18';
+export const DATA_RELEASE = 'cnt-energy-2026-10-18-r2';
 async function getJSON(url) {
   const r = await fetch(`${url}?r=${DATA_RELEASE}`);
   if (!r.ok) throw new Error(`${url} ${r.status}`);
   return r.json();
 }
 export async function loadCore() {
-  const [meta, areas, supply, plan, vehicles] = await Promise.all(['data/meta.json', 'data/areas.json', 'data/supply.json', 'data/plan.json', 'data/vehicles.json'].map(getJSON));
-  Object.assign(D, { meta, areas, supply, plan, vehicles });
+  const [meta, areas, supply, plan, vehicles, cars] = await Promise.all(['data/meta.json', 'data/areas.json', 'data/supply.json', 'data/plan.json', 'data/vehicles.json', 'data/cars.json'].map(getJSON));
+  Object.assign(D, { meta, areas, supply, plan, vehicles, cars });
   D.tambonBy = new Map(areas.tambon.map(t => [t.code, t]));
   D.laoBy = new Map(areas.lao.map(t => [t.code, t]));
   D.districtBy = new Map(areas.district.map(t => [t.code, t]));
@@ -109,7 +109,7 @@ export const METRICS = [
   { id: 'lpg', group: 'demand', label: 'LPG ภาคครัวเรือน', unit: 'กก. ต่อเดือน', family: 'activity', measure: 'modelled', grains: ['tambon', 'lao'], get: u => u.fuel.lpgKg / 12, source: `ปี 2564 จาก${PLAN}` },
   { id: 'veh_total', group: 'demand', label: 'รถจดทะเบียนสะสม', unit: 'คัน', family: 'count', measure: 'modelled', grains: ['tambon', 'lao'], get: u => sum(u.vehicles), source: 'ยอดจังหวัดจากกรมการขนส่งทางบก ณ 28 ก.พ. 2569 กระจายตามประชากร' },
   { id: 'veh_ev', group: 'demand', label: 'รถไฟฟ้าและไฮบริด', unit: 'คัน', family: 'count', measure: 'modelled', grains: ['tambon', 'lao'], get: u => (u.vehicles.bev || 0) + (u.vehicles.hybrid || 0), source: 'ยอดจังหวัดจากกรมการขนส่งทางบก ณ 28 ก.พ. 2569 กระจายตามประชากร' },
-  { id: 'pop', group: 'demand', label: 'ประชากร', unit: 'คน', family: 'count', measure: 'proxy', grains: ['tambon', 'lao'], get: u => u.pop, source: 'CityMETER ชั้นประชากร รุ่น 2026-09' },
+  { id: 'pop', group: 'demand', label: 'ประชากร', unit: 'คน', family: 'count', measure: 'proxy', grains: ['tambon', 'lao'], get: u => u.pop, source: 'CityMETER building info V4 อ่าน 18 ต.ค. 2569 (endpoint ไม่ระบุรุ่นของชั้นประชากร)' },
   { id: 'buildings', group: 'demand', label: 'อาคาร', unit: 'หลัง', family: 'count', measure: 'observed', grains: ['tambon', 'lao'], get: u => u.buildings, source: 'CityMETER อาคาร V4 อ่าน 18 ต.ค. 2569' },
   { id: 'sup_fuel', group: 'supply', label: 'กิจการน้ำมันเชื้อเพลิงในทะเบียน', unit: 'ราย', family: 'count', measure: 'observed', grains: ['tambon'], get: u => u.supply.fuel, source: 'ไฟล์ผู้ประกอบการน้ำมันเชื้อเพลิงของ สพจ.ชัยนาท' },
   { id: 'sup_fuel_small', group: 'supply', label: 'ประเภท ค และตู้หยอดเหรียญ', unit: 'ราย', family: 'count', measure: 'observed', grains: ['tambon'], get: u => u.supply.fuel_c1 + u.supply.fuel_c2 + u.supply.fuel_d, source: 'ไฟล์ผู้ประกอบการน้ำมันเชื้อเพลิงของ สพจ.ชัยนาท' },
@@ -177,6 +177,36 @@ export function rankP(metric, u) {
   return vals.length > 1 ? ((lo + hi) / 2) / (vals.length - 1) : 0.5;
 }
 
+/* ---------- CityMETER: Cars — registrations per month by vehicle type and engine (province level only) ---------- */
+/* Stable categorical IDs (DATAVIZ-05): each engine keeps its landometer-series-10-v8 slot and shape cue everywhere. */
+export const ENGINE_SERIES = { DIESEL: { slot: '01', cue: 'circle' }, GASOLINE: { slot: '02', cue: 'square' }, 'GASOLINE-HYBRID': { slot: '03', cue: 'triangle' }, 'GASOLINE-PHEV': { slot: '04', cue: 'diamond' }, ELECTRIC: { slot: '05', cue: 'cross' } };
+export function ymTh(ym) { const [y, m] = ym.split('-').map(Number); return `${MONTHS[m - 1]} ${y + 543}`; }
+export function carsTypes(groupId) { const g = D.cars?.groups.find(x => x.id === groupId); return g ? g.types : []; }
+export function carsYearly(groupId) {
+  const c = D.cars; if (!c) return [];
+  const types = carsTypes(groupId); const years = new Map();
+  c.months.forEach((ym, i) => {
+    const y = +ym.slice(0, 4);
+    if (!years.has(y)) years.set(y, { year: y, months: 0, counts: Object.fromEntries(c.engines.map(e => [e, 0])), first: ym, last: ym });
+    const row = years.get(y); row.months++; row.last = ym;
+    for (const t of types) c.monthly[t]?.[i].forEach((v, k) => { row.counts[c.engines[k]] += v; });
+  });
+  return [...years.values()].map(r => { const total = Object.values(r.counts).reduce((a, b) => a + b, 0); return { ...r, total, evShare: total ? r.counts.ELECTRIC / total : null }; });
+}
+export function carsWindow(groupId) {
+  const c = D.cars; if (!c) return null;
+  const types = carsTypes(groupId); const from = c.months.indexOf(c.window12m[0]), to = c.months.indexOf(c.window12m[1]);
+  const counts = Object.fromEntries(c.engines.map(e => [e, 0]));
+  for (let i = from; i <= to; i++) for (const t of types) c.monthly[t]?.[i].forEach((v, k) => { counts[c.engines[k]] += v; });
+  const total = Object.values(counts).reduce((a, b) => a + b, 0);
+  return { counts, total, evShare: total ? counts.ELECTRIC / total : null };
+}
+export function carsEvContext() {
+  const c = D.cars; if (!c) return 'ข้อมูลรถจดทะเบียนรายเดือนยังโหลดไม่ได้';
+  const car = carsWindow('1'), moto = carsWindow('12');
+  return `ทั้งจังหวัดชัยนาท ${ymTh(c.window12m[0])}–${ymTh(c.window12m[1])}: รถยนต์นั่ง (รย.1) ไฟฟ้าล้วนจดทะเบียนใหม่ ${n0(car.counts.ELECTRIC)} คัน เท่ากับ ${n1(car.evShare * 100)}% ของรถยนต์นั่งที่จดทะเบียนใหม่ ${n0(car.total)} คัน · จักรยานยนต์ (รย.12) ไฟฟ้าล้วน ${n0(moto.counts.ELECTRIC)} คัน เท่ากับ ${n1(moto.evShare * 100)}% ของ ${n0(moto.total)} คัน (CityMETER: Cars ระดับจังหวัด ไม่ใช่ค่าของตำบลนี้)`;
+}
+
 /* ---------- Opportunity lenses aligned with the plan 2566–2570 and the office mandate ---------- */
 const P = (id, u) => rankP(metricBy(id), u) ?? 0;
 const pct = p => `เปอร์เซ็นไทล์ที่ ${Math.round(p * 100)} เมื่อเทียบ 53 ตำบล`;
@@ -242,7 +272,7 @@ export const LENSES = [
     eval(u) {
       const pe = P('veh_ev', u), pb = P('elec_biz', u);
       const reason = `รถไฟฟ้าและไฮบริดแบบจำลอง ${n0((u.vehicles.bev || 0) + (u.vehicles.hybrid || 0))} คัน (${pct(pe)}) · ไฟฟ้ากิจการ (${pct(pb)})`;
-      const checks = ['ตำแหน่งสถานีอัดประจุเดิม 10 แห่ง (แผนระบุเฉพาะจำนวนตามผู้ให้บริการ)', 'ทะเบียนรถไฟฟ้ารายอำเภอจากกรมการขนส่งทางบก'];
+      const checks = ['ตำแหน่งสถานีอัดประจุเดิม 10 แห่ง (แผนระบุเฉพาะจำนวนตามผู้ให้บริการ)', `${carsEvContext()} · รายอำเภอและรายตำบลยังต้องขอจากกรมการขนส่งทางบก`];
       if (pe >= 0.8 && pb >= 0.6) return { status: 'candidate', reason, checks, task: 'นัดผู้ประกอบการสถานีบริการในตำบลเรื่องการติดตั้งเครื่องอัดประจุ', sort: pe };
       if (pe >= 0.6) return { status: 'evidence', reason, checks, task: 'ขอข้อมูลรถไฟฟ้ารายอำเภอและตำแหน่งสถานีเดิม', sort: pe };
       return { status: 'none', reason, checks, task: null, sort: pe };
@@ -279,7 +309,7 @@ export function computeQueue(lensIds, tiers) {
 /* ---------- URL state (permalink + Back/Forward) ---------- */
 export const VIEWS = ['overview', 'demand', 'supply', 'opportunity', 'shortlist', 'requests', 'sources'];
 export const VIEW_TH = { overview: 'ภาพรวม', demand: 'ความต้องการพลังงาน', supply: 'กิจการพลังงาน', opportunity: 'โอกาสส่งเสริม', shortlist: 'พื้นที่ที่เล็งไว้', requests: 'ข้อมูลที่ต้องขอเชื่อมโยง', sources: 'ที่มาและวิธีคิด' };
-export const S = { view: 'overview', level: 'tambon', district: null, area: null, building: null, metric: 'elec_total', supplyMetric: 'sup_fuel', lenses: [...DEFAULT_LENSES], queue: 'candidate', criteria: DEFAULT_CRITERIA.map(c => ({ ...c })), supplyFilter: 'all' };
+export const S = { view: 'overview', level: 'tambon', district: null, area: null, building: null, metric: 'elec_total', supplyMetric: 'sup_fuel', lenses: [...DEFAULT_LENSES], queue: 'candidate', criteria: DEFAULT_CRITERIA.map(c => ({ ...c })), supplyFilter: 'all', carsGroup: '1' };
 const S_DEFAULT = JSON.stringify(S);
 export function readURL() {
   Object.assign(S, JSON.parse(S_DEFAULT));

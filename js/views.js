@@ -1,5 +1,5 @@
 /* Views: overview, map panels (Demand · Supply · Opportunity), shortlist, data requests, sources. */
-import { D, S, $, $$, esc, n0, n1, big, MONTHS, METRICS, metricBy, MEASURE_TH, lut, percentileLut, valueEntries, stamp, THRESHOLDS, TIER_TH, tierNotes, computeTiers, criteriaRev, LENSES, QUEUE_TH, computeQueue, shortlist, VIEW_TH, unitsFor, quantileValue } from './core.js';
+import { D, S, $, $$, esc, n0, n1, big, MONTHS, METRICS, metricBy, MEASURE_TH, lut, percentileLut, valueEntries, stamp, THRESHOLDS, TIER_TH, tierNotes, computeTiers, criteriaRev, LENSES, QUEUE_TH, computeQueue, shortlist, VIEW_TH, unitsFor, quantileValue, ENGINE_SERIES, ymTh, carsYearly, carsWindow } from './core.js';
 
 const REL = () => `ข้อมูลรอบ ${D.meta.release.dateThai} · เครื่องคิด ${D.meta.release.engine} · เกณฑ์ ${criteriaRev(S.criteria).name}`;
 const PLAN_SRC = 'แผนปฏิบัติราชการด้านพลังงาน จ.ชัยนาท 2566–2570';
@@ -34,6 +34,75 @@ export function renderOverview() {
     return `<li><span>${esc(t)}${lenses.length ? `<br><span class="lens-links">${lenses.map(l => `<a class="chip" href="?v=opportunity&lens=${l.id}">${esc(l.short)}</a>`).join(' ')}</span>` : ''}</span></li>`;
   }).join('');
   $('#mandate-stamp').textContent = `ข้อความจากหน้าเว็บ ${D.plan.mandate.source} อ่าน 18 ต.ค. 2569`;
+  renderCars();
+}
+
+/* ---------------- new registrations (CityMETER: Cars, province level) ---------------- */
+const CUE_PATH = {
+  circle: '<circle cx="6" cy="6" r="4.8"/>',
+  square: '<rect x="1.4" y="1.4" width="9.2" height="9.2"/>',
+  triangle: '<path d="M6 1.1 11 10.6H1z"/>',
+  diamond: '<path d="M6 .9 11.1 6 6 11.1.9 6z"/>',
+  cross: '<path d="M2.4 1 6 4.6 9.6 1 11 2.4 7.4 6 11 9.6 9.6 11 6 7.4 2.4 11 1 9.6 4.6 6 1 2.4z"/>'
+};
+const cue = e => { const s = ENGINE_SERIES[e]; return `<svg class="cue" viewBox="0 0 12 12" aria-hidden="true" style="--cue:var(--cat-${s.slot})">${CUE_PATH[s.cue]}</svg>`; };
+const pct1 = new Intl.NumberFormat('th-TH', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const pctTh = v => v == null ? '—' : v > 0 && v < 0.0005 ? `<${pct1.format(0.1)}%` : `${pct1.format(v * 100)}%`;
+const CLAIM = { observed: 'ข้อมูลจากแหล่ง', benchmark: 'เทียบกับจังหวัดอื่น', inference: 'ข้อสรุปจากข้อมูล', hypothesis: 'สมมติฐานที่ต้องตรวจ' };
+const claim = k => `<span class="claim" data-claim="${k}">${CLAIM[k]}</span>`;
+function carsStamp() {
+  const c = D.cars;
+  return stamp({ dataset: c.dataset, source: c.source, date: `${ymTh(c.months[0])}–${ymTh(c.months[c.months.length - 1])} · อ่าน 18 ต.ค. 2569`, boundary: 'จังหวัดชัยนาท (ชุดข้อมูลนี้มีถึงระดับจังหวัด)', measure: 'observed' });
+}
+function benchLine(t) {
+  const c = D.cars, b = c.benchmark.types[t]; const me = b.rows[b.rank - 1];
+  return `12 เดือนล่าสุด (${ymTh(c.window12m[0])}–${ymTh(c.window12m[1])}) ไฟฟ้าล้วน ${pctTh(me[1] / me[2])} (${n0(me[1])} จาก ${n0(me[2])} คัน) · อันดับ ${n0(b.rank)} จาก ${n0(b.of)} จังหวัด เรียงจากสัดส่วนมากไปน้อย · มัธยฐานของ ${n0(b.of)} จังหวัด ${pctTh(b.median)} · ในกลุ่มภาคกลางของ CityMETER: Cars ${n0(b.region.of)} จังหวัด อันดับ ${n0(b.region.rank)}`;
+}
+function lowCountNote() {
+  const c = D.cars, lc = c.benchmark.lowCount, b1 = c.benchmark.types['1'], b12 = c.benchmark.types['12'];
+  if (!lc || !lc.provinces.length) return '';
+  return `${lc.provinces.join(' ')} ${lc.note} (เกณฑ์: ${lc.rule}) ถ้าไม่นับ ${n0(lc.provinces.length)} จังหวัดนี้ ชัยนาทอยู่อันดับ ${n0(b12.withoutLowCount.rank)} จาก ${n0(b12.withoutLowCount.of)} สำหรับจักรยานยนต์ และ ${n0(b1.withoutLowCount.rank)} จาก ${n0(b1.withoutLowCount.of)} สำหรับรถยนต์นั่ง · จังหวัดที่จดทะเบียนอาจไม่ใช่จังหวัดที่ใช้รถ`;
+}
+export function renderCars() {
+  const el = $('#cars-body'); if (!el) return;
+  const c = D.cars;
+  if (!c) { el.innerHTML = '<p class="note" role="status">โหลดข้อมูลรถจดทะเบียนรายเดือนไม่สำเร็จ ส่วนอื่นของหน้ายังใช้ได้</p>'; return; }
+  const span = `${ymTh(c.window12m[0])}–${ymTh(c.window12m[1])}`;
+  const yearsCar = carsYearly('1'), yearsMoto = carsYearly('12'), yearsAll = carsYearly('all'), yearsPickup = carsYearly('3');
+  const first = a => a[0], last = a => a[a.length - 1], lastFull = a => [...a].reverse().find(r => r.months === 12);
+  const yShort = r => `${r.year + 543}${r.months < 12 ? '*' : ''}`;
+  const yLong = r => r.months < 12 ? `${ymTh(r.first).split(' ')[0]}–${ymTh(r.last)}` : `ปี ${r.year + 543}`;
+  const glabel = id => c.groups.find(x => x.id === id).label;
+  const insight = (t, years) => { const a = first(years), z = last(years), title = glabel(t); return `<article class="insight"><h3>${esc(title)}</h3><p>${claim('observed')} ไฟฟ้าล้วน <b class="num">${pctTh(z.evShare)}</b> ของ${esc(title)} ที่จดทะเบียนใหม่ ${esc(yLong(z))} (${n0(z.counts.ELECTRIC)} จาก ${n0(z.total)} คัน) · ${esc(yLong(a))} ${pctTh(a.evShare)}</p><p>${claim('benchmark')} ${esc(benchLine(t))}</p></article>`; };
+  const d0 = first(yearsAll), dz = lastFull(yearsAll), p0 = first(yearsPickup), pz = lastFull(yearsPickup);
+  let html = `<div class="insights">${insight('1', yearsCar)}${insight('12', yearsMoto)}<article class="insight"><h3>รถดีเซลใหม่</h3><p>${claim('observed')} รถใหม่ที่ใช้ดีเซลทุกประเภท ปี ${dz.year + 543} <b class="num">${n0(dz.counts.DIESEL)}</b> คัน ลดจาก ${n0(d0.counts.DIESEL)} คันในปี ${d0.year + 543} · รถบรรทุกส่วนบุคคล (รย.3) ทุกเชื้อเพลิง จาก ${n0(p0.total)} เหลือ ${n0(pz.total)} คัน</p><p>${claim('inference')} รถดีเซลใหม่ลดลง แต่รถเดิมยังวิ่งอยู่ ยอดใช้ดีเซลจริงต้องดูจากยอดจำหน่ายรายสถานี (ข้อมูลชุดที่ 2 ในหน้าขอข้อมูล)</p></article></div>`;
+  html += `<p class="insight-note">${claim('benchmark')} สัดส่วนจักรยานยนต์ไฟฟ้าในรถจดทะเบียนใหม่ของชัยนาทสูงเป็นอันดับ ${n0(c.benchmark.types['12'].rank)} จาก ${n0(c.benchmark.types['12'].of)} จังหวัด แต่สัดส่วนรถยนต์นั่งไฟฟ้าล้วนต่ำกว่ามัธยฐานของ ${n0(c.benchmark.types['1'].of)} จังหวัด ${claim('hypothesis')} การชาร์จในจังหวัดอาจเป็นจักรยานยนต์ที่ชาร์จที่บ้านหรือร้านค้ามากกว่ารถยนต์ที่ชาร์จที่สถานีสาธารณะ และสัดส่วนที่สูงอาจมาจากผู้จำหน่ายหรือโครงการในพื้นที่ ยังไม่ได้ตรวจ ต้องถามผู้จำหน่ายและผู้ใช้ว่าชาร์จที่ไหน และขอข้อมูลรายอำเภอก่อนวางจุดอัดประจุ</p>`;
+  const lcn = lowCountNote(); if (lcn) html += `<p class="insight-note">${claim('observed')} ${esc(lcn)}</p>`;
+  const g = S.carsGroup, years = carsYearly(g);
+  const groupLabel = c.groups.find(x => x.id === g).label;
+  html += `<div class="filters" role="group" aria-label="เลือกประเภทรถ">${c.groups.map(x => `<button type="button" data-cars-group="${x.id}" aria-pressed="${x.id === g}">${esc(x.label)}</button>`).join('')}</div>`;
+  const order = ['DIESEL', 'GASOLINE', 'GASOLINE-HYBRID', 'GASOLINE-PHEV', 'ELECTRIC'];
+  const max = Math.max(...years.map(r => r.total), 1);
+  html += `<h3 class="cars-title">${esc(groupLabel)} ที่จดทะเบียนใหม่ในแต่ละปี แยกเชื้อเพลิง</h3>`;
+  html += `<ul class="cue-legend" aria-label="คำอธิบายสีและสัญลักษณ์">${order.map(e => `<li>${cue(e)}<span>${esc(c.engineTh[e])}</span></li>`).join('')}</ul>`;
+  html += `<ol class="stackbars">${years.map(r => `<li class="sb-row"><span class="sb-year">${esc(yShort(r))}</span><span class="sb-track" role="img" aria-label="${esc(`${yLong(r)} รวม ${n0(r.total)} คัน: ${order.map(e => `${c.engineTh[e]} ${n0(r.counts[e])}`).join(', ')}`)}">${order.filter(e => r.counts[e] > 0).map(e => `<span class="sb-seg" style="width:${r.counts[e] / max * 100}%;--seg:var(--cat-${ENGINE_SERIES[e].slot})" title="${esc(`${c.engineTh[e]} ${n0(r.counts[e])} คัน`)}"></span>`).join('')}</span><span class="sb-total num">${n0(r.total)}<small> คัน · ไฟฟ้าล้วน ${pctTh(r.evShare)}</small></span></li>`).join('')}</ol>`;
+  html += `<p class="meta">ปี พ.ศ. · * ${esc(yLong(last(years)))} มีข้อมูล ${n0(last(years).months)} เดือน · เรียงจากซ้าย: ${order.map(e => c.engineTh[e]).join(' · ')} · เชื้อเพลิงที่เป็นศูนย์ในปีนั้นไม่มีช่องในแท่ง · ความยาวแท่งเทียบกับปีที่มีรถจดทะเบียนมากที่สุดของประเภทนี้${g === '3' ? ' · รย.3 คือรถบรรทุกส่วนบุคคล กระบะบางแบบ เช่น กระบะ 4 ประตู อาจจดเป็น รย.1' : ''}</p>`;
+  html += `<details class="card"><summary>ดูเป็นตาราง</summary><div class="table-wrap"><table class="lds-table"><caption>${esc(groupLabel)} ที่จดทะเบียนใหม่ จังหวัดชัยนาท แยก<span class="phrase">เชื้อเพลิง</span> · หน่วย คัน</caption><thead><tr><th scope="col">ช่วงเวลา</th>${order.map(e => `<th scope="col" class="num">${esc(c.engineTh[e])}</th>`).join('')}<th scope="col" class="num">รวม</th><th scope="col" class="num">สัดส่วนไฟฟ้าล้วน</th></tr></thead><tbody>${years.map(r => `<tr><th scope="row">${esc(yLong(r))}</th>${order.map(e => `<td class="num" data-label="${esc(c.engineTh[e])}" data-state="${r.counts[e] ? 'measured' : 'measured_zero'}" data-value="${r.counts[e]}">${n0(r.counts[e])}</td>`).join('')}<td class="num" data-label="รวม" data-value="${r.total}">${n0(r.total)}</td><td class="num" data-label="สัดส่วนไฟฟ้าล้วน">${pctTh(r.evShare)}</td></tr>`).join('')}</tbody></table></div></details>`;
+  const tb = c.topBrands12m[g];
+  if (tb) {
+    const list = e => tb[e] && tb[e].length ? `<li><span class="brand-head">${cue(e)}${esc(c.engineTh[e])}</span><span>${tb[e].map(([b, n]) => `${esc(b)} <span class="num">${n0(n)}</span>`).join(' · ')}</span></li>` : '';
+    html += `<h3 class="cars-title">ยี่ห้อที่จดทะเบียนมากที่สุด ${esc(span)}</h3><ul class="brand-list">${['ELECTRIC', 'GASOLINE-HYBRID', 'GASOLINE-PHEV'].map(list).join('')}</ul><p class="meta">นับรายยี่ห้อ ชุดข้อมูลแยกยี่ห้อตามเชื้อเพลิง แต่ไม่ได้ผูกรุ่นกับเชื้อเพลิง จึงไม่ระบุรุ่น</p>`;
+  }
+  const bm = c.benchmark.types[g];
+  const low = new Set(c.benchmark.lowCount?.provinces || []);
+  if (bm) html += `<details class="card"><summary>เทียบสัดส่วนไฟฟ้าล้วนกับ ${n0(bm.of)} จังหวัด (${esc(span)})</summary><div class="table-wrap"><table class="lds-table table-keep"><caption>${esc(c.benchmark.metric)} · ${esc(groupLabel)} · จักรวาล: ${esc(c.benchmark.universe)} · ${esc(c.benchmark.order)} · * ข้อมูลน้อยผิดปกติ</caption><thead><tr><th scope="col" class="num">อันดับ</th><th scope="col">จังหวัด</th><th scope="col" class="num">ไฟฟ้าล้วน</th><th scope="col" class="num">ทั้งหมด</th><th scope="col" class="num">สัดส่วน</th></tr></thead><tbody>${bm.rows.map((r, i) => `<tr${r[0] === c.province.name ? ' class="is-self"' : ''}><td class="num" data-label="อันดับ">${n0(i + 1)}</td><th scope="row">${esc(r[0])}${low.has(r[0]) ? ' *' : ''}${r[0] === c.province.name ? ' <small>(จังหวัดนี้)</small>' : ''}</th><td class="num" data-label="ไฟฟ้าล้วน (คัน)">${n0(r[1])}</td><td class="num" data-label="ทั้งหมด (คัน)">${n0(r[2])}</td><td class="num" data-label="สัดส่วน">${pctTh(r[1] / r[2])}</td></tr>`).join('')}</tbody></table></div></details>`;
+  else if (g === 'all') html += `<p class="meta">การเทียบกับจังหวัดอื่นทำแยกรายประเภท เลือกรถยนต์นั่งหรือจักรยานยนต์เพื่อดูตารางเทียบ ${n0(c.benchmark.types['1'].of)} จังหวัด</p>`;
+  else html += `<p class="meta">ไม่มีรถไฟฟ้าล้วนประเภทนี้จดทะเบียนใหม่ในชัยนาทตลอดช่วงข้อมูล จึงไม่ได้เทียบกับจังหวัดอื่น</p>`;
+  html += carsStamp();
+  html += `<p class="meta">ดูแบรนด์และรุ่นเพิ่มเติมที่ <a href="${esc(c.page)}" rel="noopener">CityMETER: Cars จังหวัดชัยนาท</a> · ข้อมูลรายอำเภอและรายตำบลยังต้องขอจากกรมการขนส่งทางบก</p>`;
+  const key = document.activeElement?.dataset?.carsGroup;
+  el.innerHTML = html;
+  if (key) $(`#cars-body [data-cars-group="${CSS.escape(key)}"]`)?.focus({ preventScroll: true });
 }
 
 /* ---------------- colours for current map metric ---------------- */
@@ -315,7 +384,7 @@ export function renderRequests() {
   const veh = D.vehicles; const byFuel = {};
   veh.rows.forEach(r => { byFuel[r[1]] = (byFuel[r[1]] || 0) + r[2]; });
   const top = Object.entries(byFuel).sort((a, b) => b[1] - a[1]);
-  $('#veh-table').innerHTML = `<table class="lds-table"><caption>รถจดทะเบียนสะสม จังหวัดชัยนาท แยกชนิดเชื้อเพลิง · ณ ${esc(veh.asOfThai)} · หน่วย คัน<br><span class="meta">แหล่ง: ${esc(veh.source)} · ขอบเขต: จังหวัดชัยนาท · ชนิดค่า: ข้อมูลจากแหล่ง</span></caption><thead><tr><th scope="col">ชนิดเชื้อเพลิง</th><th scope="col" class="num">จำนวนรถ (คัน)</th></tr></thead><tbody>${top.map(([k, v]) => `<tr><td>${esc(k)}</td><td class="num" data-state="${v ? 'measured' : 'measured_zero'}" data-value="${v}"><span class="lds-cell-glyph">${n0(v)}</span>${v ? '' : '<span class="lds-state-label">ศูนย์ นับแล้วไม่มี</span>'}</td></tr>`).join('')}</tbody></table>`;
+  $('#veh-table').innerHTML = `<table class="lds-table"><caption>รถจดทะเบียนสะสม จังหวัดชัยนาท แยกชนิดเชื้อเพลิง · ณ ${esc(veh.asOfThai)} · หน่วย คัน<br><span class="meta">แหล่ง: ${esc(veh.source)} · ขอบเขต: จังหวัดชัยนาท · ชนิดค่า: ข้อมูลจากแหล่ง</span></caption><thead><tr><th scope="col">ชนิดเชื้อเพลิง</th><th scope="col" class="num">จำนวนรถ (คัน)</th></tr></thead><tbody>${top.map(([k, v]) => `<tr><td data-label="ชนิดเชื้อเพลิง">${esc(k)}</td><td class="num" data-label="จำนวนรถ (คัน)" data-state="${v ? 'measured' : 'measured_zero'}" data-value="${v}"><span class="lds-cell-glyph">${n0(v)}</span>${v ? '' : '<span class="lds-state-label">ศูนย์ นับแล้วไม่มี</span>'}</td></tr>`).join('')}</tbody></table>`;
 }
 
 /* ---------------- sources ---------------- */
@@ -326,16 +395,17 @@ export function renderSources() {
     { t: PLAN_SRC, l: 'PARTIAL', d: `${D.plan.plan.labelNote} · อ่าน 18 ต.ค. 2569` },
     { t: 'อำนาจหน้าที่สำนักงานพลังงานจังหวัด', l: 'VERBATIM', d: `${D.plan.mandate.source} · อ่าน 18 ต.ค. 2569` },
     { t: 'รถจดทะเบียนสะสมตามชนิดเชื้อเพลิง', l: 'Observed', d: `${D.vehicles.source} · ณ ${D.vehicles.asOfThai} · ระดับจังหวัด` },
+    ...(D.cars ? [{ t: 'รถจดทะเบียนรายเดือน แยกประเภทรถ เชื้อเพลิง และยี่ห้อ', l: 'Observed', d: `${D.cars.source} · ${ymTh(D.cars.months[0])}–${ymTh(D.cars.months[D.cars.months.length - 1])} · ระดับจังหวัด ไม่มีอำเภอหรือตำบล · อ่าน 18 ต.ค. 2569 · ${D.cars.measure} · ตรวจนิยามแล้ว: จักรยานยนต์ไฟฟ้าล้วนที่จดทะเบียน ม.ค. 2563–ก.พ. 2569 รวม ${n0(D.cars.quality.stockCheck.find(s => s.type === '12').registered)} คัน เท่ากับยอดสะสมของกรมการขนส่งทางบก ณ 28 ก.พ. 2569 · การเทียบจังหวัดใช้ ${D.cars.benchmark.universe} · ${D.cars.benchmark.lowCount.provinces.join(' ')} ${D.cars.benchmark.lowCount.note}`, u: D.cars.page }] : []),
     { t: 'ขอบเขตจังหวัด อำเภอ ตำบล และ อปท.', l: 'Observed', d: `${m.layers.boundaries.source} · 8 อำเภอ 53 ตำบล 59 อปท. · อ่าน 18 ต.ค. 2569` },
     { t: 'รูปอาคาร ความสูง และจำนวนชั้นโดยประมาณ', l: 'Observed', d: `${m.layers.buildings.source} · ${n0(m.layers.buildings.count)} หลัง หลังรวมชิ้นอาคารที่ถูกตัดตามขอบแผ่นแผนที่แล้ว (ยอดของ CityMETER ${n0(m.layers.buildings.officialCount)} หลัง)` },
-    { t: 'ประชากร โรงงาน และห้องพักรายพื้นที่', l: 'Proxy', d: `CityMETER ชั้นประชากรรุ่น ${m.layers.population.version} · โรงงานรุ่น ${m.layers.factory.version} · ชั้นโรงแรมไม่ระบุรุ่น` },
+    { t: 'ประชากร โรงงาน และห้องพักรายพื้นที่', l: 'Proxy', d: `ประชากร: ${m.layers.population.source} อ่าน 18 ต.ค. 2569 · ${m.layers.population.versionNote || ''} · โรงงานรุ่น ${m.layers.factory.version} · ชั้นโรงแรมไม่ระบุรุ่น` },
     { t: 'แบบจำลองไฟฟ้า', l: 'Modelled', d: m.model.electricity + ' · ' + m.model.categoryRule },
     { t: 'แบบจำลองน้ำมันและ LPG', l: 'Modelled', d: m.model.fuel },
     { t: 'แบบจำลองรถรายพื้นที่', l: 'Modelled', d: m.model.vehicles },
     { t: 'รูปแบบรายเดือน', l: 'Modelled', d: m.model.monthly }
   ];
   const LABEL_TH = { Observed: 'ข้อมูลจากแหล่ง', PARTIAL: 'ถอดความบางส่วน', VERBATIM: 'คำต่อคำ', Proxy: 'ค่าตัวแทน', Modelled: 'แบบจำลอง' };
-  $('#sources-list').innerHTML = items.map(x => `<li><div class="card-head"><h2 class="source-title">${esc(x.t)}</h2><span class="label-pill">${esc(LABEL_TH[x.l])} · ${esc(x.l)}</span></div><p class="muted source-note">${esc(x.d)}</p></li>`).join('');
+  $('#sources-list').innerHTML = items.map(x => `<li><div class="card-head"><h2 class="source-title">${esc(x.t)}</h2><span class="label-pill">${esc(LABEL_TH[x.l])} · ${esc(x.l)}</span></div><p class="muted source-note">${esc(x.d)}${x.u ? ` · <a href="${esc(x.u)}" rel="noopener">เปิดแหล่งข้อมูล</a>` : ''}</p></li>`).join('');
   const all = s.projects.flatMap(p => p.photos.map((ph, i) => ({ p, ph, i })));
   $('#gallery').innerHTML = all.map(({ p, ph, i }) => `<figure><button type="button" data-photo="${esc(p.id)}" data-photo-i="${i}" aria-label="ดูภาพ ${esc(p.technology)} ต.${esc(p.tambon)}"><img src="assets/photos/${esc(ph.file)}" alt="" width="${ph.w}" height="${ph.h}" loading="lazy"></button><figcaption>${esc(p.technology)} · ${esc(p.beneficiary || '')} · ต.${esc(p.tambon)} อ.${esc(p.district)} · ปี ${esc(p.yearBE || '—')} · ${esc(p.status || '')}</figcaption></figure>`).join('');
   $('#gallery-count').textContent = `${n0(all.length)} ภาพจากไฟล์โครงการพลังงานในพื้นที่ · ภาพ: สำนักงานพลังงานจังหวัดชัยนาท`;

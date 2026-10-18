@@ -26,7 +26,7 @@ const sha = f => crypto.createHash('sha256').update(fs.readFileSync(path.join(RO
 
 /* ---------------- static checks (repository files that are published) ---------------- */
 const REQUIRED = ['index.html', 'styles.css', 'js/core.js', 'js/map.js', 'js/views.js', 'js/app.js',
-  'data/meta.json', 'data/areas.json', 'data/supply.json', 'data/plan.json', 'data/vehicles.json',
+  'data/meta.json', 'data/areas.json', 'data/supply.json', 'data/plan.json', 'data/vehicles.json', 'data/cars.json',
   'data/geo/province.geojson', 'data/geo/district.geojson', 'data/geo/tambon.geojson', 'data/geo/lao.geojson', 'data/buildings/index.json',
   'vendor/maplibre-gl/4.7.1/maplibre-gl.js', 'vendor/maplibre-gl/4.7.1/LICENSE.txt',
   'assets/lds/build-kit/lds-0.9.7.css', 'assets/lds/machine/color-srgb-10.production.css',
@@ -34,7 +34,7 @@ const REQUIRED = ['index.html', 'styles.css', 'js/core.js', 'js/map.js', 'js/vie
 const missing = REQUIRED.filter(f => !exists(f));
 check('files', 'required files present', !missing.length, missing.join(', '));
 
-const meta = json('data/meta.json'), areas = json('data/areas.json'), supply = json('data/supply.json'), plan = json('data/plan.json'), vehicles = json('data/vehicles.json');
+const meta = json('data/meta.json'), areas = json('data/areas.json'), supply = json('data/supply.json'), plan = json('data/plan.json'), vehicles = json('data/vehicles.json'), cars = json('data/cars.json');
 check('data', '8 districts · 53 tambons · 59 LAOs', areas.district.length === 8 && areas.tambon.length === 53 && areas.lao.length === 59, `${areas.district.length}/${areas.tambon.length}/${areas.lao.length}`);
 const bindex = json('data/buildings/index.json');
 const laoFiles = fs.readdirSync(path.join(ROOT, 'data/buildings')).filter(f => /^\d{8}\.json$/.test(f));
@@ -54,7 +54,45 @@ const tambonKw = areas.tambon.reduce((a, u) => a + (u.supply.solarPumpKw || 0), 
 check('data', 'tambon pump capacity sums to the project total', Math.abs(tambonKw - pumpKw) < 0.01, `${tambonKw.toFixed(2)} vs ${pumpKw.toFixed(2)}`);
 const vehObs = vehicles.rows.reduce((a, r) => a + r[2], 0);
 const vehSum = lvl => areas[lvl].reduce((a, u) => a + Object.values(u.vehicles).reduce((x, y) => x + y, 0), 0);
-check('data', 'modelled vehicles are whole numbers and sum to the DLT total at both grains', vehSum('tambon') === vehObs && vehSum('lao') === vehObs && areas.tambon.every(u => Object.values(u.vehicles).every(Number.isInteger)), `${vehSum('tambon')} · ${vehSum('lao')} vs ${vehObs}`);
+check('data', 'modelled vehicles are whole numbers and sum to the DLT total at tambon, LAO and district level', vehSum('tambon') === vehObs && vehSum('lao') === vehObs && vehSum('district') === vehObs && ['tambon', 'lao', 'district'].every(l => areas[l].every(u => Object.values(u.vehicles).every(Number.isInteger))), `${vehSum('tambon')} · ${vehSum('lao')} · ${vehSum('district')} vs ${vehObs}`);
+const distBad = [];
+for (const d of areas.district) {
+  const ts = areas.tambon.filter(t => t.districtCode === d.code);
+  for (const g of ['elec', 'fuel', 'vehicles', 'supply']) for (const k of Object.keys(d[g])) {
+    const s = ts.reduce((a, t) => a + (t[g][k] || 0), 0);
+    if (d[g][k] == null ? ts.every(t => t[g][k] != null) : Math.abs(d[g][k] - s) > 1e-6) distBad.push(`${d.code} ${g}.${k} ${d[g][k]} vs ${s}`);
+  }
+}
+check('data', 'district values equal the sum of their tambons', !distBad.length, distBad.slice(0, 4).join(' | '));
+// CityMETER: Cars (registrations per month, province level)
+const E = cars.engines;
+const rowsOk = Object.values(cars.monthly).every(rows => rows.length === cars.months.length && rows.every(r => r.length === E.length && r.every(v => Number.isInteger(v) && v >= 0)));
+check('cars', 'monthly registrations: one row of five engine counts per month for every vehicle type', rowsOk && E.join() === 'ELECTRIC,GASOLINE-PHEV,GASOLINE-HYBRID,GASOLINE,DIESEL', `${cars.months.length} months ${cars.months[0]}–${cars.months[cars.months.length - 1]} · ${Object.keys(cars.monthly).join(',')}`);
+const jun26 = cars.monthly['1'][cars.months.indexOf('2026-06')].reduce((a, b) => a + b, 0);
+check('cars', 'June 2026 passenger cars (รย.1) total 78, as shown on the CityMETER: Cars page', jun26 === 78, jun26);
+const win = [cars.months.indexOf(cars.window12m[0]), cars.months.indexOf(cars.window12m[1])];
+const benchBad = [];
+for (const [t, b] of Object.entries(cars.benchmark.types)) {
+  let ev = 0, tot = 0; for (let i = win[0]; i <= win[1]; i++) { const r = cars.monthly[t][i]; ev += r[0]; tot += r.reduce((a, c) => a + c, 0); }
+  const me = b.rows.findIndex(r => r[0] === cars.province.name);
+  const sorted = [...b.rows].sort((x, y) => y[1] / y[2] - x[1] / x[2] || x[0].localeCompare(y[0]));
+  const shares = b.rows.map(r => r[1] / r[2]).sort((x, y) => x - y); const n = shares.length;
+  const median = n % 2 ? shares[(n - 1) / 2] : (shares[n / 2 - 1] + shares[n / 2]) / 2;
+  if (b.rows[me][1] !== ev || b.rows[me][2] !== tot) benchBad.push(`type ${t} window ${ev}/${tot} vs ${b.rows[me][1]}/${b.rows[me][2]}`);
+  if (sorted[b.rank - 1][0] !== cars.province.name || b.rank !== me + 1) benchBad.push(`type ${t} rank ${b.rank}`);
+  if (b.of !== 77 || Math.abs(median - b.median) > 5e-5) benchBad.push(`type ${t} of ${b.of} median ${median} vs ${b.median}`);
+}
+check('cars', 'benchmark: 77 provinces, rank and median recompute from the rows, Chainat window equals its monthly sums', !benchBad.length, benchBad.join(' | '));
+const lc = cars.benchmark.lowCount, lowExpected = cars.benchmark.types['12'].rows.filter(r => r[2] < 1000).map(r => r[0]).sort();
+const sensBad = [];
+for (const [t, b] of Object.entries(cars.benchmark.types)) {
+  const kept = b.rows.filter(r => !lc.provinces.includes(r[0]));
+  const rank = [...kept].sort((x, y) => y[1] / y[2] - x[1] / x[2] || x[0].localeCompare(y[0])).findIndex(r => r[0] === cars.province.name) + 1;
+  if (rank !== b.withoutLowCount.rank || kept.length !== b.withoutLowCount.of) sensBad.push(`type ${t}: ${rank}/${kept.length} vs ${b.withoutLowCount.rank}/${b.withoutLowCount.of}`);
+}
+check('cars', 'low-count provinces follow the stated rule and the rank without them recomputes', JSON.stringify([...lc.provinces].sort()) === JSON.stringify(lowExpected) && !sensBad.length, `${lc.provinces.join(',')} ${sensBad.join(' | ')}`);
+const moto = cars.quality.stockCheck.find(s => s.type === '12' && s.engine === 'ELECTRIC');
+check('cars', 'e-motorcycles registered Jan 2020–Feb 2026 equal the DLT stock at 28 Feb 2026 (monthly values are new registrations)', moto && moto.registered === moto.stock && moto.stock === vehicles.rows.filter(r => r[0] === '12' && r[1] === 'ไฟฟ้า').reduce((a, r) => a + r[2], 0), JSON.stringify(moto));
 const photos = supply.projects.flatMap(p => p.photos || []);
 const missingPhotos = photos.filter(ph => !exists(`assets/photos/${ph.file}`) || sha(`assets/photos/${ph.file}`) !== ph.sha256);
 check('data', 'every project photo exists and matches its SHA-256', photos.length === 64 && !missingPhotos.length, `${photos.length} photos · ${missingPhotos.length} missing/mismatched`);
@@ -74,10 +112,10 @@ const walk = (o, p) => {
   if (PHONE.test(o)) hits.phone.push(`${p}: ${o.slice(0, 40)}`);
   if (ID13.test(o)) hits.id13.push(`${p}: ${o.slice(0, 40)}`);
 };
-walk(supply, 'supply');
-check('privacy', 'no phone numbers in published supply data', !hits.phone.length, hits.phone.slice(0, 5).join(' | '));
+walk(supply, 'supply'); walk(cars, 'cars');
+check('privacy', 'no phone numbers in published supply or cars data', !hits.phone.length, hits.phone.slice(0, 5).join(' | '));
 check('privacy', 'no 13-digit numbers outside juristic registration fields', !hits.id13.length, hits.id13.slice(0, 5).join(' | '));
-check('privacy', 'no per-site coordinates in supply data', !hits.coord.length, hits.coord.slice(0, 5).join(' | '));
+check('privacy', 'no per-site coordinates in supply or cars data', !hits.coord.length, hits.coord.slice(0, 5).join(' | '));
 const individualsWithReg = supply.fuel.filter(f => f.ownerKind === 'บุคคลธรรมดา' && f.juristicRegNo);
 check('privacy', 'individual operators carry no registration number', !individualsWithReg.length, individualsWithReg.length);
 const publicText = ['index.html', 'js/core.js', 'js/views.js', 'js/app.js', 'js/map.js', 'data/meta.json', 'data/plan.json', 'data/supply.json', 'README.md'].filter(exists).map(f => [f, read(f)]);
@@ -98,6 +136,9 @@ const tokens = read('assets/lds/machine/color-srgb-10.production.css');
 const lutOf = (fam, mode) => Array.from({ length: 41 }, (_, i) => (tokens.match(new RegExp(`--ldm-scale-${fam}-${mode}-lut-${String(i).padStart(2, '0')}:\\s*(#[0-9A-Fa-f]{6})`)) || [])[1]);
 const FAMILIES = ['activity', 'count', 'density-household'];
 check('colour', 'LUT41 light and dark tokens are identical for every family used', FAMILIES.every(f => { const a = lutOf(f, 'light'), b = lutOf(f, 'dark'); return a.every(Boolean) && a.join() === b.join(); }));
+const css = read('styles.css');
+const catOk = ['01', '02', '03', '04', '05'].every(s => css.includes(`--cat-${s}: var(--ldm-series-${s}-fill-light)`) && (css.match(new RegExp(`--cat-${s}: var\\(--ldm-series-${s}-fill-dark\\)`, 'g')) || []).length === 2 && new RegExp(`--ldm-series-${s}-fill-(light|dark):`).test(tokens));
+check('colour', 'engine categories use landometer-series-10-v8 soft fills, light and dark (DATAVIZ-05)', catOk);
 
 // documentation of the release
 const html = read('index.html');
@@ -202,10 +243,21 @@ async function browserChecks() {
   await page.goto(BASE, { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
   const stamps = await page.$$eval('.kpi', ks => ks.map(k => { const t = k.querySelector('.evidence')?.textContent || ''; return ['ชุดข้อมูล', 'แหล่ง', 'วันที่', 'ขอบเขต'].every(w => t.includes(w)); }));
   check('evidence', 'every overview number carries dataset · source · date · boundary', stamps.length === 6 && stamps.every(Boolean), `${stamps.filter(Boolean).length}/${stamps.length}`);
+  const carsInfo = await page.evaluate(() => { const s = document.querySelector('#cars .evidence')?.textContent || ''; return { stamp: ['ชุดข้อมูล', 'แหล่ง', 'วันที่', 'ขอบเขต'].every(w => s.includes(w)), cues: document.querySelectorAll('#cars .cue-legend svg').length, rows: document.querySelectorAll('#cars .stackbars li').length, table: document.querySelectorAll('#cars table')[0]?.querySelectorAll('tbody tr').length, labels: [...document.querySelectorAll('#cars table td')].every(td => td.dataset.label), claims: document.querySelectorAll('#cars .claim').length }; });
+  check('evidence', 'new-registration section: four-part stamp, five shape cues, table alternative with labelled cells, labelled claims', carsInfo.stamp && carsInfo.cues === 5 && carsInfo.rows === 7 && carsInfo.table === 7 && carsInfo.labels && carsInfo.claims >= 6, JSON.stringify(carsInfo));
   const motif = await page.evaluate(() => { const f = document.querySelector('.lds-motif-frame'); return { state: f?.dataset.motifState, err: f?.dataset.motifError || '' }; });
   check('motif', 'hero motif mounts on the declared atmosphere ground (no MOTIF-06 refusal)', ['mounted', 'fallback', 'checked'].includes(motif.state) && !motif.err, JSON.stringify(motif));
   const firstTab = await page.evaluate(() => { document.activeElement.blur(); return null; }).then(() => page.keyboard.press('Tab')).then(() => page.evaluate(() => ({ cls: document.activeElement.className, outline: getComputedStyle(document.activeElement).outlineStyle, visible: document.activeElement.getBoundingClientRect().height > 0 })));
   check('keyboard', 'first Tab reaches a visible skip link with a focus outline', /skip-link/.test(firstTab.cls) && firstTab.outline !== 'none' && firstTab.visible, JSON.stringify(firstTab));
+  await page.click('#cars [data-cars-group="12"]'); await page.waitForTimeout(300);
+  const grp = await page.evaluate(() => ({ pressed: document.querySelector('#cars [data-cars-group="12"]')?.getAttribute('aria-pressed'), focus: document.activeElement?.dataset?.carsGroup, title: document.querySelector('#cars .cars-title')?.textContent || '' }));
+  check('keyboard', 'vehicle group buttons switch the chart and keep focus on the pressed button', grp.pressed === 'true' && grp.focus === '12' && grp.title.startsWith('จักรยานยนต์'), JSON.stringify(grp));
+  await page.click('#cars [data-cars-group="all"]'); await page.waitForTimeout(200);
+  const allTxt = await page.evaluate(() => document.querySelector('#cars-body')?.textContent || '');
+  await page.click('#cars [data-cars-group="3"]'); await page.waitForTimeout(200);
+  const truckTxt = await page.evaluate(() => document.querySelector('#cars-body')?.textContent || '');
+  check('evidence', 'no-benchmark notes are true per group (all types: compare by type · trucks: no BEV registered)', allTxt.includes('แยกรายประเภท') && !allTxt.includes('ไม่มีรถไฟฟ้าล้วนประเภทนี้') && truckTxt.includes('ไม่มีรถไฟฟ้าล้วนประเภทนี้'), '');
+  await page.click('#cars [data-cars-group="1"]');
 
   await page.goto(BASE + '?v=demand', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
   const listCount = await page.$$eval('.area-list button[data-area]', b => b.length);

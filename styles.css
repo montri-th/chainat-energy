@@ -24,6 +24,12 @@
   --map-marker-stroke: var(--ldm-map-marker-stroke-light);
   --on-deep: #FFFFFF; --on-deep-2: #F1F4EF; --on-deep-ring: #182327;
   --deep: var(--ldm-atmosphere-gradient-measure-deep);
+  /* categorical series landometer-series-10-v8, soft variant (DATAVIZ-05): engine types keep stable slots */
+  --cat-01: var(--ldm-series-01-fill-light);
+  --cat-02: var(--ldm-series-02-fill-light);
+  --cat-03: var(--ldm-series-03-fill-light);
+  --cat-04: var(--ldm-series-04-fill-light);
+  --cat-05: var(--ldm-series-05-fill-light);
 }
 :root[data-theme="dark"] {
   --identity-ink: var(--text-primary);
@@ -35,6 +41,11 @@
   --map-province: var(--ldm-foundation-text-secondary-dark);
   --map-marker-halo: var(--ldm-map-marker-halo-dark);
   --map-marker-stroke: var(--ldm-map-marker-stroke-dark);
+  --cat-01: var(--ldm-series-01-fill-dark);
+  --cat-02: var(--ldm-series-02-fill-dark);
+  --cat-03: var(--ldm-series-03-fill-dark);
+  --cat-04: var(--ldm-series-04-fill-dark);
+  --cat-05: var(--ldm-series-05-fill-dark);
 }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
@@ -47,6 +58,11 @@
     --map-province: var(--ldm-foundation-text-secondary-dark);
     --map-marker-halo: var(--ldm-map-marker-halo-dark);
     --map-marker-stroke: var(--ldm-map-marker-stroke-dark);
+    --cat-01: var(--ldm-series-01-fill-dark);
+    --cat-02: var(--ldm-series-02-fill-dark);
+    --cat-03: var(--ldm-series-03-fill-dark);
+    --cat-04: var(--ldm-series-04-fill-dark);
+    --cat-05: var(--ldm-series-05-fill-dark);
   }
 }
 
@@ -391,3 +407,45 @@ details > summary { min-height: 44px; padding-block: var(--s2); cursor: pointer;
 .maplibregl-canvas:focus-visible { outline: 3px solid var(--interaction-focus-ring); outline-offset: -3px; }
 /* Thai stacked vowels and tone marks rise above the line box: keep clear space under kickers */
 .section-head h1, .section-head h2, .map-head h1 { padding-top: .12em; }
+
+/* ---------- new registrations by engine (CityMETER: Cars) ---------- */
+.cars { display: grid; gap: var(--s4); }
+.cars > * { min-width: 0; }
+.insights { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--s4); }
+.insight { display: grid; gap: var(--s3); align-content: start; padding: var(--s5); border: 1px solid var(--border-default); border-radius: var(--r-md); background: var(--surface-card); }
+.insight h3 { font-size: var(--fs-body-lg); padding-top: .12em; }
+.insight p { font-size: var(--fs-body-sm); line-height: 1.6; }
+.insight b.num { font-size: var(--fs-body-lg); }
+.insight-note { max-width: 78ch; font-size: var(--fs-body-sm); color: var(--text-secondary); }
+.claim { display: inline-block; margin-right: var(--s1); padding: 0 var(--s2); border: 1px solid var(--border-default); border-radius: var(--r-pill); color: var(--text-secondary); font-size: var(--fs-caption); font-weight: 600; white-space: nowrap; }
+.cars-title { font-family: var(--font-body); font-size: var(--fs-body-lg); font-weight: 600; }
+.cue-legend { display: flex; flex-wrap: wrap; gap: var(--s2) var(--s4); padding: 0; list-style: none; }
+.cue-legend li { display: inline-flex; align-items: center; gap: var(--s2); font-size: var(--fs-body-sm); }
+.cue { flex: none; width: 14px; height: 14px; fill: var(--cue); stroke: var(--text-primary); stroke-width: .8; }
+.stackbars { display: grid; gap: var(--s2); padding: 0; list-style: none; }
+.sb-row { display: grid; grid-template-columns: 3.25rem minmax(0, 1fr) 13rem; align-items: center; gap: var(--s3); }
+.sb-year { font-family: var(--font-data); font-size: var(--fs-body-sm); font-variant-numeric: tabular-nums; }
+.sb-track { display: flex; height: 22px; overflow: hidden; border: 1px solid var(--border-default); border-radius: var(--r-xs); background: var(--surface-canvas); }
+.sb-seg { display: block; height: 100%; background: var(--seg); box-shadow: inset -1px 0 0 var(--border-default); }
+.sb-total { font-size: var(--fs-body-sm); white-space: nowrap; }
+.sb-total small { color: var(--text-secondary); font-family: var(--font-body); }
+.brand-list { display: grid; gap: var(--s2); padding: 0; list-style: none; font-size: var(--fs-body-sm); }
+.brand-list li { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr); gap: var(--s3); }
+.brand-head { display: inline-flex; align-items: center; gap: var(--s2); font-weight: 600; }
+tr.is-self th, tr.is-self td { background: var(--surface-blue-tint); font-weight: 700; }
+@media (max-width: 1023px) { .insights { grid-template-columns: minmax(0, 1fr); } }
+/* the 77-province benchmark stays a table on phones; stacking it would run to dozens of screens */
+@media (max-width: 600px) {
+  .lds-table.table-keep thead { position: static; clip: auto; }
+  .lds-table.table-keep tr { display: table-row; padding: 0; border-block-end: 0; }
+  .lds-table.table-keep th, .lds-table.table-keep td { display: table-cell; padding: var(--s1) var(--s2); border-block-end: 1px solid var(--border-hairline); }
+  .lds-table.table-keep td::before { content: none; }
+  .lds-table.table-keep td.num { text-align: end; }
+  .lds-table.table-keep { font-size: .8125rem; }
+  .lds-table.table-keep th, .lds-table.table-keep td { padding: var(--s1) 6px; }
+}
+@media (max-width: 599px) {
+  .sb-row { grid-template-columns: 3rem minmax(0, 1fr); row-gap: 0; }
+  .sb-total { grid-column: 2; }
+  .brand-list li { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}

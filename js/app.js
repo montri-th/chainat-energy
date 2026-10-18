@@ -1,7 +1,7 @@
 /* Boot, router and interactions. Views are URL-addressable (permalink) and Back/Forward restores them. */
 import { D, S, $, $$, esc, n0, token, loadCore, loadGeo, readURL, writeURL, VIEWS, VIEW_TH, getThemeChoice, setThemeChoice, effectiveTheme, toast, LENSES, DEFAULT_CRITERIA, computeTiers, computeQueue, criteriaRev, shortlist, saveShortlist, percentileLut, lut, QUEUE_TH } from './core.js';
 import { initMap, mapReady, setUnits, fitTo, setDistrictFocus, setBuildings, buildingsForArea, selectBuilding, flyToBuilding, setPitch3d, get3d, isPitched, zoomBy, resize } from './map.js';
-import { renderOverview, renderPanel, renderLegend, toggleLegend, renderMapHead, mapStyles, buildingCard, renderShortlist, renderRequests, renderSources, photoDialog } from './views.js';
+import { renderOverview, renderCars, renderPanel, renderLegend, toggleLegend, renderMapHead, mapStyles, buildingCard, renderShortlist, renderRequests, renderSources, photoDialog } from './views.js';
 
 const MAP_VIEWS = ['demand', 'supply', 'opportunity'];
 let mapFailed = false, areaBuildings = [], lastArea = null;
@@ -141,6 +141,7 @@ function bind() {
     }
     const t = e.target.closest('button, [data-photo]'); if (!t) return;
     if (t.dataset.photo) { photoDialog(t.dataset.photo, t.dataset.photoI); return; }
+    if (t.dataset.carsGroup) { S.carsGroup = t.dataset.carsGroup; renderCars(); return; }
     if (t.classList.contains('legend-toggle')) { toggleLegend(); return; }
     if (t.dataset.building) { await go({ building: t.dataset.building }, { fit: true }); return; }
     if (t.dataset.area) { await go({ area: t.dataset.area, district: null, building: null, level: D.tambonBy.has(t.dataset.area) && S.level === 'tambon' ? 'tambon' : S.level }, { fit: true }); return; }

@@ -3,11 +3,11 @@
  "mission": "สำนักงานพลังงานจังหวัด",
  "province": "ชัยนาท",
  "release": {
-  "id": "cnt-energy-2026-10-18",
+  "id": "cnt-energy-2026-10-18-r2",
   "date": "2026-10-18",
   "dateThai": "18 ต.ค. 2569",
   "engine": "Yolk สพจ. เดโม 0.1",
-  "engineNote": "ใช้แนวคิดเครื่องคิดเดียวกับโหมดขยายสาขา (Demand → Supply → โอกาส → คิวลงพื้นที่) โดยเปลี่ยนเกณฑ์และมุมมองโอกาสตามแผนปฏิบัติราชการ"
+  "engineNote": "ใช้ลำดับคิดและกติกาเดียวกับ Yolk โหมดขยายสาขา (Demand → Supply → โอกาส → คิวลงพื้นที่) โดยเปลี่ยนเกณฑ์และมุมมองโอกาสตามแผนปฏิบัติราชการ เขียนเป็น JavaScript ในหน้าเว็บ ไม่ได้เรียกเครื่องคิดของ production"
  },
  "layers": {
   "boundaries": {
@@ -29,8 +29,9 @@
   },
   "population": {
    "dataset": "ประชากรรายพื้นที่",
-   "source": "CityMETER ชั้นประชากร",
-   "version": "2026-09",
+   "source": "CityMETER building info V4 ฟิลด์ popCount (/citymeter-v3/building/info/lv1?version=V4)",
+   "version": null,
+   "versionNote": "endpoint นี้ไม่ระบุรุ่นของชั้นประชากร ป้ายรุ่น 2026-09 ที่ใช้ก่อนหน้านี้มาจาก API อื่นและยังไม่ยืนยัน",
    "readOn": "2026-10-18"
   },
   "factory": {
@@ -44,6 +45,18 @@
    "source": "CityMETER ชั้นโรงแรม",
    "version": null,
    "readOn": "2026-10-18"
+  },
+  "cars": {
+   "dataset": "รถจดทะเบียนรายเดือน แยกประเภทรถ เชื้อเพลิง และยี่ห้อ",
+   "source": "CityMETER: Cars (Landometer) จากข้อมูลทะเบียนรถของกรมการขนส่งทางบก",
+   "page": "https://landometer.com/v3/citymeter/Central/CNT?d=cars",
+   "range": [
+    "2020-01",
+    "2026-08"
+   ],
+   "readOn": "2026-10-18",
+   "boundary": "จังหวัดชัยนาท · ชุดข้อมูลนี้มีถึงระดับจังหวัด ไม่มีอำเภอหรือตำบล",
+   "label": "observed"
   }
  },
  "model": {
