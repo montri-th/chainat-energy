@@ -1,61 +1,90 @@
-# Chainat Energy demo data QA
+# บันทึกข้อมูล · CityMETER: Yolk โหมดสำนักงานพลังงานจังหวัดชัยนาท
 
-Imported for the demo on **2026-10-16** and revised on **2026-10-17** (project rows 57 → 69). These are import and revision dates, not source observation dates. The original spreadsheets and internal planning documents are excluded from the repository. All public values are aggregate counts or explicitly qualified project metrics.
+รอบข้อมูล 18 ต.ค. 2569 · ไฟล์นี้อธิบายว่าตัวเลขแต่ละชุดมาจากไหน ผ่านการจัดการอะไร และใช้ได้แค่ไหน
 
-## Verified extraction results
+## ชนิดค่าที่หน้าเว็บแยกให้เห็น
 
-| Source | Included rows | Definition |
+| ป้าย | ความหมาย | ใช้กับ |
+| --- | --- | --- |
+| ข้อมูลจากแหล่ง (Observed) | นับหรืออ่านจากแหล่งโดยตรง | ทะเบียนกิจการ 3 ไฟล์ · รถจดทะเบียนระดับจังหวัด · ขอบเขต · รูปอาคาร |
+| ตามที่รายงาน (Reported) | ตัวเลขที่แผนฯ รายงานไว้ | การใช้ไฟฟ้าและพลังงานขั้นสุดท้ายปี 2566 ระดับจังหวัด |
+| ค่าตัวแทน (Proxy) | ใช้แทนสิ่งที่ยังไม่มีข้อมูลตรง | ประชากร โรงงาน และห้องพักรายพื้นที่จาก CityMETER |
+| แบบจำลอง (Modelled) | กระจายยอดจังหวัดลงพื้นที่หรืออาคารด้วยสมมติฐาน | ไฟฟ้า น้ำมัน LPG และรถรายตำบล รายอปท. และรายอาคาร · รูปแบบรายเดือน |
+
+ค่าแบบจำลองใช้จัดลำดับพื้นที่ที่ควรลงไปดูก่อน ไม่ใช่ยอดใช้จริงของพื้นที่ใดพื้นที่หนึ่ง และไม่ใช้ยืนยันรายได้ ความเสี่ยง หรือสิทธิ์ของใคร
+
+## ทะเบียนกิจการพลังงาน (Supply)
+
+ได้รับ 3 ไฟล์จากสำนักงานพลังงานจังหวัดชัยนาทเมื่อ 16 ต.ค. 2569 ไฟล์ไม่ระบุวันที่ของข้อมูลและไม่มีช่องพิกัด
+
+| ไฟล์ | รายการ | รายละเอียด |
 | --- | ---: | --- |
-| ผู้ประกอบการน้ำมันเชื้อเพลิง.xlsx | 203 | Numbered registry rows; 58 ก, 9 ค.2, 125 ค.1, 11 coin-vending |
-| โรงงาน-อาคารควบคุม.xlsx | 18 | Numbered registry rows; 16 factories and 2 buildings |
-| โครงการพลังงานในพื้นที่.xlsx | 69 | Support rows after removing 15 exact duplicate locality-view rows from 84 raw rows; includes 12 rows in `01 Solar pumping` whose sequence cell is blank |
+| ผู้ประกอบการน้ำมันเชื้อเพลิง.xlsx | 203 | ประเภท ก 58 · ค ลักษณะที่ 1 125 · ค ลักษณะที่ 2 9 · ง ตู้หยอดเหรียญ 11 · บุคคลธรรมดา 145 นิติบุคคล 58 |
+| โรงงาน-อาคารควบคุม.xlsx | 18 | ชื่อนิติบุคคล TSIC-ID เลขทะเบียนนิติบุคคล ที่อยู่ กลุ่ม และช่องสี 4 ช่องที่ไฟล์ไม่ระบุความหมาย · ไม่เผยแพร่คอลัมน์ท้ายที่ไม่มีหัวคอลัมน์ ซึ่งมีเบอร์โทรศัพท์ 1 รายการ |
+| โครงการพลังงานในพื้นที่.xlsx | 69 | ระบบสูบน้ำพลังงานแสงอาทิตย์ 58 · ระบบผลิตไฟฟ้าพลังงานแสงอาทิตย์สำหรับห้องเย็น 1 · ระบบอบแห้ง 7 · เตาชีวมวล 2 · ก๊าซชีวภาพ 1 · ภาพ 64 ภาพ |
 
-**290 is the sum of source rows, not verified unique establishments.** The supplied files do not provide shared stable asset IDs. There may be overlap between a fuel/controlled facility and a project beneficiary.
+- ทุกรายการผูกกับรหัสตำบลของ CityMETER ด้วยชื่ออำเภอและตำบลในไฟล์ แก้คำสะกดที่พบ เช่น ห้นคา → หันคา · แรกศรีราชา และ แพรศรราชา → แพรกศรีราชา · สามง่ามพัฒนา → สามง่ามท่าโบสถ์
+- โครงการ 65 รายการตรงชื่อทันที 3 รายการตรงหลังแก้คำสะกด และ 1 รายการ (ชีต 01 แถว 61) ระบุอำเภอสรรคบุรีแต่ตำบลกุดจอกอยู่ในอำเภอหนองมะโมง จึงจับคู่ตามชื่อตำบล
+- ชีต 01 Solar pumping แถว 50 เป็นระบบผลิตไฟฟ้าพลังงานแสงอาทิตย์ 10 kW สำหรับห้องเย็นของกลุ่มผลิตน้ำนม ไม่ใช่ระบบสูบน้ำ จึงแยกประเภทตามช่องรายละเอียดเทคโนโลยี และคงชื่อชีตไว้เป็นที่มา
+- กำลังติดตั้งของระบบสูบน้ำอ่านจากช่องรายละเอียดเทคโนโลยี รองรับหน่วยวัตต์และกิโลวัตต์ คูณจำนวนระบบ ได้ 58 รายการ 103 ระบบ รวม 360.04 kW ทุกรายการอ่านค่าได้ ถ้าตำบลใดอ่านค่าไม่ได้จะแสดงเป็นไม่มีข้อมูล ไม่แสดงเป็นศูนย์
+- ใบงานโครงการใช้ช่วงแถวที่ระบุชัด (01 แถว 3–61 · 03 แถว 5–6 · 04 แถว 5 · 05 แถว 5–11) เพื่อไม่นับแถวท้ายตารางหรือคำอธิบาย
+- ภาพโครงการดึงจากไฟล์ต้นทางตามตำแหน่งในใบงาน บันทึกใหม่เป็น JPEG โดยไม่เก็บ metadata ขนาดภาพเท่าที่มีในไฟล์ (กว้าง 179–457 พิกเซล) ทุกภาพมี SHA-256 ใน `supply.json`
+- เผยแพร่ทุกช่องจากไฟล์ รวมชื่อผู้ประกอบการที่เป็นบุคคลธรรมดาและบ้านเลขที่ ยกเว้นเบอร์โทรศัพท์ส่วนบุคคลของผู้ติดต่อโครงการ 14 รายการ และเบอร์โทรที่ปนอยู่ในช่องชื่อ 1 รายการ
+- ไม่มีพิกัดรายแห่ง แผนที่จึงแสดงจำนวนต่อตำบล ไม่วางหมุดคาดเดา
 
-### Exact source ranges
+## ขอบเขตและอาคาร (CityMETER)
 
-- Fuel: `ประเภท ก!A2:H59` (58), `ประเภท ค.ลักษณะที่ 2!A2:H10` (9), `ประเภท ค.ลักษณะที่ 1!A2:H126` (125), `ประเภท ง คู้หยอดเหรียญ!A2:H12` (11). Sheet names are retained exactly, including the source typo `คู้`.
-- Controlled: `รายชื่อ พพ. !A3:Q20` (18); the sheet name has a trailing space. District is parsed from column J address text solely to calculate aggregate counts.
-- Projects canonical: `01 Solar pumping!A3:N49` (47) plus `A50:O61` (12, sequence cell blank), `03 เตาชีวมวล!A5:N6` (2), `04 Biogas!A5:N5` (1), `05 ระบบอบแห้ง!A5:N11` (7).
-- Project duplicate views excluded: `หางน้ำสาคร!A4:N5` (2), `บางขุด!A4:N11` (8), `สรรพยา!A4:N4` plus `A9:N12` (5). Comparing normalized A:N values yields 69 distinct records (57 numbered + 12 recovered). Each of the 15 view rows matches exactly one solar-pumping row.
-- Project template sheets with zero numbered records: `02 ระบบผลิตน้ำร้อน`, `06 Off-Grid`, `07 Solar street light`, `08 อื่นๆ`. Empty templates do not count as datasets delivered.
+| ชั้น | แหล่ง | อ่านเมื่อ | จำนวน |
+| --- | --- | --- | ---: |
+| ขอบเขตจังหวัด อำเภอ ตำบล อปท. | CityMETER /citymeter-v3/base | 18 ต.ค. 2569 | 8 อำเภอ · 53 ตำบล · 59 อปท. |
+| รูปอาคาร ความสูง จำนวนชั้นโดยประมาณ | CityMETER อาคาร V4 | 18 ต.ค. 2569 | 177,647 หลัง |
 
-## District aggregation
+- อาคารอ่านเป็นแผ่นแผนที่ระดับ 14 ต่อ อปท. แล้วรวมชิ้นอาคารที่ถูกตัดตามขอบแผ่น ได้ 177,647 หลัง เทียบยอดของ CityMETER 177,711 หลัง ต่างกัน 64 หลัง (0.04%) อปท. ที่ต่างมากที่สุดต่างไม่เกิน 0.2%
+- พื้นที่ใช้สอยโดยประมาณของเทศบาลเมืองชัยนาทได้ 3,443,851 ตร.ม. เทียบค่าของ CityMETER 3,447,729 ตร.ม. (ต่าง 0.1%)
+- จุดกึ่งกลางของอาคาร 177,625 หลังอยู่ในขอบเขต อปท. ของตัวเอง อีก 22 หลังมีจุดกึ่งกลางเลยแนวเขตเล็กน้อย (อาคารคร่อมแนวเขต) จึงคง อปท. ตามที่ CityMETER ส่งมา
+- ประชากรใช้ชั้นประชากร CityMETER รุ่น 2026-09 · โรงงานรุ่น 2025-04 · ชั้นโรงแรมไม่ระบุรุ่น ใช้เป็นค่าตัวแทน ไม่ใช่ทะเบียนราษฎร์
 
-Two explicit district normalizations: fuel F3 in `ประเภท ค.ลักษณะที่ 2` has `ห้นคา` and is grouped under `หันคา`; two project I-column values `เมือง` are grouped under `เมืองชัยนาท`. One fuel category value `ค 1` is grouped under `ค.1`, consistent with its sheet name. Original files are unchanged. All 290 included source rows resolve to one of eight districts, so **unassigned district rows = 0**. If future rows do not resolve, they must remain an unassigned bucket included in province totals and excluded from district polygons. A category count of 0 means no matching rows in these supplied files; it is not a surveyed absence or measured zero in the real world.
+## แบบจำลองความต้องการ (Demand)
 
-| District | Fuel rows | Controlled rows | Project support rows |
-| --- | ---: | ---: | ---: |
-| เมืองชัยนาท | 35 | 4 | 8 |
-| มโนรมย์ | 21 | 6 | 7 |
-| วัดสิงห์ | 25 | 0 | 11 |
-| สรรพยา | 20 | 2 | 6 |
-| สรรคบุรี | 40 | 0 | 22 |
-| หันคา | 38 | 4 | 10 |
-| หนองมะโมง | 13 | 1 | 0 |
-| เนินขาม | 11 | 1 | 5 |
+### ไฟฟ้า
 
-## Evidence boundaries
+ยอดจังหวัดปี 2566 ตามประเภทผู้ใช้ไฟจากแผนปฏิบัติราชการด้านพลังงาน จ.ชัยนาท 2566–2570 หน้า 25 (ต้นฉบับพิมพ์กิจการขนาดกลางซ้ำสองบรรทัดด้วยค่าเดียวกัน จึงนับครั้งเดียว)
 
-- No supplied table contains latitude/longitude fields. Available coordinate pairs in the supplied files = 0. Site coordinates are being checked internally and are not published here. District polygons, if added, are summaries and never stand in for establishment locations.
-- Spreadsheet observation/verification dates are absent. The projects have participation years BE 2558–2568 (2015–2025). No source supports “live”, “current”, “latest verified”, operational availability, completeness of the province, or public-master status.
-- Historical project usage text gives 63 normal, 4 damaged and 2 blank records, without observation dates. This may be displayed only as unverified recorded status, not current condition.
-- The 58 solar-pumping rows record 103 systems with nominal rated power **360.04 kW**: the 47 original rows = 25×1 + 3×27 + 2.5×14 + 50×1 + 5×4 = 211 kW; the 11 recovered pumping rows = 149.04 kW, including one support row of 40 mobile 3.06 kW pumps (122.4 kW). `PRJ-01-R057` states 2.5 kW without a system count and is counted as one. One more row in the same sheet is a 10 kW solar system for a cold room, not a pump, and is reported separately. It is not electricity generated, not currently operating capacity, not a solar-potential estimate and not a province-wide solar total. Solar drying is thermal technology and must not be added to electrical capacity.
-- Fuel types are copied as source categories. No legal classification, current license validity or business-operating assertion is inferred.
-- The controlled-source color-mark columns have no supplied legend and are omitted. They must not become a risk/compliance score.
-- EV and power-infrastructure records are absent; their dataset counts are null/awaiting source. Solar pumping is a subset of the project table, not an independently verified solar register. The demo has three source-backed aggregate datasets.
+| ประเภทผู้ใช้ไฟ | kWh ต่อปี | วิธีกระจาย |
+| --- | ---: | --- |
+| บ้านอยู่อาศัย | 230,693,731 | อาคารหลังคาไม่ถึง 250 ตร.ม. และไม่เกิน 3 ชั้น ตามพื้นที่ใช้สอย |
+| กิจการขนาดใหญ่ | 183,608,292 | อาคารใหญ่สุดใน อปท. ที่มีโรงงาน จำนวนอาคารเท่าจำนวนโรงงาน ยอดตามแรงงาน |
+| กิจการขนาดกลาง | 120,158,658 | อาคารตั้งแต่ 1,000 ตร.ม. ตามพื้นที่ใช้สอย |
+| กิจการขนาดเล็ก | 87,806,376 | อาคาร 250–999 ตร.ม. หรือ 4 ชั้นขึ้นไป ตามพื้นที่ใช้สอย |
+| กิจการเฉพาะอย่าง | 3,389,006 | อาคารหลายชั้นใน อปท. ที่มีห้องพักโรงแรม ตามจำนวนห้อง |
+| สูบน้ำเพื่อการเกษตร | 6,748,842 | ตามพื้นที่ที่ไม่ใช่อาคาร |
 
-## Public minimization
+ผลรวมแบบจำลองรายตำบล 632,404,902 kWh และราย อปท. 632,404,905 kWh เทียบยอดแผน 632,404,905 kWh (ต่างจากการปัดเศษ) ค่ารายอาคารรวม 625,654,734 kWh เพราะไม่รวมสูบน้ำเพื่อการเกษตร 6,748,842 kWh ที่กระจายตามพื้นที่ที่ไม่ใช่อาคาร ส่วนต่างที่เหลือ 1,326 kWh มาจากการปัดค่ารายอาคารเป็นจำนวนเต็ม
 
-Only aggregated district/category/year counts and qualified technology metrics are exported. No entity or beneficiary names, personal names, telephone numbers, exact addresses, registration/license identifiers, TSIC identifiers, source photos or signatures are present in the public JSON. Do not add the raw workbooks or internal planning documents to public Git history. Publishing the demo does not approve source-record visibility or production use.
+### น้ำมันและ LPG
 
-The JSON includes filenames, SHA-256 fingerprints, exact source ranges, transformations and limitations so the aggregates remain traceable without copying raw source records. Aggregate IDs describe stable group dimensions rather than claiming master-asset IDs.
+- น้ำมัน: พลังงานขั้นสุดท้ายปี 2566 จากแผนฯ หน้า 7 (ดีเซล 51.93 ktoe · แก๊สโซฮอล์ 95 11.44 ktoe · แก๊สโซฮอล์ 91 5.602 ktoe) แปลงเป็นลิตรด้วยค่าความร้อนโดยประมาณ ดีเซล 36.42 MJ/ลิตร แก๊สโซฮอล์ 31.5 MJ/ลิตร ได้ดีเซลราว 59.7 ล้านลิตรต่อปี กระจายตามประชากร ส่วนดีเซลใช้ประชากรร้อยละ 60 และพื้นที่ที่ไม่ใช่อาคารร้อยละ 40 (ใช้แทนพื้นที่เกษตร)
+- LPG: การใช้ LPG ภาคครัวเรือนปี 2564 จากแผนฯ หน้า 5–6 (0.46 ktoe) แปลงเป็นกิโลกรัมด้วย 46.3 MJ/กก. กระจายตามประชากร
 
-## Checks completed
+### รถจดทะเบียน
 
-- Record selection excludes headers, instructions and blank/dash template rows, and includes rows whose sequence cell is blank when the project fields are filled.
-- District totals reconcile exactly to 203 fuel + 18 controlled + 69 project rows.
-- Fuel category totals, project technology totals, participation-year totals and recorded-usage totals reconcile to their source selections.
-- Project duplicates compared across normalized A:N fields: 84 raw rows, 69 distinct, 15 duplicate views removed.
-- Nominal solar-pumping power independently summed: L3:L49 = 211 kW; recovered rows 50–61 = 149.04 kW for pumps plus a separate 10 kW cold-room system.
-- Source originals read only. No source files copied into repository.
+ยอดจังหวัดจากกรมการขนส่งทางบกผ่าน MOT Data Catalog ณ 28 ก.พ. 2569 แยกชนิดเชื้อเพลิง เป็นข้อมูลจริงระดับจังหวัด 176,445 คัน ค่ารายตำบลและราย อปท. กระจายตามสัดส่วนประชากรจึงเป็นแบบจำลอง ปัดเป็นจำนวนเต็มด้วยวิธีเศษเหลือมากสุด ผลรวมทุกระดับจึงเท่ายอดจริงทุกกลุ่มเชื้อเพลิง
+
+### รูปแบบรายเดือน
+
+เป็นสมมติฐานตามฤดูกาล ผลรวม 12 เดือนเท่ากับค่ารายปี ไม่ใช่ข้อมูลรายเดือนจริง จะใช้ค่าจริงเมื่อได้ข้อมูลจาก กฟภ. และผู้จำหน่ายน้ำมัน
+
+## สีบนแผนที่
+
+- ทุก choropleth ใช้สเกล 41 ระดับของ LDS 0.9.7 ตามอันดับเปอร์เซ็นไทล์ p = (อันดับเฉลี่ย − 1) / (n − 1) ตำแหน่งสี = round(40 × p) ค่าที่เท่ากันใช้อันดับเฉลี่ยร่วมกัน
+- ค่าศูนย์ที่นับแล้ว (measured zero) ใช้ตำแหน่ง 0 พร้อมเส้นขอบศูนย์ ค่าที่ไม่มีข้อมูลไม่ระบายสี
+- สีข้อมูลใช้ HEX เดียวกันทั้งธีมสว่างและธีมมืด
+- ระดับไข่แดงใช้ชุด 3 ระดับของสเกลกิจกรรม (ตำแหน่ง 40 · 20 · 0) ตามเกณฑ์ที่ผู้ใช้เลือก ไม่เกิน 3 เงื่อนไข
+
+## สิ่งที่ยังไม่มี
+
+- ข้อมูลการใช้ไฟฟ้ารายผู้ใช้ไฟจาก กฟภ.
+- ยอดจำหน่ายน้ำมันและ LPG รายสถานี
+- รถจดทะเบียนรายตำบลและรายเดือน
+- พิกัดรายแห่งของกิจการในทะเบียน
+- วันที่ของข้อมูลในไฟล์ทะเบียนทั้ง 3 ไฟล์

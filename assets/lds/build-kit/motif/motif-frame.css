@@ -1,0 +1,58 @@
+/* Landometer Design System 0.9.4 candidate — MotifFrame host styles (component.motif-frame.01, MOTION-04 / MOTIF-01…06)
+   Runtime styles come from landometer-motifs.css (exact bytes, never edited). Every motif SVG is 600 × 300 (2 : 1).
+   MOTIF-06: a frame or static motif that declares an invariant or theme-fixed carrier paints that carrier itself, so the
+   declaration and the ground cannot drift; a themed carrier (e.g. surface.canvas) is painted by the page. */
+.lds-motif-frame { display: block; inline-size: min(100%, 600px); aspect-ratio: 2 / 1; position: relative; box-sizing: border-box; }
+.lds-motif-frame[data-variant="quiet"] { inline-size: min(100%, 360px); }
+.lds-motif-frame lm-motif { display: block; inline-size: 100%; block-size: 100%; }
+.lds-motif-frame noscript img, .lds-motif-frame .lds-motif-frame__fallback { display: block; inline-size: 100%; block-size: auto; }
+.lds-motif-frame[data-motif-state="fallback"] lm-motif { display: none; }
+/* MOTIF-06 theme swap without JavaScript: the noscript carries both final states in .lds-motif-noscript wrappers
+   (data-theme-variant="light|dark"). The theme is resolved as MotifFrame.currentTheme() does: an explicit choice stamped as
+   data-theme on <html> (THEME-01) first, the OS preference otherwise. <picture><source media> follows only the OS preference
+   and is refused by preflight PF-MOTIF-02-BYTES. */
+.lds-motif-noscript { display: block; }
+.lds-motif-noscript svg, .lds-motif-noscript img { display: block; inline-size: 100%; block-size: auto; }
+.lds-motif-noscript[data-theme-variant="dark"] { display: none; }
+@media (prefers-color-scheme: dark) {
+  .lds-motif-noscript[data-theme-variant="light"] { display: none; }
+  .lds-motif-noscript[data-theme-variant="dark"] { display: block; }
+}
+:root[data-theme="light"] .lds-motif-noscript[data-theme-variant="light"] { display: block; }
+:root[data-theme="light"] .lds-motif-noscript[data-theme-variant="dark"] { display: none; }
+:root[data-theme="dark"] .lds-motif-noscript[data-theme-variant="light"] { display: none; }
+:root[data-theme="dark"] .lds-motif-noscript[data-theme-variant="dark"] { display: block; }
+/* MOTIF-06 refusal = ladder rung L5: the placement is removed, never shown on a ground where it cannot be read */
+[data-motif-error^="MOTIF-06"] { display: none !important; }
+/* MOTIF-06 carriers painted by the placement itself (generated from motif-register.v0.9.4.json#/carrierPolicy/carriers) */
+[data-host-surface*="@"], [data-host-surface^="brand."], [data-host-surface^="atmosphere."] { border-radius: 16px; padding: 12px; box-sizing: border-box; }
+/* @carrier-paint-begin */
+[data-host-surface="surface.canvas@light"] { background: var(--ldm-foundation-surface-canvas-light, #F6F7F3); }
+[data-host-surface="surface.canvas@dark"] { background: var(--ldm-foundation-surface-canvas-dark, #11191D); }
+[data-host-surface="surface.alt@light"] { background: var(--ldm-foundation-surface-alt-light, #EEF1EE); }
+[data-host-surface="surface.alt@dark"] { background: var(--ldm-foundation-surface-alt-dark, #172126); }
+[data-host-surface="surface.card@light"] { background: var(--ldm-foundation-surface-card-light, #FCFCFA); }
+[data-host-surface="surface.card@dark"] { background: var(--ldm-foundation-surface-card-dark, #20292D); }
+[data-host-surface="surface.raised@light"] { background: var(--ldm-foundation-surface-raised-light, #FFFFFF); }
+[data-host-surface="surface.raised@dark"] { background: var(--ldm-foundation-surface-raised-dark, #293337); }
+[data-host-surface="surface.soft@light"] { background: var(--ldm-foundation-surface-soft-light, #E5E9E6); }
+[data-host-surface="surface.soft@dark"] { background: var(--ldm-foundation-surface-soft-dark, #2B3534); }
+[data-host-surface="surface.blueTint@light"] { background: var(--ldm-foundation-surface-blue-tint-light, #E2E9ED); }
+[data-host-surface="surface.blueTint@dark"] { background: var(--ldm-foundation-surface-blue-tint-dark, #18333E); }
+[data-host-surface="surface.beigeTint@light"] { background: var(--ldm-foundation-surface-beige-tint-light, #F2F1DF); }
+[data-host-surface="surface.beigeTint@dark"] { background: var(--ldm-foundation-surface-beige-tint-dark, #2C2A22); }
+[data-host-surface="brand.beige"] { background: var(--ldm-brand-beige, #F2F1DF); }
+[data-host-surface="brand.blue"] { background: var(--ldm-brand-blue, #1D4497); }
+[data-host-surface="atmosphere.ground.mist"] { background: linear-gradient(135deg, #C4E0EE 0%, #B2E2E2 50%, #CCE6D0 100%); }
+[data-host-surface="atmosphere.measure.luminous"] { background: linear-gradient(135deg, #89CEF6 0%, #5ECAD6 50%, #6CD5B3 100%); }
+[data-host-surface="atmosphere.ground.current"] { background: linear-gradient(135deg, #0F5773 0%, #006A6A 50%, #1F744F 100%); }
+[data-host-surface="atmosphere.measure.deep"] { background: linear-gradient(135deg, #1D4497 0%, #176B82 54%, #08756F 100%); }
+/* @carrier-paint-end */
+/* MotionController — component.motion-controller.01 (CTRL-01 sizes; colour from the governed tokens) */
+.lds-motion-pause { min-block-size: 44px; padding: 0 20px; border-radius: 999px; border: 1px solid var(--border-default, #C9D0CB); background: var(--surface-card, #FCFCFA); color: var(--text-primary, #182327); font: inherit; cursor: pointer; }
+.lds-motion-pause:hover { border-color: var(--border-emphasis, #7D877F); }
+.lds-motion-pause:focus-visible { outline: 2px solid var(--interaction-focus-ring, #176B82); outline-offset: 2px; }
+.lds-motion-pause[aria-pressed="true"] { background: var(--surface-soft, #E5E9E6); }
+/* Final state everywhere motion is not allowed to run */
+@media (prefers-reduced-motion: reduce) { .lds-motif-frame lm-motif * { animation: none !important; } }
+@media print { .lds-motif-frame lm-motif * { animation: none !important; } .lds-motion-pause { display: none; } }

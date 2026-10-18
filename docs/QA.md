@@ -1,25 +1,32 @@
-# Demo QA
+# QA · CityMETER: Yolk โหมดสำนักงานพลังงานจังหวัด
 
-Checked 16 October 2026 (Asia/Bangkok), local Chrome headless desktop browser.
+รอบข้อมูล 18 ต.ค. 2569 · ผลละเอียดอยู่ใน [browser-checks.json](browser-checks.json) · รันซ้ำได้ด้วย `node scripts/qa.mjs`
 
-- 40 browser assertions passed. No browser exceptions.
-- All four views rendered at 1440, 768, and 390 CSS pixels; no document-level horizontal overflow. The narrow data table intentionally scrolls within its container and has a visible hint.
-- Visual review covered Thai headings, source cards, six dataset entries, plan target text, map labels, registry, admin, and metadata. Mobile map uses numbered areas and a readable district key.
-- Thai 130% root-font fixture passed document containment; reduced viewport equivalent to 200% zoom passed containment. This is browser simulation, not a native device certification.
-- Keyboard district selection, reduced motion, empty search, missing map boundary fallback, source detail dialog, filtered CSV export, and pagination tested.
-- Draft edits, unsaved-edit guard, review permissions, return-to-draft, simulated publication, prior published snapshot retention, browser persistence, CSV dry run, duplicate rows, and revalidation at commit tested.
-- Source figures reconcile: 203 + 18 + 57 = 278 source rows. Solar pumping subset excluded from combined counts. No facility coordinates fabricated. Baseline coverage remains unreported.
-- Data extraction review scanned the public aggregate JSON against 384 sensitive source strings with zero matches. Original attachments are excluded. See data/DATA_QA.md.
-- LDS package verifier passed 9,768 checks; analytical palette advisories belong to the source package. Static artifact checks passed, with an explicit warning that JavaScript requires rendered review. No full LDS conformance, WCAG/CVD certification, or team activation is claimed.
+## ผลตรวจบนเครื่อง (local)
 
-## Material limits
+`scripts/qa.mjs` ผ่าน 63 จาก 63 ข้อ เมื่อ 18 ต.ค. 2569 ที่ http://127.0.0.1:4173/ ด้วย Chromium headless
 
-- This is a static public demonstration. Role switching does not implement authentication or server access control. Admin records and audit events are browser-local and separate from real source figures.
-- Public source dates are unknown; project years are 2558–2563. Eight-district boundary geometry represents 2019.
-- EV, a separate Solar register, and power infrastructure have no independent supplied master in this demo. Three source files do not establish delivery of five acceptance datasets.
-- The current base registry has no approved CityMETER product icon tile; no substitute favicon was invented. Exact official Landometer artwork and fonts are used where supplied.
-- Native iOS/Android and screen-reader review remain unperformed.
+| กลุ่ม | ตรวจอะไร |
+| --- | --- |
+| ไฟล์และข้อมูล | ไฟล์ครบ · 8 อำเภอ 53 ตำบล 59 อปท. · อาคาร 177,647 หลังตรงทุกไฟล์ · ไฟฟ้าแบบจำลองรวมกลับได้ยอดแผน · สูบน้ำโซลาร์ 58 รายการ 103 ระบบ 360.04 kW · รถแบบจำลองเป็นจำนวนเต็มและรวมได้ 176,445 คันทุกระดับ · ภาพ 64 ภาพตรง SHA-256 |
+| ความเป็นส่วนตัว | ไม่มีเบอร์โทรศัพท์ · ไม่มีเลข 13 หลักนอกช่องเลขทะเบียนนิติบุคคล · ไม่มีพิกัดรายแห่ง · ไม่มีข้อความราคาหรือข้อเสนอ · ไม่มี credential |
+| สี | ไม่มี HEX หรือฟังก์ชันสีที่ไม่ได้กำกับในไฟล์ของเรา · LUT 41 ระดับเหมือนกันทั้งสองธีม · ทุก metric ใช้เปอร์เซ็นไทล์แบบอันดับเฉลี่ยตรงสูตร (29 คู่ metric × ระดับพื้นที่) |
+| หน้าเว็บ | 14 เส้นทางรวมลิงก์ที่เคยทำให้หน้าเสีย ที่ 1440 สว่างและมืด · 390 สว่าง · 768 มืด: ready ทุกหน้า ไม่มี error ไม่ล้นแนวนอน ปุ่มอย่างน้อย 44×44 px ทุกมุมมองมี h1 |
+| พฤติกรรม | สลับธีมได้พื้นตรงโทเคน LDS · ปุ่มย้อนกลับคืนมุมมองเดิม · โฟกัสคีย์บอร์ดอยู่ที่เดิมหลังแผงเปลี่ยน · เปิดการ์ดอาคารจากรายการด้วยคีย์บอร์ดได้ · permalink อาคาร · ศูนย์ที่นับแล้วไม่ปนกับไม่มีข้อมูล · คิวโอกาสมีเฉพาะตำบลที่ผ่าน Demand |
 
-Machine-readable local browser assertions are in [browser-checks.json](browser-checks.json). Provider delivery and live-byte checks are recorded separately after publication.
+## ตรวจด้วยเครื่องมือของ LDS 0.9.7
 
-Final map label layering adjustment: checked all eight label backplates above district boundaries and click-to-select from label text. Source counts unchanged.
+- `verify.mjs` ผ่าน 9,769 จาก 9,769 ข้อ (ตรวจชุด package เท่านั้น)
+- `check-artifact.mjs` ผ่านสำหรับ `styles.css` และไฟล์ใน `js/` ทุกไฟล์
+- `index.html` รายงานปัญหา 1 ข้อจากไฟล์ motif ทางการที่ไม่ได้แก้ (`color-mix` ที่กำหนดสีชิ้นของ motif โลโก้ ซึ่งหน้านี้ไม่ได้แสดง) ไฟล์ LDS 28 ไฟล์ใน `assets/lds/` ตรงกับ package ทุกไบต์
+
+## ตรวจโดยผู้ตรวจอิสระก่อนเผยแพร่
+
+ผู้ตรวจที่ไม่ได้ร่วมสร้างงานตรวจความเป็นส่วนตัว ตัวเลขเทียบไฟล์ต้นทาง สูตรสี การทำงาน และภาษา พบ 2 ข้อที่ต้องแก้ก่อนเผยแพร่และข้อควรแก้อีกหลายข้อ แก้แล้วและเพิ่มเป็นข้อตรวจใน `scripts/qa.mjs` ได้แก่ หน้าเสียเมื่อสลับระดับพื้นที่ · กำลังติดตั้งสูบน้ำโซลาร์ที่อ่านหน่วยวัตต์ไม่ได้จนแสดงเป็นศูนย์ · ค่าเฉลี่ยต่อครัวเรือนที่ถูกบวกรวม · คำอธิบายระดับไข่ที่ไม่ตามจำนวนเงื่อนไข · คิวที่มีตำบลนอก Demand · ไข่ขาวกับพื้นที่ไม่ผ่านเกณฑ์แยกกันด้วยสีอย่างเดียว · ปุ่มย้อนกลับ · โฟกัสคีย์บอร์ด · แคชข้อมูล
+
+## ยังไม่ได้ตรวจ
+
+- โปรแกรมอ่านหน้าจอ โทรศัพท์จริง และการซูม 200%
+- ตัวเลขจากแผน PDF เทียบต้นฉบับอีกรอบ และข้อความอำนาจหน้าที่เทียบหน้าเว็บต้นทางในรอบนี้
+- ตัวเลขรถจดทะเบียนเทียบ MOT Data Catalog ในรอบนี้
+- ผลบนหน้าเว็บจริงบันทึกแยกหลังเผยแพร่

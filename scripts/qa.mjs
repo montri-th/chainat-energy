@@ -1,79 +1,266 @@
-import assert from 'node:assert/strict';
-import fs from 'node:fs/promises';
+// QA for CityMETER: Yolk · โหมดสำนักงานพลังงานจังหวัด (Chainat energy demo)
+//
+//   python3 -m http.server 4173 --bind 127.0.0.1      # from the repository root
+//   node scripts/qa.mjs                                # static + browser checks against the local server
+//   BASE_URL=https://montri-th.github.io/chainat-energy/ node scripts/qa.mjs --label live
+//
+// Options: --write <file.json> saves the results · --shots <dir> saves screenshots · --static-only skips the browser.
+// Playwright is resolved from PLAYWRIGHT_MODULE (path to playwright/index.mjs) or the "playwright" package.
+// A pass here is evidence for the listed checks only. It is not an accessibility, LDS or data-truth certificate.
+import fs from 'node:fs';
 import path from 'node:path';
-const { chromium } = await import(process.env.PLAYWRIGHT_MODULE || 'playwright');
-const base = process.env.BASE_URL || 'http://127.0.0.1:4173/';
-const output = process.env.QA_OUTPUT || '/private/tmp/chainat-energy-qa';
-await fs.mkdir(output,{recursive:true});
-const browser = await chromium.launch({headless:true,...(process.env.CHROME_PATH ? {executablePath:process.env.CHROME_PATH} : {})});
-const errors = [], checks = [];
-function check(name, value) { assert.ok(value,name); checks.push(name); }
-async function ready(page) { await page.waitForSelector('html[data-ready="true"]');await page.evaluate(()=>document.fonts.ready); }
-async function view(page,name) {await page.evaluate(name=>document.querySelector(`.primary-nav [data-view="${name}"]`).click(),name);await page.waitForTimeout(120);}
-try {
-  const page=await browser.newPage({viewport:{width:1440,height:1000}});
-  page.on('pageerror',error=>errors.push(error.message));
-  await page.goto(base);await ready(page);
-  check('eight district polygons',await page.locator('.district-shape').count()===8);
-  check('source row total 290 excludes solar subset',(await page.locator('#map-summary').innerText()).includes('290'));
-  await page.selectOption('#district-select','chainat-sankhaburi');
-  await page.locator('[data-dataset="fuel"]').click();
-  check('Sankhaburi fuel count40',(await page.locator('#map-summary').innerText()).includes('40'));
-  await view(page,'registry');
-  check('map filter synchronized to table',await page.inputValue('#registry-dataset')==='fuel' && await page.inputValue('#registry-district')==='chainat-sankhaburi');
-  check('filtered table has one row',await page.locator('#registry-body tr').count()===1);
-  await page.locator('[data-row-id]').click();
-  check('source detail dialog opens',await page.locator('#detail-dialog').isVisible());await page.locator('#detail-close').click();
-  const [download]=await Promise.all([page.waitForEvent('download'),page.locator('#registry-export').click()]);
-  const content=await fs.readFile(await download.path(),'utf8');check('CSV export contains filtered district',content.includes('สรรคบุรี')&&content.includes('40')&&!content.includes('มโนรมย์'));
-  await page.locator('#registry-search').fill('zz_no_match');
-  check('empty search state',await page.locator('#registry-empty').isVisible());
-  await page.locator('#registry-search').fill('');
-  await page.selectOption('#registry-dataset','all');await page.selectOption('#registry-district','all');
-  check('table counts24 group rows',(await page.locator('#registry-count').innerText()).includes('24'));
-  await page.locator('#registry-next').click();check('table pagination',(await page.locator('#registry-page').innerText()).includes('2 / 3'));
-  await view(page,'quality');check('six dataset readiness entries',await page.locator('#dataset-readiness article').count()===6);
-  check('coordinate coverage not fabricated',(await page.locator('#coordinate-quality').innerText()).includes('ไม่มีข้อมูลพิกัด'));
-  await view(page,'admin');
-  await page.locator('#admin-name').fill('รายการสมมติ QA');await page.selectOption('#admin-district','chainat-manorom');await page.locator('#admin-note').fill('เฉพาะทดสอบ ไม่ใช่ข้อมูลจริง');await page.locator('#admin-save').click();
-  check('draft created',await page.locator('.workflow-card').count()===1);
-  await page.locator('[data-admin-action="edit"]').click();await page.locator('#admin-name').fill('รายการสมมติ QA ฉบับแก้ไข');await page.locator('[data-admin-action="review"]').click();
-  check('unsaved edit blocks review',(await page.locator('.workflow-card .pill').innerText())==='ร่าง');await page.locator('#admin-save').click();await page.locator('[data-admin-action="review"]').click();
-  check('review action permission',await page.locator('[data-admin-action="publish"]').count()===0);
-  await page.selectOption('#admin-role','reviewer');await page.locator('[data-admin-action="return"]').click();check('return to draft',(await page.locator('.workflow-card .pill').innerText())==='ร่าง');
-  await page.selectOption('#admin-role','editor');await page.locator('[data-admin-action="review"]').click();await page.selectOption('#admin-role','reviewer');await page.locator('[data-admin-action="publish"]').click();
-  check('published snapshot stored',await page.evaluate(()=>JSON.parse(localStorage.getItem('chainat-energy-demo-v1')).records[0].publishedSnapshot.version===1));
-  await page.selectOption('#admin-role','editor');await page.locator('[data-admin-action="new-version"]').click();
-  check('new draft preserves published version',(await page.locator('.workflow-card').innerText()).includes('ยังเป็น v1'));
-  const csv='name,dataset,district,note\n"CSV สมมติ",projects,"เมืองชัยนาท","ทดสอบ"';
-  await page.locator('#admin-import').setInputFiles({name:'test.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
-  await page.waitForFunction(()=>!document.querySelector('#admin-import-commit').disabled);
-  check('dry run before commit',await page.locator('.workflow-card').count()===1 && await page.locator('#admin-import-commit').isEnabled());
-  await page.locator('#admin-import-commit').click();check('CSV draft import',await page.locator('.workflow-card').count()===2);
-  await page.locator('#admin-import').setInputFiles({name:'duplicate.csv',mimeType:'text/csv',buffer:Buffer.from(csv)});
-  await page.waitForFunction(()=>document.querySelector('#admin-import-result').textContent.includes('พบปัญหา 1'));
-  check('duplicate rejected',await page.locator('#admin-import-commit').isDisabled());
-  const staleCSV='name,dataset,district,note\n"รายการชนกัน",fuel,"มโนรมย์","ทดสอบ"';
-  await page.locator('#admin-import').setInputFiles({name:'stale.csv',mimeType:'text/csv',buffer:Buffer.from(staleCSV)});
-  await page.waitForFunction(()=>!document.querySelector('#admin-import-commit').disabled);
-  await page.locator('#admin-name').fill('รายการชนกัน');await page.selectOption('#admin-district','chainat-manorom');await page.selectOption('#admin-dataset','fuel');await page.locator('#admin-save').click();await page.locator('#admin-import-commit').click();
-  check('duplicate revalidated at commit',await page.locator('.workflow-card').count()===3 && (await page.locator('#admin-import-result').innerText()).includes('ซ้ำ'));
-  await page.reload();await ready(page);await view(page,'admin');check('browser state persists',await page.locator('.workflow-card').count()===3);
-  await page.evaluate(()=>localStorage.removeItem('chainat-energy-demo-v1'));await page.reload();await ready(page);
-  for(const width of [1440,768,390]){
-    await page.setViewportSize({width,height:width===1440?1000:844});
-    for(const name of ['overview','registry','quality','admin']){
-      await view(page,name);await page.evaluate(()=>scrollTo(0,0));await page.waitForTimeout(120);
-      check(`${name} page overflow ${width}`,await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-      await page.screenshot({path:path.join(output,`${width}-${name}.png`),fullPage:true});
+import crypto from 'node:crypto';
+import { fileURLToPath } from 'node:url';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const args = process.argv.slice(2);
+const opt = name => { const i = args.indexOf(name); return i >= 0 ? args[i + 1] : null; };
+const BASE = (process.env.BASE_URL || 'http://127.0.0.1:4173/').replace(/\/?$/, '/');
+const LABEL = opt('--label') || (BASE.includes('127.0.0.1') || BASE.includes('localhost') ? 'local' : 'live');
+const results = [];
+const check = (group, name, ok, detail = '') => { results.push({ group, name, ok: !!ok, detail: String(detail).slice(0, 400) }); };
+const read = f => fs.readFileSync(path.join(ROOT, f), 'utf8');
+const json = f => JSON.parse(read(f));
+const exists = f => fs.existsSync(path.join(ROOT, f));
+const sha = f => crypto.createHash('sha256').update(fs.readFileSync(path.join(ROOT, f))).digest('hex');
+
+/* ---------------- static checks (repository files that are published) ---------------- */
+const REQUIRED = ['index.html', 'styles.css', 'js/core.js', 'js/map.js', 'js/views.js', 'js/app.js',
+  'data/meta.json', 'data/areas.json', 'data/supply.json', 'data/plan.json', 'data/vehicles.json',
+  'data/geo/province.geojson', 'data/geo/district.geojson', 'data/geo/tambon.geojson', 'data/geo/lao.geojson', 'data/buildings/index.json',
+  'vendor/maplibre-gl/4.7.1/maplibre-gl.js', 'vendor/maplibre-gl/4.7.1/LICENSE.txt',
+  'assets/lds/build-kit/lds-0.9.7.css', 'assets/lds/machine/color-srgb-10.production.css',
+  'assets/lds/build-kit/motif/landometer-motifs.js', 'assets/lds/build-kit/motif/motif-frame.js', 'assets/lds/build-kit/motif/motion-controller.js'];
+const missing = REQUIRED.filter(f => !exists(f));
+check('files', 'required files present', !missing.length, missing.join(', '));
+
+const meta = json('data/meta.json'), areas = json('data/areas.json'), supply = json('data/supply.json'), plan = json('data/plan.json'), vehicles = json('data/vehicles.json');
+check('data', '8 districts · 53 tambons · 59 LAOs', areas.district.length === 8 && areas.tambon.length === 53 && areas.lao.length === 59, `${areas.district.length}/${areas.tambon.length}/${areas.lao.length}`);
+const bindex = json('data/buildings/index.json');
+const laoFiles = fs.readdirSync(path.join(ROOT, 'data/buildings')).filter(f => /^\d{8}\.json$/.test(f));
+let bTotal = 0; for (const f of laoFiles) bTotal += json(`data/buildings/${f}`).n;
+check('data', 'one building file per LAO and totals match meta', laoFiles.length === 59 && bTotal === meta.layers.buildings.count, `${laoFiles.length} files · ${bTotal} vs meta ${meta.layers.buildings.count}`);
+check('data', 'building index covers every LAO', Object.keys(bindex.laoTambons || {}).length === 59);
+
+const planElec = plan.plan.situation.electricity2566.rows.reduce((a, r) => a + r.value, 0);
+const modelElec = areas.tambon.reduce((a, u) => a + Object.values(u.elec || {}).reduce((x, y) => x + (y || 0), 0), 0);
+check('data', 'modelled electricity sums back to the plan total (±0.01%)', Math.abs(modelElec - planElec) / planElec < 1e-4, `model ${Math.round(modelElec)} · plan ${planElec}`);
+check('data', 'supply registers: 203 fuel · 18 controlled · 69 projects', supply.fuel.length === 203 && supply.controlled.length === 18 && supply.projects.length === 69, `${supply.fuel.length}/${supply.controlled.length}/${supply.projects.length}`);
+
+const pumps = supply.projects.filter(p => p.technology === 'ระบบสูบน้ำพลังงานแสงอาทิตย์');
+const pumpKw = pumps.reduce((a, p) => a + (p.capacityKw || 0), 0), pumpSystems = pumps.reduce((a, p) => a + (p.systems || 0), 0);
+check('data', 'solar pumping: 58 rows · 103 systems · 360.04 kW parsed from W, kW and system counts', pumps.length === 58 && pumpSystems === 103 && Math.abs(pumpKw - 360.04) < 0.01 && pumps.every(p => p.capacityKw != null), `${pumps.length} rows · ${pumpSystems} systems · ${pumpKw.toFixed(2)} kW`);
+const tambonKw = areas.tambon.reduce((a, u) => a + (u.supply.solarPumpKw || 0), 0);
+check('data', 'tambon pump capacity sums to the project total', Math.abs(tambonKw - pumpKw) < 0.01, `${tambonKw.toFixed(2)} vs ${pumpKw.toFixed(2)}`);
+const vehObs = vehicles.rows.reduce((a, r) => a + r[2], 0);
+const vehSum = lvl => areas[lvl].reduce((a, u) => a + Object.values(u.vehicles).reduce((x, y) => x + y, 0), 0);
+check('data', 'modelled vehicles are whole numbers and sum to the DLT total at both grains', vehSum('tambon') === vehObs && vehSum('lao') === vehObs && areas.tambon.every(u => Object.values(u.vehicles).every(Number.isInteger)), `${vehSum('tambon')} · ${vehSum('lao')} vs ${vehObs}`);
+const photos = supply.projects.flatMap(p => p.photos || []);
+const missingPhotos = photos.filter(ph => !exists(`assets/photos/${ph.file}`) || sha(`assets/photos/${ph.file}`) !== ph.sha256);
+check('data', 'every project photo exists and matches its SHA-256', photos.length === 64 && !missingPhotos.length, `${photos.length} photos · ${missingPhotos.length} missing/mismatched`);
+
+// privacy and publication boundary
+const ID_KEYS = /(^|\.)(id|code|tambonId|districtId|sha256|juristicRegNo|tsicId|tambonCode|districtCode|laoCode)$/;
+const PHONE = /(?<![\d.])0\d{1,2}[- ]?\d{3}[- ]?\d{3,4}(?!\d)/;
+const ID13 = /(?<![\d.])\d{13}(?!\d)/;
+const COORD_KEYS = /^(lat|lon|lng|latitude|longitude|coordinates|coord|geometry|x|y)$/i;
+const hits = { phone: [], id13: [], coord: [] };
+const walk = (o, p) => {
+  if (Array.isArray(o)) return o.forEach((v, i) => walk(v, `${p}[${i}]`));
+  if (o && typeof o === 'object') return Object.entries(o).forEach(([k, v]) => { if (COORD_KEYS.test(k)) hits.coord.push(`${p}.${k}`); walk(v, `${p}.${k}`); });
+  if (typeof o !== 'string') return;
+  const key = p.replace(/\[\d+\]/g, '');
+  if (ID_KEYS.test(key)) return;
+  if (PHONE.test(o)) hits.phone.push(`${p}: ${o.slice(0, 40)}`);
+  if (ID13.test(o)) hits.id13.push(`${p}: ${o.slice(0, 40)}`);
+};
+walk(supply, 'supply');
+check('privacy', 'no phone numbers in published supply data', !hits.phone.length, hits.phone.slice(0, 5).join(' | '));
+check('privacy', 'no 13-digit numbers outside juristic registration fields', !hits.id13.length, hits.id13.slice(0, 5).join(' | '));
+check('privacy', 'no per-site coordinates in supply data', !hits.coord.length, hits.coord.slice(0, 5).join(' | '));
+const individualsWithReg = supply.fuel.filter(f => f.ownerKind === 'บุคคลธรรมดา' && f.juristicRegNo);
+check('privacy', 'individual operators carry no registration number', !individualsWithReg.length, individualsWithReg.length);
+const publicText = ['index.html', 'js/core.js', 'js/views.js', 'js/app.js', 'js/map.js', 'data/meta.json', 'data/plan.json', 'data/supply.json', 'README.md'].filter(exists).map(f => [f, read(f)]);
+const commercial = publicText.filter(([, t]) => /ใบเสนอราคา|ค่าบริการ|ราคาบริการ|อัตราค่าบริการ/i.test(t)).map(([f]) => f);
+check('privacy', 'no price or quotation text in published files', !commercial.length, commercial.join(', '));
+const secrets = publicText.filter(([, t]) => /(api[_-]?key|secret|token)\s*[:=]\s*['"][A-Za-z0-9_\-]{16,}/i.test(t)).map(([f]) => f);
+check('privacy', 'no credentials or tokens in published files', !secrets.length, secrets.join(', '));
+
+// colour governance in our own files (LDS files are checked by the LDS package itself)
+const own = ['styles.css', 'js/core.js', 'js/map.js', 'js/views.js', 'js/app.js'];
+const hexInJs = own.filter(f => f.endsWith('.js')).flatMap(f => (read(f).match(/#[0-9A-Fa-f]{6}\b/g) || []).map(h => `${f} ${h}`));
+check('colour', 'no literal hex colours in scripts (all colours resolve from LDS tokens)', !hexInJs.length, hexInJs.join(', '));
+const fnColours = own.flatMap(f => (read(f).match(/\b(rgba?|hsla?|color-mix|oklch|lab|lch)\(/g) || []).map(m => `${f} ${m}`));
+check('colour', 'no ungoverned colour functions in our CSS/JS', !fnColours.length, fnColours.join(', '));
+const cssHex = (read('styles.css').match(/#[0-9A-Fa-f]{6}\b/g) || []).map(h => h.toUpperCase());
+check('colour', 'only on-deep identity inks are literal in CSS (#FFFFFF #F1F4EF #182327)', cssHex.every(h => ['#FFFFFF', '#F1F4EF', '#182327'].includes(h)), [...new Set(cssHex)].join(' '));
+const tokens = read('assets/lds/machine/color-srgb-10.production.css');
+const lutOf = (fam, mode) => Array.from({ length: 41 }, (_, i) => (tokens.match(new RegExp(`--ldm-scale-${fam}-${mode}-lut-${String(i).padStart(2, '0')}:\\s*(#[0-9A-Fa-f]{6})`)) || [])[1]);
+const FAMILIES = ['activity', 'count', 'density-household'];
+check('colour', 'LUT41 light and dark tokens are identical for every family used', FAMILIES.every(f => { const a = lutOf(f, 'light'), b = lutOf(f, 'dark'); return a.every(Boolean) && a.join() === b.join(); }));
+
+// documentation of the release
+const html = read('index.html');
+check('page', 'noindex, color-scheme and two theme-color metas', /noindex/.test(html) && /name="color-scheme"/.test(html) && (html.match(/name="theme-color"/g) || []).length === 2);
+check('page', 'no favicon or unapproved product tile is linked', !/rel="(icon|apple-touch-icon|shortcut icon)"/.test(html));
+check('page', 'pause control precedes the motif frame', html.indexOf('lds-motion-pause') > 0 && html.indexOf('lds-motion-pause') < html.indexOf('lds-motif-frame'));
+check('page', 'motif scripts load in order: motifs → motion controller → frame', html.indexOf('landometer-motifs.js') < html.indexOf('motion-controller.js') && html.indexOf('motion-controller.js') < html.indexOf('motif-frame.js'));
+
+/* ---------------- browser checks ---------------- */
+let shotsDir = opt('--shots');
+async function browserChecks() {
+  let pw;
+  try { pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright'); } catch (e) { check('browser', 'playwright available', false, e.message); return; }
+  const { chromium } = pw;
+  const browser = await chromium.launch({ headless: true, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  const ROUTES = ['', '?v=demand', '?v=demand&m=tier', '?v=demand&a=180101', '?v=demand&lvl=lao&a=04180102&b=04180102-00001', '?v=supply', '?v=supply&a=180606', '?v=supply&lvl=lao&a=04180102', '?v=demand&lvl=lao&a=04180102&m=tier', '?v=opportunity', '?v=shortlist', '?v=requests', '?v=sources', '?v=unknown&a=zzz&b=1'];
+  const MATRIX = [{ scheme: 'light', w: 1440, h: 900 }, { scheme: 'dark', w: 1440, h: 900 }, { scheme: 'light', w: 390, h: 844 }, { scheme: 'dark', w: 768, h: 1024 }];
+  for (const m of MATRIX) {
+    const ctx = await browser.newContext({ viewport: { width: m.w, height: m.h }, colorScheme: m.scheme });
+    const page = await ctx.newPage();
+    const errs = []; page.on('console', c => { if (c.type() === 'error') errs.push(c.text()); }); page.on('pageerror', e => errs.push(e.message));
+    const tag = `${m.scheme} ${m.w}`;
+    const bad = { overflow: [], small: [], ready: [], h1: [] };
+    for (const r of ROUTES) {
+      await page.goto(BASE + r, { waitUntil: 'networkidle' });
+      const ok = await page.waitForFunction(() => document.documentElement.dataset.ready, null, { timeout: 45000 }).then(() => true).catch(() => false);
+      if (!ok) { bad.ready.push(r || 'overview'); continue; }
+      await page.waitForTimeout(r.includes('b=') ? 2500 : 1200);
+      const info = await page.evaluate(() => {
+        const vis = el => { const b = el.getBoundingClientRect(); const cs = getComputedStyle(el); return b.width > 0 && b.height > 0 && cs.visibility !== 'hidden' && cs.display !== 'none' && !el.closest('[hidden]'); };
+        const small = [];
+        for (const el of document.querySelectorAll('button, select, a.btn, a.chip, .rail a, .flow a, summary, .drill button')) {
+          if (!vis(el)) continue; const b = el.getBoundingClientRect(); if (b.width < 43.5 || b.height < 43.5) small.push(`${el.tagName}:${(el.textContent || '').trim().slice(0, 16)} ${Math.round(b.width)}x${Math.round(b.height)}`);
+        }
+        return { ready: document.documentElement.dataset.ready, overflow: document.documentElement.scrollWidth - innerWidth, small, h1: !!document.querySelector('main .view:not([hidden]) h1') };
+      });
+      if (info.ready !== 'true') bad.ready.push(`${r || 'overview'}=${info.ready}`);
+      if (info.overflow > 0) bad.overflow.push(`${r || 'overview'} +${info.overflow}px`);
+      if (info.small.length) bad.small.push(`${r || 'overview'}: ${info.small.slice(0, 3).join('; ')}`);
+      if (!info.h1) bad.h1.push(r || 'overview');
+      if (shotsDir) { fs.mkdirSync(shotsDir, { recursive: true }); await page.screenshot({ path: path.join(shotsDir, `${LABEL}-${m.scheme}-${m.w}-${(r || 'overview').replace(/[^a-z0-9]+/gi, '_')}.png`) }); }
     }
+    check('browser', `${tag}: every route reaches ready=true`, !bad.ready.length, bad.ready.join(', '));
+    check('browser', `${tag}: no horizontal overflow`, !bad.overflow.length, bad.overflow.join(', '));
+    check('browser', `${tag}: direct targets ≥ 44×44 CSS px`, !bad.small.length, bad.small.join(' | '));
+    check('browser', `${tag}: every view has an h1`, !bad.h1.length, bad.h1.join(', '));
+    check('browser', `${tag}: no console errors`, !errs.length, errs.slice(0, 4).join(' | '));
+    await ctx.close();
   }
-  await page.setViewportSize({width:390,height:844});await page.evaluate(()=>document.documentElement.style.fontSize='130%');await view(page,'quality');
-  check('Thai 130percent no page overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));await page.screenshot({path:path.join(output,'thai130-quality.png'),fullPage:true});
-  await page.evaluate(()=>document.documentElement.style.fontSize='');await page.setViewportSize({width:720,height:500});await page.emulateMedia({reducedMotion:'reduce'});await view(page,'overview');
-  check('reduced viewport equivalent to 200percent zoom no overflow',await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
-  await page.locator('.district-shape').first().focus();await page.keyboard.press('Enter');check('keyboard map selection',await page.locator('.district-shape[aria-pressed="true"]').count()===1);
-  const fallback=await browser.newPage();await fallback.route('**/districts.geojson',route=>route.abort());await fallback.goto(base);await ready(fallback);await view(fallback,'registry');check('table usable without map boundary',await fallback.locator('#registry-body tr').count()>0);await fallback.close();
-  check('no browser exceptions',errors.length===0);
-  const report={checkedAt:new Date().toISOString(),base,checksPassed:checks.length,checks,errors};await fs.writeFile(path.join(output,'result.json'),JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));
-} finally {await browser.close();}
+
+  // deeper checks on one desktop context
+  const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' });
+  const page = await ctx.newPage();
+  await page.goto(BASE + '?v=demand', { waitUntil: 'networkidle' });
+  await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 45000 });
+  const lutResult = await page.evaluate(async () => {
+    const core = await import(new URL('js/core.js', document.baseURI).href);
+    const out = { metrics: 0, problems: [], spans: [] };
+    for (const metric of core.METRICS) for (const level of metric.grains) {
+      const entries = core.valueEntries(metric, level); const ranks = core.percentileLut(entries); const L = core.lut(metric.family);
+      const measured = entries.filter(e => e.state === 'measured' || e.state === 'measured_zero');
+      const sorted = measured.map(e => e.value).sort((a, b) => a - b);
+      const used = new Set();
+      for (const e of entries) {
+        const r = ranks.get(e.key);
+        if (e.state === 'no_data') { if (r.idx !== null) out.problems.push(`${metric.id}@${level} ${e.key} no_data has a colour`); continue; }
+        const lo = sorted.indexOf(e.value), hi = sorted.lastIndexOf(e.value);
+        const p = sorted.length > 1 ? ((lo + hi) / 2) / (sorted.length - 1) : 0.5;
+        const want = e.state === 'measured_zero' ? 0 : Math.round(40 * p);
+        if (r.idx !== want) out.problems.push(`${metric.id}@${level} ${e.key} idx ${r.idx} want ${want}`);
+        if (!/^#[0-9A-F]{6}$/.test(L[r.idx])) out.problems.push(`${metric.id} LUT[${r.idx}] invalid`);
+        if (e.state === 'measured') used.add(r.idx);
+      }
+      const max = sorted[sorted.length - 1], uniqueMax = sorted.length > 1 && sorted[sorted.length - 2] !== max;
+      out.metrics++; out.spans.push({ id: `${metric.id}@${level}`, lo: Math.min(...used), hi: Math.max(...used), uniqueMax });
+    }
+    return out;
+  });
+  check('choropleth', `every metric maps to LUT41 by mid-rank percentile (${lutResult.metrics} metric×grain)`, !lutResult.problems.length, lutResult.problems.slice(0, 5).join(' | '));
+  const topMiss = lutResult.spans.filter(s => s.uniqueMax && s.hi !== 40);
+  check('choropleth', 'a unique maximum always reaches the top LUT sample (index 40); tied maxima share their mid-rank', !topMiss.length, topMiss.map(s => `${s.id}:${s.lo}–${s.hi}`).join(', '));
+
+  const themeResult = await page.evaluate(async () => {
+    const core = await import(new URL('js/core.js', document.baseURI).href);
+    const bg = () => getComputedStyle(document.body).backgroundColor;
+    const lutLight = core.lut('activity').join();
+    const sel = document.querySelector('#theme-select');
+    sel.value = 'dark'; sel.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 300));
+    const dark = { attr: document.documentElement.dataset.theme, bg: bg(), lut: getComputedStyle(document.documentElement).getPropertyValue('--ldm-scale-activity-dark-lut-40').trim() };
+    sel.value = 'light'; sel.dispatchEvent(new Event('change', { bubbles: true }));
+    await new Promise(r => setTimeout(r, 300));
+    const light = { attr: document.documentElement.dataset.theme, bg: bg() };
+    sel.value = 'auto'; sel.dispatchEvent(new Event('change', { bubbles: true }));
+    return { dark, light, lutLight40: lutLight.split(',')[40] };
+  });
+  check('theme', 'Dark switches body to LDS canvas dark (#11191D)', themeResult.dark.attr === 'dark' && themeResult.dark.bg === 'rgb(17, 25, 29)', JSON.stringify(themeResult.dark));
+  check('theme', 'Light switches body to LDS canvas light (#F6F7F3)', themeResult.light.attr === 'light' && themeResult.light.bg === 'rgb(246, 247, 243)', JSON.stringify(themeResult.light));
+  check('theme', 'analytical LUT HEX identical in both themes', themeResult.dark.lut.toUpperCase() === themeResult.lutLight40, `${themeResult.dark.lut} vs ${themeResult.lutLight40}`);
+
+  // evidence stamps, non-map alternative, permalink and states
+  await page.goto(BASE, { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  const stamps = await page.$$eval('.kpi', ks => ks.map(k => { const t = k.querySelector('.evidence')?.textContent || ''; return ['ชุดข้อมูล', 'แหล่ง', 'วันที่', 'ขอบเขต'].every(w => t.includes(w)); }));
+  check('evidence', 'every overview number carries dataset · source · date · boundary', stamps.length === 6 && stamps.every(Boolean), `${stamps.filter(Boolean).length}/${stamps.length}`);
+  const motif = await page.evaluate(() => { const f = document.querySelector('.lds-motif-frame'); return { state: f?.dataset.motifState, err: f?.dataset.motifError || '' }; });
+  check('motif', 'hero motif mounts on the declared atmosphere ground (no MOTIF-06 refusal)', ['mounted', 'fallback', 'checked'].includes(motif.state) && !motif.err, JSON.stringify(motif));
+  const firstTab = await page.evaluate(() => { document.activeElement.blur(); return null; }).then(() => page.keyboard.press('Tab')).then(() => page.evaluate(() => ({ cls: document.activeElement.className, outline: getComputedStyle(document.activeElement).outlineStyle, visible: document.activeElement.getBoundingClientRect().height > 0 })));
+  check('keyboard', 'first Tab reaches a visible skip link with a focus outline', /skip-link/.test(firstTab.cls) && firstTab.outline !== 'none' && firstTab.visible, JSON.stringify(firstTab));
+
+  await page.goto(BASE + '?v=demand', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  const listCount = await page.$$eval('.area-list button[data-area]', b => b.length);
+  check('map', 'non-map alternative lists all 53 tambons', listCount === 53, listCount);
+  await page.goto(BASE + '?v=demand&lvl=lao&a=04180102&b=04180102-00001', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true'); await page.waitForTimeout(2000);
+  const perm = await page.evaluate(() => ({ card: document.querySelector('#panel')?.textContent.includes('04180102-00001'), crumbs: document.querySelectorAll('#drill button').length, url: location.search }));
+  check('map', 'building permalink opens the building card with breadcrumbs', perm.card && perm.crumbs >= 4 && perm.url.includes('b=04180102-00001'), JSON.stringify(perm));
+  await page.goto(BASE + '?v=supply&m=sup_projects', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  const zero = await page.evaluate(() => ({ legend: !!document.querySelector('#map-legend [data-state="measured_zero"]'), zeroLabel: [...document.querySelectorAll('.area-list .num')].some(n => n.textContent.trim() === '0') }));
+  check('states', 'measured zero has its own legend row and is shown as 0 (not blank)', zero.legend && zero.zeroLabel, JSON.stringify(zero));
+  await page.goto(BASE + '?v=sources', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  const gallery = await page.$$eval('#gallery img', imgs => imgs.length);
+  check('supply', 'source photo gallery shows all 64 project photos', gallery === 64, gallery);
+  await page.goto(BASE + '?v=requests', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  const veh = await page.$$eval('#veh-table td[data-state]', tds => tds.map(td => ({ s: td.dataset.state, v: td.dataset.value, w: td.scrollWidth <= td.clientWidth + 1 })));
+  check('states', 'vehicle table cells declare value state and are not clipped', veh.length > 0 && veh.every(c => c.s && c.v !== undefined && c.w), `${veh.length} cells`);
+  // ratio metrics aggregate as a ratio, not a sum
+  await page.goto(BASE + '?v=demand&m=elec_hh', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  const hh = await page.textContent('#map-sub');
+  check('evidence', 'per-household electricity shows the province ratio (~152), not a sum', /ทั้งพื้นที่ 15\d kWh/.test(hh) && !hh.includes('รวม'), hh);
+  // Yolk eligibility: every queued tambon passes Demand; notes follow the number of active conditions
+  const elig = await page.evaluate(async () => {
+    const core = await import(new URL('js/core.js', document.baseURI).href);
+    const tiers = core.computeTiers(core.DEFAULT_CRITERIA);
+    const rows = core.computeQueue(core.DEFAULT_LENSES, tiers);
+    const two = core.tierNotes([{ metric: 'elec_total', p: 60, on: true }, { metric: 'fuel_diesel', p: 60, on: true }, { metric: 'veh_total', p: 50, on: false }]);
+    return { all: rows.every(r => r.tier), n: rows.length, demand: [...tiers.res.values()].filter(v => v.tier).length, two };
+  });
+  check('yolk', 'only Demand members enter the opportunity queue', elig.all && elig.n === elig.demand, JSON.stringify({ n: elig.n, demand: elig.demand }));
+  check('yolk', 'tier notes follow the active conditions (2 on → 2 tiers)', elig.two[1] && elig.two[2] && !elig.two[3], JSON.stringify(elig.two));
+  // Back restores defaults for parameters that the previous URL did not carry
+  await page.goto(BASE + '?v=demand', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  await page.selectOption('#metric-select', 'pop'); await page.waitForTimeout(400);
+  await page.click('.area-list button[data-area="180101"]'); await page.waitForTimeout(1500);
+  await page.goBack(); await page.waitForTimeout(1500);
+  const back = await page.evaluate(() => ({ url: location.search, title: document.querySelector('#map-title')?.textContent }));
+  check('history', 'Back restores the previous view and its metric', back.url === '?v=demand&m=pop' && back.title === 'ประชากร', JSON.stringify(back));
+  // focus stays on the control after the panel re-renders
+  await page.goto(BASE + '?v=demand', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  await page.focus('#metric-select'); await page.selectOption('#metric-select', 'fuel_diesel'); await page.waitForTimeout(800);
+  const keep = await page.evaluate(() => document.activeElement?.id);
+  check('keyboard', 'focus stays on the metric select after the panel re-renders', keep === 'metric-select', keep);
+  await page.goto(BASE + '?v=demand&a=180101', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true'); await page.waitForTimeout(1500);
+  const firstB = await page.$('#panel [data-building]');
+  if (firstB) { await firstB.focus(); await page.keyboard.press('Enter'); await page.waitForTimeout(2000); }
+  const bcard = await page.evaluate(() => ({ url: location.search, card: !!document.querySelector('#h-bld') }));
+  check('keyboard', 'a building card opens from the non-map building list with the keyboard', !!firstB && bcard.card && /b=\d{8}-\d{5}/.test(bcard.url), JSON.stringify(bcard));
+  await ctx.close();
+  await browser.close();
+}
+
+if (!args.includes('--static-only')) await browserChecks();
+const failed = results.filter(r => !r.ok);
+const summary = { label: LABEL, base: BASE, ranAt: new Date().toISOString(), passed: results.length - failed.length, failed: failed.length, results };
+const out = opt('--write'); if (out) fs.writeFileSync(path.resolve(out), JSON.stringify(summary, null, 2) + '\n');
+for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  [${r.group}] ${r.name}${r.ok || !r.detail ? '' : `  — ${r.detail}`}`);
+console.log(`\n${summary.passed} passed · ${summary.failed} failed · ${LABEL} ${BASE}`);
+process.exit(failed.length ? 1 : 0);

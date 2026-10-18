@@ -1,34 +1,79 @@
 {
+  "product": "CityMETER: Yolk · โหมดสำนักงานพลังงานจังหวัด",
+  "province": "ชัยนาท",
+  "release": {
+    "id": "cnt-energy-2026-10-18",
+    "dataRound": "2026-10-18",
+    "engine": "Yolk สพจ. เดโม 0.1",
+    "replaces": "District aggregate registry demo (commit 5fb5f4f)"
+  },
   "designSystem": {
+    "name": "Landometer Design System",
     "version": "0.9.7",
     "releaseRef": "v0.9.7-owner.1",
+    "colorSetId": "color-srgb-10",
     "documentSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
     "releaseManifestSha256": "0a936393fc1ab05f8b32110397546b2a87cc26e46f2661a712bdd2debaa58516",
-    "signature": "unsigned-owner-approved"
+    "signature": "unsigned-owner-approved",
+    "vendoredFiles": "28 files under assets/lds are byte-identical to the 0.9.7 package (checked 2026-10-18)"
   },
-  "purpose": "User-authorized public demonstration of Chainat energy data workflow",
-  "dataBoundary": "Aggregate district and category data only; all attached source files excluded; browser-only fictional admin records separate from source figures",
-  "authority": "Owner request to build and publish in montri-th/chainat-energy; plan is product reference and not an instruction to provision a production system",
+  "authority": {
+    "request": "Owner instruction 2026-10-18: show the demo the way Yolk works, for the Provincial Energy Office mission, one product for both branch expansion and the energy office; criteria and opportunities follow the Chainat energy action plan 2566–2570 and the office mandate; publish at https://montri-th.github.io/chainat-energy/",
+    "publicationBoundary": "Owner decision 2026-10-18: show every field of the office registers, including names of natural persons. Implementation withholds personal phone numbers: 14 project contacts, one number inside a name field and one in an unlabelled column of the controlled-facilities file; the owner can reverse this after the office confirms consent.",
+    "notAuthorised": "No prices, quotations, contract terms, sales pipeline, credentials or per-site coordinates are published."
+  },
   "publication": {
     "repository": "https://github.com/montri-th/chainat-energy",
+    "branch": "main",
     "url": "https://montri-th.github.io/chainat-energy/",
     "robots": "noindex,nofollow",
     "audience": "public-demo"
   },
-  "conformance": {
-    "package": "9768 integrity checks passed; analytical palette advisories retained by source",
-    "artifact": "Actual checks recorded in QA.md. Not a complete LDS conformance certification.",
-    "knownLimitations": [
-      "CityMETER product-specific icon set remains an open item in the current base asset registry; no substitute identity tile is invented. Text tab identity is retained.",
-      "No production authentication, RBAC enforcement, database, shared audit log, live source connection or backup service.",
-      "Native device behavior requires device testing; browser viewport coverage does not certify iOS."
+  "data": {
+    "notes": "data/DATA_QA.md",
+    "observed": [
+      "office registers: 203 fuel operators, 18 controlled factories and buildings, 69 projects (58 solar pumping rows with 103 systems and 360.04 kW, 1 solar PV for a cold room, 7 dryers, 2 biomass stoves, 1 biogas) with 64 photos",
+      "DLT registered vehicles by fuel, province level, as of 2026-02-28",
+      "CityMETER boundaries (8 districts, 53 tambons, 59 LAOs) and 177,647 building footprints"
+    ],
+    "reported": [
+      "electricity by PEA customer category 2566 and final energy 2566 from the action plan"
+    ],
+    "proxy": [
+      "CityMETER population 2026-09, factories 2025-04, hotel rooms"
+    ],
+    "modelled": [
+      "electricity, fuel, LPG and vehicles per tambon, LAO and building",
+      "monthly profiles"
     ]
   },
   "visualDecisions": {
-    "atmosphere": "zero-atmosphere decision: task-oriented data workspace; clarity before decoration",
-    "motion": "none; state feedback via static text",
-    "navigation": "product-scoped views; no decorative colored left rails or brackets",
-    "map": "Actual district polygons, exact count scale 5 classes 1–10,11–20,21–40,41–60,61+ source rows; no individual asset coordinates",
-    "counts": "Not normalized by area or population; counts of supplied source rows only"
-  }
+    "themes": "Auto, Light and Dark from LDS foundation tokens; choice persists per browser; no first-paint flash",
+    "atmosphere": "Overview hero on atmosphere.measure.deep with on-deep inks; dial motif quiet variant declared on that ground; pause control before the frame",
+    "identity": "Governed text identity 'Landometer' in Arvo 700; no unapproved logo candidate",
+    "favicon": "None. The base asset registry has no approved CityMETER product tile, so no substitute is invented",
+    "choropleth": "Every map metric uses the exact 41-sample LUT by mid-rank percentile, index round(40p); measured zero at index 0 with the zero outline; no-data not filled; same HEX in both themes",
+    "tiers": "Yolk tiers use the approved 3-class set of the activity scale (LUT indices 40, 20, 0); ไข่ขาว adds a dashed inset outline because its near-white start is close to the land colour in light theme; opportunity candidates (ชวนสำรวจ) add a heavy inset outline",
+    "families": "activity for energy use, count for register counts, density-household for per-household electricity",
+    "selection": "Map selection uses map.selectedStroke and a marker with markerHalo/markerStroke; data fills never change colour on selection",
+    "navigation": "No decorative brackets or coloured left rails; visible keyboard focus; 44 px direct targets",
+    "queue": "Yolk vocabulary and eligibility: only Demand members (tier 1–3) enter the queue; statuses ชวนสำรวจ / ต้องเพิ่มหลักฐาน / ยังไม่พบสัญญาณ; release stamp shows the criteria preset name"
+  },
+  "conformance": {
+    "package": "LDS verify.mjs PASS 9769/9769 on 2026-10-18 (package scope only)",
+    "artifact": "check-artifact.mjs PASS for styles.css and all js files. index.html reports one problem that comes from the official unmodified motif stylesheet (a color-mix that defines the logo-motif wedge, not rendered on this page); left unchanged because LDS files must not be edited",
+    "browser": "scripts/qa.mjs results in docs/browser-checks.json and docs/QA.md",
+    "notClaimed": [
+      "full LDS conformance",
+      "WCAG or colour-vision certification",
+      "native iOS/Android or screen-reader testing",
+      "truth of modelled consumption"
+    ]
+  },
+  "knownLimitations": [
+    "Demand per area and per building is modelled from province totals until PEA, fuel-sales and DLT linkages are in place",
+    "Office registers carry no data date and no coordinates",
+    "Shortlist is stored in the viewer's browser only",
+    "Static demo: no authentication, database or live connection to CityMETER production"
+  ]
 }

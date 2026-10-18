@@ -1,0 +1,119 @@
+/* Landometer motion motifs — v3 · 6 September 2026
+   Pair with landometer-motifs.js. Colours resolve from the site's lds-tokens.css
+   (color-srgb-05); the fallbacks are the same atomic values. Do not edit values.
+   v3: the logo assembles with squash & stretch and pop-overshoot, and ends on the three sky layers (wedge, band, outer
+   ring) stepping forward together, each its own distance and beat. Quiet: the three sky pieces fill with the ink at graded
+   opacity before that finale, and two hidden closed frames swap in for the resting lines while they move, so every moving
+   piece is a closed outline.
+   5 September 2026). The pop curve also softens slice, rings, layers-quiet and cultivate; each of those five carries one
+   character beat of its own meaning — needle sweep + click, wriggle free, land then ripple, sheets landing, seedling sway. */
+
+lm-motif { display: block; color: var(--brand-blue, #1D4497); }
+/* the mark’s priority wedge is not a solid token; it is derived from two tokens, never a sampled hex */
+lm-motif { --lm-wedge: color-mix(in lch, var(--energy-sky, #59D2FE) 48%, var(--brand-blue, #1D4497));
+  /* character curve of the set — not a DS token: overshoots about 10% past the target, then settles */
+  --lm-ease-pop: cubic-bezier(.34,1.56,.64,1); }
+lm-motif svg { display: block; width: 100%; height: auto; aspect-ratio: 2 / 1; }
+/* quiet variants are a single ink — sky by default (the logo's priority slice), never faded Brand Blue */
+lm-motif[quiet] { color: var(--energy-sky, #59D2FE); }
+lm-motif[ink="sky"] { color: var(--energy-sky, #59D2FE); }
+lm-motif[ink="mint"] { color: var(--energy-mint, #0AD69C); }
+lm-motif[ink="yellow"] { color: var(--energy-yellow, #FFBC1F); }
+lm-motif[ink="blue"] { color: var(--brand-blue, #1D4497); }
+[data-theme="dark"] lm-motif:not([quiet]):not([ink]), lm-motif[ink="beige"] { color: var(--brand-beige, #D8CFB2); }
+
+/* keyframes (motion-riddim-approach-02 durations and curves; fall/squash curves are fixed inside the keyframes) */
+@keyframes lm-draw90 { from { stroke-dashoffset: 90; } to { stroke-dashoffset: 0; } }
+@keyframes lm-drawv { from { stroke-dashoffset: var(--lm-dash, 90); } to { stroke-dashoffset: 0; } }
+@keyframes lm-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes lm-grow-x { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes lm-grow-y { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes lm-unfold { from { transform: translateX(var(--lm-dx, -40px)); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes lm-radiate { from { transform: scale(.82); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes lm-approach { from { transform: scale(.985); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes lm-step-wiggle { 0% { transform: translate(0, 0) rotate(0deg); } 60% { transform: translate(14px, -14px) rotate(-5deg); } 80% { transform: translate(12px, -12px) rotate(2deg); } 100% { transform: translate(12px, -12px) rotate(0deg); } }
+@keyframes lm-sweep { from { transform: rotate(-12deg); } to { transform: none; } }
+@keyframes lm-pulse { 0% { transform: none; } 45% { transform: scale(1.06); } 100% { transform: none; } }
+@keyframes lm-land { from { transform: translateY(-30px); opacity: 0; } to { transform: none; opacity: 1; } }
+@keyframes lm-sway { 0% { transform: none; } 30% { transform: rotate(3deg); } 65% { transform: rotate(-2deg); } 100% { transform: none; } }
+@keyframes lm-settle-down { from { transform: translateY(-24px); opacity: 0; } to { transform: none; opacity: 1; } }
+/* squash & stretch — a seed falls, lands, bounces once */
+@keyframes lm-drop {
+  0% { transform: translateY(-56px); opacity: 0; animation-timing-function: cubic-bezier(.45,0,.85,.5); }
+  12% { opacity: 1; }
+  52% { transform: translateY(0); animation-timing-function: cubic-bezier(.2,.7,.4,1); }
+  72% { transform: translateY(-10px); animation-timing-function: cubic-bezier(.5,0,.8,.6); }
+  100% { transform: none; } }
+/* the pin falls in from above the frame, lands on its tip, squashes, springs back */
+@keyframes lm-pin-fall {
+  0% { transform: translateY(-210px); opacity: 0; animation-timing-function: cubic-bezier(.45,0,.85,.5); }
+  10% { opacity: 1; }
+  55% { transform: translateY(0) scale(1, 1); animation-timing-function: cubic-bezier(.2,.7,.4,1); }
+  68% { transform: scale(1.13, .86); animation-timing-function: cubic-bezier(.4,0,.6,1); }
+  84% { transform: scale(.97, 1.05); animation-timing-function: cubic-bezier(.4,0,.6,1); }
+  100% { transform: none; } }
+@keyframes lm-squash { 0% { transform: none; } 40% { transform: scale(1.08, .9); } 72% { transform: scale(.97, 1.04); } 100% { transform: none; } }
+/* a colour piece is laid down like a translucent sheet: slides in radially, fades up, settles with a small overshoot */
+@keyframes lm-lay { 0% { transform: translate(var(--lm-dx, 0px), var(--lm-dy, -22px)) scale(1.1); opacity: 0; } 100% { transform: none; opacity: 1; } }
+/* finale: each sky layer steps forward along the 22.5° bisector by its own distance (--lm-fx/--lm-fy); only the wedge
+   swells (--lm-fs) and wiggles (--lm-fr); all settle back. Nothing else changes — no dimming of the other parts. */
+@keyframes lm-focus-out {
+  0% { transform: none; }
+  38% { transform: translate(var(--lm-fx, 33.26px), var(--lm-fy, -13.78px)) scale(var(--lm-fs, 1)) rotate(var(--lm-fr, 0deg)); }
+  58% { transform: translate(var(--lm-fx, 33.26px), var(--lm-fy, -13.78px)) scale(var(--lm-fs, 1)) rotate(calc(-1 * var(--lm-fr, 0deg))); }
+  76% { transform: translate(var(--lm-fx, 33.26px), var(--lm-fy, -13.78px)) scale(var(--lm-fs, 1)) rotate(0deg); }
+  100% { transform: none; } }
+/* quiet finale swap: hidden closed frames appear (lm-show) as the resting lines they replace vanish (lm-hide) */
+@keyframes lm-show { 0% { opacity: 0; } 3% { opacity: 1; } 97% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes lm-hide { 0% { opacity: 1; } 3% { opacity: 0; } 97% { opacity: 0; } 100% { opacity: 1; } }
+/* quiet: a piece fills with the ink up to its resting opacity (--lm-fo) — the full mark’s hierarchy in one ink */
+@keyframes lm-fill-in { from { fill-opacity: 0; } to { fill-opacity: var(--lm-fo, 1); } }
+@keyframes lm-wedge-pop {
+  0% { transform: scale(0) rotate(-24deg); opacity: 0; }
+  55% { transform: scale(1.16) rotate(5deg); opacity: 1; }
+  78% { transform: scale(.96) rotate(-2deg); }
+  100% { transform: none; } }
+
+/* final states live in the markup; animations only run while the host carries data-play */
+.lm-step { transform: translate(12px, -12px); transform-box: view-box; transform-origin: 300px 150px; }
+.lm-disc { transform-box: view-box; transform-origin: 300px 150px; }
+.lm-sweep, .lm-pulse { transform-box: view-box; transform-origin: 300px 200px; }
+.lm-sway { transform-box: view-box; }
+.lm-growx { transform-box: fill-box; transform-origin: left center; }
+.lm-growx-c { transform-box: fill-box; transform-origin: center; }
+.lm-growy { transform-box: fill-box; transform-origin: center bottom; }
+.lm-radial { transform-box: view-box; transform-origin: 80px 260px; }
+.lm-pin, .lm-pin-q { transform-box: view-box; transform-origin: 300px 286px; }
+.lm-pop, .lm-wedge, .lm-focus { transform-box: view-box; transform-origin: 300px 143px; }
+
+lm-motif[data-play] .lm-draw     { animation: lm-draw90 360ms var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-drawv    { animation: lm-drawv var(--lm-dur, 360ms) var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-fade     { animation: lm-fade 760ms var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-growx    { animation: lm-grow-x var(--lm-dur, 360ms) var(--lm-ease, cubic-bezier(.16,1,.3,1)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-growx-c  { animation: lm-grow-x 360ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-growy    { animation: lm-grow-y 420ms var(--lm-ease-pop) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-unfold   { animation: lm-unfold 720ms var(--lm-ease-pop) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-radiate  { animation: lm-radiate 760ms var(--lm-ease-pop) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-approach { animation: lm-approach 920ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-step     { animation: lm-fade 760ms var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) both, lm-step-wiggle 620ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) 600ms both; }
+lm-motif[data-play] .lm-draw.lm-sweep { animation: lm-draw90 360ms var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) var(--lm-delay, 0ms) both, lm-sweep 520ms var(--lm-ease-pop) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-pulse    { animation: lm-pulse 420ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-land     { animation: lm-land 560ms var(--lm-ease-pop) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-sway     { animation: lm-sway 760ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-drop     { animation: lm-drop 920ms linear var(--lm-delay, 120ms) both; }
+lm-motif[data-play] .lm-settle   { animation: lm-settle-down 760ms var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) 700ms both; }
+/* logo assembly */
+lm-motif[data-play] .lm-pin      { animation: lm-pin-fall 700ms linear 0ms both; }
+lm-motif[data-play] .lm-pin-q    { animation: lm-drawv 600ms var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) 0ms both, lm-squash 440ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) 560ms both; }
+lm-motif[data-play] .lm-pop      { animation: lm-lay 520ms var(--lm-ease-pop) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-wedge    { animation: lm-wedge-pop 600ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-focus    { animation: lm-focus-out 900ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) var(--lm-delay, 0ms) both; }
+lm-motif[data-play] .lm-show     { animation: lm-show var(--lm-swap-dur, 1020ms) linear var(--lm-swap-delay, 0ms) both; }
+lm-motif[data-play] .lm-fill     { animation: lm-fill-in 360ms var(--motion-ease-state, cubic-bezier(.2,0,0,1)) var(--lm-fill-delay, 0ms) both; }
+lm-motif[data-play] .lm-wedge.lm-fill { animation: lm-wedge-pop 600ms var(--motion-ease-settle, cubic-bezier(.2,.9,.25,1.08)) var(--lm-delay, 0ms) both, lm-fill-in 360ms var(--motion-ease-state, cubic-bezier(.2,0,0,1)) var(--lm-fill-delay, 0ms) both; }
+lm-motif[data-play] .lm-drawv.lm-hide { animation: lm-drawv var(--lm-dur, 360ms) var(--motion-ease-enter, cubic-bezier(.16,1,.3,1)) var(--lm-delay, 0ms) both, lm-hide var(--lm-swap-dur, 1020ms) linear var(--lm-swap-delay, 0ms) both; }
+
+/* one kill switch — reduced motion lands the final state immediately */
+@media (prefers-reduced-motion: reduce) {
+  lm-motif * { animation: none !important; transition: none !important; }
+}
