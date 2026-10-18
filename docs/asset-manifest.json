@@ -830,13 +830,13 @@
     },
     {
       "path": "docs/QA.md",
-      "bytes": 5831,
-      "sha256": "c074ca41fd594c8c614cd39a128df7a6a6de0f34d56d51bbaecfb87393daf320"
+      "bytes": 6498,
+      "sha256": "9381a64dc0d11d1119b4f7d709277aecf459479b403544b6159f99a61efdf4a9"
     },
     {
       "path": "docs/browser-checks.json",
-      "bytes": 10109,
-      "sha256": "3042a1122b7097555f3e1bb62a2ead7c4284a2a69693d26b983f4c64b49fceb2"
+      "bytes": 23568,
+      "sha256": "ac9c3fa11821da90a4341df01b24d810daf151303cd01b567bc7aa1ca2af12b7"
     },
     {
       "path": "docs/build-record.json",
@@ -875,8 +875,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 38873,
-      "sha256": "5755b25451ea1552e2954d91010e653911b94c295c0458f78939639a285f82f6"
+      "bytes": 39062,
+      "sha256": "d3b893c5bc8c01b84f3fea6dc42ff63d5f4b42f3e7109c5140c7894192e89356"
     },
     {
       "path": "vendor/maplibre-gl/4.7.1/LICENSE.txt",

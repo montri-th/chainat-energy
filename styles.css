@@ -109,7 +109,7 @@ main { min-width: 0; outline: none; }
 .hero { position: relative; display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(220px, .6fr); gap: var(--s6); align-items: center; padding: var(--s7); border-radius: var(--r-xl); background: var(--deep); color: var(--on-deep); overflow: hidden; }
 .hero :focus-visible { outline: 3px solid var(--on-deep); outline-offset: 2px; box-shadow: 0 0 0 6px var(--on-deep-ring); }
 .hero-eyebrow { font-family: var(--font-data); font-size: var(--fs-caption); letter-spacing: .08em; color: var(--on-deep-2); margin-bottom: var(--s3); }
-.hero h1 { font-size: var(--fs-h1); line-height: 1.25; color: var(--on-deep); text-wrap: balance; }
+.hero h1 { font-size: var(--fs-h1); line-height: 1.3; padding-top: .18em; color: var(--on-deep); text-wrap: balance; }
 .hero-lede { margin-top: var(--s4); font-size: var(--fs-body-lg); line-height: 1.7; color: var(--on-deep-2); max-width: 46ch; }
 .hero-actions { margin-top: var(--s5); display: flex; flex-wrap: wrap; gap: var(--s3); align-items: center; }
 .btn-on-deep { background: var(--on-deep); border-color: var(--on-deep); color: var(--ldm-brand-blue); }
@@ -389,3 +389,5 @@ details > summary { min-height: 44px; padding-block: var(--s2); cursor: pointer;
 .bld-list .num { font-family: var(--font-data); }
 /* the map wrapper clips overflow, so the canvas focus ring is drawn inside */
 .maplibregl-canvas:focus-visible { outline: 3px solid var(--interaction-focus-ring); outline-offset: -3px; }
+/* Thai stacked vowels and tone marks rise above the line box: keep clear space under kickers */
+.section-head h1, .section-head h2, .map-head h1 { padding-top: .12em; }
