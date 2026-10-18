@@ -1,7 +1,7 @@
 {
   "label": "local",
-  "base": "http://127.0.0.1:58192/",
-  "ranAt": "2026-10-18T17:20:38.733Z",
+  "base": "http://127.0.0.1:59138/",
+  "ranAt": "2026-10-18T17:40:44.589Z",
   "passed": 85,
   "failed": 0,
   "results": [
@@ -501,7 +501,7 @@
       "group": "basemap",
       "name": "Auto follows OS appearance for provider styling while exact analytical colors stay fixed",
       "ok": true,
-      "detail": ""
+      "detail": "{\"darkSettled\":true,\"lightSettled\":true,\"dark\":{\"choice\":\"auto\",\"attr\":null,\"mediaDark\":true,\"effective\":\"dark\",\"roadBrightness\":0.72},\"light\":{\"choice\":\"auto\",\"attr\":null,\"mediaDark\":false,\"effective\":\"light\",\"roadBrightness\":1},\"fillsUnchanged\":true,\"tiersUnchanged\":true}"
     },
     {
       "group": "basemap",

@@ -384,8 +384,9 @@ async function browserChecks() {
   check('basemap', 'theme changes retain exact analytical source colors and Demand members', darkDisplay.fills === beforeDisplay.fills && darkDisplay.tiers === beforeDisplay.tiers && darkDisplay.state === beforeDisplay.state);
   await page.emulateMedia({ colorScheme: 'dark' });
   await page.evaluate(() => { const s = document.getElementById('theme-select'); s.value = 'auto'; s.dispatchEvent(new Event('change', { bubbles: true })); });
-  const waitForAuto = expected => page.waitForFunction(async expectedState => {
-    const module = await import(new URL('js/map.js', document.baseURI).href), m = await module.mapReady();
+  // Playwright's poller requires a synchronous Boolean: an async predicate is a truthy Promise.
+  const waitForAuto = expected => page.waitForFunction(expectedState => {
+    const m = window.__chainatQaMap;
     const roads = m.getStyle().layers.find(layer => layer.id.startsWith('context-roads-'));
     return !document.documentElement.dataset.theme && matchMedia('(prefers-color-scheme: dark)').matches === expectedState.dark && !!roads && m.getPaintProperty(roads.id, 'raster-brightness-max') === expectedState.brightness;
   }, expected, { timeout: 5000 }).then(() => true).catch(() => false);

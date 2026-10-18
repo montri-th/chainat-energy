@@ -968,13 +968,13 @@
     },
     {
       "path": "docs/release-evidence.json",
-      "bytes": 4858,
-      "sha256": "b30604c9622859e7a2d0f4766edc596579e803724c20a34128d62c6a0dc86ae7"
+      "bytes": 5061,
+      "sha256": "72fbd193746e6866f9a5f83811aacd1d4dac546f2bfe4054bbb7f015334f17d1"
     },
     {
       "path": "docs/ui-v2-browser-checks.json",
-      "bytes": 14636,
-      "sha256": "07617f21b3d0f857afa278d862440dbbd332eb4ebae30c4074c94df73751c764"
+      "bytes": 14950,
+      "sha256": "55a177b403a6f94cff4cc59e93019e57801bc7815e4b0d9dcc2c67db4d35f7d3"
     },
     {
       "path": "icons.css",
@@ -1048,8 +1048,8 @@
     },
     {
       "path": "scripts/qa.mjs",
-      "bytes": 44701,
-      "sha256": "51e4f6b7abf3e58d589320b52b7adb11ad2a91c00305d4097088bb9e28d4c418"
+      "bytes": 44722,
+      "sha256": "99a127137a4752171da23052ba6b2ff0e1bab056846672a57b64c42aed15d182"
     },
     {
       "path": "scripts/run-qa.mjs",

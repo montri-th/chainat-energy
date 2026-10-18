@@ -1,7 +1,7 @@
 {
   "schemaVersion": "chainat.ui-release/1.0",
   "uiReleaseId": "chainat-yolk-ui-2026-10-19-v2",
-  "preparedAt": "2026-10-18T17:22:01.545716+00:00",
+  "preparedAt": "2026-10-18T17:41:11.099010+00:00",
   "status": "local_verified_provider_receipt_external",
   "sourceBaselineCommit": "c913c8061164973bf259f7fff983d245f97b3494",
   "sourceBinding": {
@@ -101,9 +101,11 @@
     "status": "passed",
     "passed": 85,
     "failed": 0,
-    "ranAt": "2026-10-18T17:20:38.733Z",
+    "ranAt": "2026-10-18T17:40:44.589Z",
     "report": "docs/ui-v2-browser-checks.json",
-    "scope": "56 route/viewport/theme fixtures, metric/grain, navigation, keyboard and basemap regressions; external tiles mocked"
+    "scope": "56 route/viewport/theme fixtures, metric/grain, navigation, keyboard and basemap regressions; external tiles mocked",
+    "qaHarnessSha256": "99a127137a4752171da23052ba6b2ff0e1bab056846672a57b64c42aed15d182",
+    "autoThemePredicate": "Synchronous observed-state polling; exact brightness/HEX/tier assertions preserved"
   },
   "additionalChecks": {
     "coreAndContract": 11,
