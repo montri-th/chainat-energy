@@ -17,9 +17,13 @@
 
 ## ผลตรวจบนหน้าเว็บจริง (live)
 
-รอบ r2: รอตรวจหลัง push และ GitHub Pages deploy ผลจะบันทึกในไฟล์นี้และ `browser-checks.json`
+รอบ r2 หลัง push commit `c899707` และ GitHub Pages deploy สำเร็จ (22:32 น. 18 ต.ค. 2569):
 
-รอบแรก (commit `818c95e` และ `0a9da8e`): ไฟล์บนหน้าเว็บจริงตรงกับ commit ทุกไบต์ และ `BASE_URL=https://montri-th.github.io/chainat-energy/ node scripts/qa.mjs` ผ่าน 63 จาก 63 ข้อ
+- ไฟล์ 179 ไฟล์ที่ดึงจาก https://montri-th.github.io/chainat-energy/ ตรงกับ SHA-256 ใน `docs/asset-manifest.json` ทุกไบต์ (ตรวจ 22:32 น.)
+- `BASE_URL=https://montri-th.github.io/chainat-energy/ node scripts/qa.mjs` ผ่าน 73 จาก 73 ข้อ (22:36 น.)
+- commit ถัดไปแก้เฉพาะเอกสารผลตรวจ (`docs/QA.md` `docs/browser-checks.json` `docs/build-record.json` และ manifest)
+
+รอบแรก (commit `818c95e` และ `0a9da8e`): ไฟล์บนหน้าเว็บจริงตรงกับ commit ทุกไบต์ และชุดตรวจรุ่นนั้นผ่าน 63 จาก 63 ข้อ
 
 ## ตรวจด้วยเครื่องมือของ LDS 0.9.7
 

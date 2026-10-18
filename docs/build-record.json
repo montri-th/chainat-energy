@@ -80,7 +80,7 @@
   "conformance": {
     "package": "LDS verify.mjs PASS 9769/9769 on 2026-10-18 (package scope only; the package did not change in r2)",
     "artifact": "check-artifact.mjs (r2) PASS for styles.css and all js files. index.html reports one problem that comes from the official unmodified motif stylesheet (a color-mix that defines the logo-motif wedge, not rendered on this page); left unchanged because LDS files must not be edited",
-    "browser": "scripts/qa.mjs 73/73 locally for r2; results in docs/browser-checks.json and docs/QA.md",
+    "browser": "scripts/qa.mjs 73/73 locally and 73/73 on https://montri-th.github.io/chainat-energy/ for commit c899707 (2026-10-18 22:36 +07); 179/179 live files byte-identical to docs/asset-manifest.json; results in docs/browser-checks.json and docs/QA.md",
     "favicon": "Not conformant with FAVICON-01 / WEBFMT-01 until a product tile is approved",
     "notClaimed": [
       "full LDS conformance",

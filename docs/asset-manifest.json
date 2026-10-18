@@ -835,18 +835,18 @@
     },
     {
       "path": "docs/QA.md",
-      "bytes": 10182,
-      "sha256": "38b37fa3818a4882644822c972e801710115b87b2a71e2d34458585e2c725cf2"
+      "bytes": 10623,
+      "sha256": "0c5a8586e94cb7c9898e34c93769053172507d2b6c3d74abc0c961cf5724ebca"
     },
     {
       "path": "docs/browser-checks.json",
-      "bytes": 38015,
-      "sha256": "2fcdcaa7f1739d2dd81b7a77912ec28cd1c31bce847ba7327180969f3bf10473"
+      "bytes": 52425,
+      "sha256": "33b2d2c9e7d7784eb6f8723d915f2d433f0b917090d1a0685b7c10e9ec10b3cf"
     },
     {
       "path": "docs/build-record.json",
-      "bytes": 9310,
-      "sha256": "224acadcab54b557ee0369240da95156491df76cde443c56572ec0852c0c041b"
+      "bytes": 9465,
+      "sha256": "cf782b84d04207cfe19f05906f61aee172ac4006c114fe5e6d7107d5a4286693"
     },
     {
       "path": "index.html",
