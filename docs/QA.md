@@ -1,10 +1,18 @@
 # QA · CityMETER: Yolk โหมดสำนักงานพลังงานจังหวัด
 
-## UI v2 · 19 ต.ค. 2569
+## Quiet logo follow-up · 19 ต.ค. 2569
+
+- เปลี่ยน hero จาก dial เป็น `landometer.logo.quiet` และนำปุ่มหยุดออกตามคำขอเจ้าของงาน ใช้ lifecycle เล่นครั้งเดียว 3.36 วินาที แล้วค้าง SVG ต้นฉบับที่ 3.4 วินาที ดู [motion contract](quiet-logo-motion.json)
+- ผลตรวจบนเครื่อง **123/123 ผ่าน** · core 11 และ portable server 4 ผ่าน · [ผลดิบพร้อม hash ของ runtime และชุดตรวจ](quiet-logo-browser-checks.json)
+- รวม 320/360/390/1440 px ทั้งสองธีม, การเคลื่อนไหวจริง, ไม่เล่นซ้ำ, reduced motion, no JavaScript, ไฟล์ JS/CSS ล้มเหลว, การโหลด dependency ช้า, print/offscreen/pagehide/document-hidden และการวาง hero เมื่อขยายข้อความ 130/200% การตรวจข้อความขยายนี้จำกัดที่ตำแหน่ง hero
+- ตรวจภาพจริงผ่าน CUA บนมือถือและ desktop ธีมสว่าง/มืด โลโก้ครบ ไม่มีปุ่ม ไม่มีข้อความซ้อนกัน ใช้ exact runtime JS/CSS/SVG ที่ตรวจ hash แล้ว ไม่แก้ vendor bytes
+- ผลและ receipt UI v2 ด้านล่างเป็น snapshot ก่อนการแก้ hero รอบนี้ ไม่ใช้ยืนยันไฟล์ hero ปัจจุบัน การตรวจ live ของรอบนี้เก็บแยกหลัง deploy
+
+## UI v2 · 19 ต.ค. 2569 (ประวัติก่อนเปลี่ยน hero เป็น quiet logo)
 
 คงข้อมูลรอบ `cnt-energy-2026-10-18-r2` และวิธีคำนวณเดิม ปรับเฉพาะ identity/navigation, พื้นหลังแผนที่ และ developer handoff
 
-- ชุด browser/static ปัจจุบันผ่าน **85/85** ข้อ รวม 56 route × viewport/theme fixtures และ 8 basemap regressions; ดู [ผลดิบ UI v2](ui-v2-browser-checks.json)
+- ชุด browser/static ใน snapshot UI v2 ผ่าน **85/85** ข้อ รวม 56 route × viewport/theme fixtures และ 8 basemap regressions; ดู [ผลดิบ UI v2](ui-v2-browser-checks.json)
 - ตรวจ core/contract 11 ข้อ และ portable server 4 ข้อผ่าน; tier 9/15/12 และ opportunity queue 28/8/0 ตรง baseline
 - ตรวจจริงผ่าน CUA บนจอแคบและ desktop ธีมสว่าง/มืด ทั้งข้อความไทย/อังกฤษใหม่ เมนู focus/Escape และภาพ OSM/Sentinel-2 2021; provider tests อัตโนมัติใช้ภาพจำลอง ไม่ยิง tile จำนวนมาก
 - [Release evidence](release-evidence.json) bind hash ของไฟล์ที่ทดสอบ ส่วน final source SHA, provider และ live parity เก็บใน private handoff หลัง deploy

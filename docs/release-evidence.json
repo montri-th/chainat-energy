@@ -148,5 +148,7 @@
       "D10"
     ]
   },
-  "liveReceipt": "Stored with the private handoff after matching source SHA to GitHub Pages terminal success and live bytes."
+  "liveReceipt": "Stored with the private handoff after matching source SHA to GitHub Pages terminal success and live bytes.",
+  "scopeStatus": "Retained UI v2 test snapshot before quiet-logo follow-up; hashes and checks below attest the earlier bytes only.",
+  "subsequentHeroFollowUp": "docs/quiet-logo-motion.json"
 }

@@ -38,11 +38,9 @@
   <link rel="stylesheet" href="./icons.css">
   <link rel="stylesheet" href="./identity.css">
   <link rel="stylesheet" href="./assets/lds/build-kit/motif/landometer-motifs.css">
-  <link rel="stylesheet" href="./assets/lds/build-kit/motif/motif-frame.css">
   <script src="./vendor/maplibre-gl/4.7.1/maplibre-gl.js" defer></script>
   <script src="./assets/lds/build-kit/motif/landometer-motifs.js" defer></script>
-  <script src="./assets/lds/build-kit/motif/motion-controller.js" defer></script>
-  <script src="./assets/lds/build-kit/motif/motif-frame.js" defer></script>
+  <script type="module" src="./js/hero-logo.js"></script>
   <script src="./js/icons.js" defer></script>
   <script src="./js/identity.js" defer></script>
   <script type="module" src="./js/app.js"></script>
@@ -94,12 +92,9 @@
               <div class="hero-actions" data-region="primary_action"><a class="btn btn-on-deep" href="?v=demand">เริ่มที่ความต้องการพลังงาน</a><a class="btn btn-ghost-deep" href="?v=opportunity">ดูคิวโอกาสส่งเสริม</a></div>
               <p class="hero-stamp">ข้อมูลรอบ 18 ต.ค. 2569 · ตัวเลขความต้องการรายพื้นที่เป็นแบบจำลองจากยอดจังหวัดจริง</p>
             </div>
-            <div class="hero-motif">
-              <button class="lds-motion-pause" type="button" aria-pressed="false" data-label-pause="หยุดภาพเคลื่อนไหว" data-label-resume="เล่นภาพเคลื่อนไหวต่อ">หยุดภาพเคลื่อนไหว</button>
-              <div class="lds-motif-frame" data-kind="dial" data-job="orientation" data-beat="opening" data-variant="quiet" data-host-surface="atmosphere.measure.deep" data-cycle-ms="3000">
-                <lm-motif kind="dial" autoplay="false"></lm-motif>
-                <noscript><img src="./assets/lds/build-kit/motif/svg/dial-quiet.svg" alt="" width="600" height="300"></noscript>
-              </div>
+            <div class="hero-motif" data-asset-id="landometer.logo.quiet" data-kind="logo" data-job="animated_brand_opening" data-beat="opening" data-variant="quiet" data-host-surface="atmosphere.measure.deep" data-motion-mode="finite_once" data-logo-motion="final" aria-hidden="true">
+              <img class="hero-logo-fallback" src="./assets/lds/build-kit/motif/svg/logo-quiet.svg" alt="" width="600" height="300">
+              <lm-motif kind="logo" quiet autoplay="false"></lm-motif>
             </div>
           </section>
 

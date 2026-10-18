@@ -31,7 +31,8 @@ const REQUIRED = ['index.html', 'styles.css', 'js/core.js', 'js/map.js', 'js/vie
   'data/geo/province.geojson', 'data/geo/district.geojson', 'data/geo/tambon.geojson', 'data/geo/lao.geojson', 'data/buildings/index.json',
   'vendor/maplibre-gl/4.7.1/maplibre-gl.js', 'vendor/maplibre-gl/4.7.1/LICENSE.txt',
   'assets/lds/build-kit/lds-0.9.7.css', 'assets/lds/machine/color-srgb-10.production.css',
-  'assets/lds/build-kit/motif/landometer-motifs.js', 'assets/lds/build-kit/motif/motif-frame.js', 'assets/lds/build-kit/motif/motion-controller.js'];
+  'assets/lds/build-kit/motif/landometer-motifs.js', 'assets/lds/build-kit/motif/landometer-motifs.css',
+  'assets/lds/build-kit/motif/svg/logo-quiet.svg', 'js/hero-logo.js'];
 const missing = REQUIRED.filter(f => !exists(f));
 check('files', 'required files present', !missing.length, missing.join(', '));
 
@@ -158,8 +159,24 @@ const webManifest = exists('site.webmanifest') ? json('site.webmanifest') : {};
 check('identity', 'web manifest binds the scoped 192 and 512 maskable icons with relative app URLs', /rel="manifest"/.test(html) && webManifest.scope === './' && webManifest.start_url === './' && ['192x192', '512x512'].every(size => webManifest.icons?.some(i => i.sizes === size && iconRows.some(a => i.src.split('?')[0].replace(/^\.\//, '') === a.path) && (size !== '512x512' || i.purpose === 'maskable'))));
 const share = identity.share;
 check('identity', 'social preview metadata binds the truthful Chainat 1200×630 asset', share.width === 1200 && share.height === 630 && identity.assets.some(a => a.role === 'social_preview' && a.path === share.path) && html.includes(`content="https://montri-th.github.io/chainat-energy/${share.path}"`) && html.includes(`property="og:image:type" content="${share.mime}"`) && /property="og:image:width" content="1200"/.test(html) && /property="og:image:height" content="630"/.test(html) && /name="twitter:card" content="summary_large_image"/.test(html));
-check('page', 'pause control precedes the motif frame', html.indexOf('lds-motion-pause') > 0 && html.indexOf('lds-motion-pause') < html.indexOf('lds-motif-frame'));
-check('page', 'motif scripts load in order: motifs → motion controller → frame', html.indexOf('landometer-motifs.js') < html.indexOf('motion-controller.js') && html.indexOf('motion-controller.js') < html.indexOf('motif-frame.js'));
+check('page', 'owner-selected quiet logo is finite-once with an exact visible source fallback and no pause control',
+  /data-asset-id="landometer\.logo\.quiet"/.test(html) && /data-motion-mode="finite_once"/.test(html) &&
+  /<lm-motif\b[^>]*kind="logo"[^>]*\bquiet\b[^>]*autoplay="false"/.test(html) &&
+  /<img\b[^>]*class="hero-logo-fallback"[^>]*src="\.\/assets\/lds\/build-kit\/motif\/svg\/logo-quiet\.svg"/.test(html) &&
+  !/<button\b[^>]*class="[^"]*lds-motion-pause/.test(html));
+check('page', 'exact motif runtime loads with the artifact finite-once controller; repeating wrappers are not loaded',
+  html.includes('landometer-motifs.js') && html.includes('js/hero-logo.js') &&
+  !/\b(?:src|href)="[^"]*(?:motion-controller\.js|motif-frame\.(?:js|css))/.test(html) &&
+  !/<lm-motif\b[^>]*\b(?:loop|replay)=/.test(html));
+const quietAssets = [
+  ['assets/lds/build-kit/motif/landometer-motifs.js', '3a5caef7918a85885b61dd53e049ea8bf2b0a3cea508f587bb14970bfe6deaf2'],
+  ['assets/lds/build-kit/motif/landometer-motifs.css', '7cc2deb475a8d6e4af331407b2b4b741716c458a8ce885e2fb2859374b93912e'],
+  ['assets/lds/build-kit/motif/svg/logo-quiet.svg', '5b6798cdb6c3ada246286e6ce3386644f383c4f987a267e5c5db392809403e14']
+];
+const sourceFiles = ['index.html', 'styles.css', 'js/hero-logo.js', ...quietAssets.map(([file]) => file), 'scripts/qa.mjs'];
+const sourceFingerprint = { algorithm: 'sha256', files: Object.fromEntries(sourceFiles.map(file => [file, exists(file) ? sha(file) : null])) };
+check('motif', 'quiet logo runtime, CSS and final SVG retain the exact approved release 1.2.1 bytes',
+  quietAssets.every(([file, hash]) => exists(file) && sha(file) === hash));
 
 /* ---------------- browser checks ---------------- */
 let shotsDir = opt('--shots');
@@ -170,6 +187,163 @@ function syntheticTile() {
   const ihdr = Buffer.alloc(13); ihdr.writeUInt32BE(256, 0); ihdr.writeUInt32BE(256, 4); ihdr[8] = 8; ihdr[9] = 6;
   return Buffer.concat([Buffer.from([137,80,78,71,13,10,26,10]), chunk('IHDR', ihdr), chunk('IDAT', zlib.deflateSync(Buffer.alloc((256 * 4 + 1) * 256))), chunk('IEND', Buffer.alloc(0))]);
 }
+
+// This artifact deliberately uses the owner's finite-once/no-button selection.
+// These checks attest that selection, not LDS's different repeating gallery contract.
+async function heroLogoChecks(browser) {
+  const host = '.hero-motif[data-asset-id="landometer.logo.quiet"]';
+  const state = page => page.evaluate(selector => {
+    const node = document.querySelector(selector), runtime = node?.querySelector('lm-motif'), fallback = node?.querySelector('img.hero-logo-fallback');
+    const visible = el => { if (!el) return false; const r = el.getBoundingClientRect(), s = getComputedStyle(el); return r.width > 0 && r.height > 0 && s.display !== 'none' && s.visibility !== 'hidden' && !el.hidden; };
+    const box = node?.getBoundingClientRect();
+    const animations = runtime?.getAnimations({ subtree: true }) || [];
+    return { count: document.querySelectorAll(selector).length, runtimeCount: node?.querySelectorAll('lm-motif').length || 0,
+      svgCount: runtime?.querySelectorAll('svg').length || 0, fallbackCount: node?.querySelectorAll('img.hero-logo-fallback').length || 0,
+      phase: node?.dataset.logoMotion, runtimeVisible: visible(runtime), fallbackVisible: visible(fallback),
+      fallbackLoaded: !!(fallback?.complete && fallback.naturalWidth),
+      kind: runtime?.getAttribute('kind'), quiet: runtime?.hasAttribute('quiet'), autoplay: runtime?.getAttribute('autoplay'),
+      running: animations.filter(a => a.playState === 'running').length,
+      bounded: animations.every(a => a.effect?.getComputedTiming().iterations === 1 && a.effect.getComputedTiming().endTime <= 3400),
+      width: box?.width || 0, height: box?.height || 0, overflow: document.documentElement.scrollWidth - innerWidth,
+      pauses: document.querySelectorAll('.lds-motion-pause').length, started: window.__heroLogoQaStarts || 0 };
+  }, host);
+  const watch = ctx => ctx.addInitScript(() => {
+    window.__heroLogoQaStarts = 0;
+    new MutationObserver(records => {
+      for (const r of records) if (r.target.matches?.('.hero-motif[data-asset-id="landometer.logo.quiet"]') && r.target.dataset.logoMotion === 'playing') window.__heroLogoQaStarts++;
+    }).observe(document, { subtree: true, attributes: true, attributeFilter: ['data-logo-motion'] });
+  });
+  const awaitPhase = (page, phase) => page.waitForFunction(({ selector, phase }) => document.querySelector(selector)?.dataset.logoMotion === phase, { selector: host, phase }, { timeout: 7000 });
+  const matrix = [1440, 320, 360, 390].flatMap(width => ['light', 'dark'].map(scheme => ({ width, scheme })));
+  for (const { width, scheme } of matrix) {
+    const ctx = await browser.newContext({ viewport: { width, height: width === 1440 ? 900 : 844 }, colorScheme: scheme });
+    await watch(ctx);
+    const page = await ctx.newPage(), tag = `${scheme} ${width}`;
+    try {
+      await page.goto(BASE, { waitUntil: 'domcontentloaded' });
+      await page.locator(host).scrollIntoViewIfNeeded();
+      await awaitPhase(page, 'playing');
+      const moving = await state(page);
+      check('motif', `${tag}: exact quiet logo performs one real, bounded authored animation`, moving.count === 1 && moving.runtimeCount === 1 && moving.svgCount === 1 && moving.kind === 'logo' && moving.quiet && moving.autoplay === 'false' && moving.runtimeVisible && moving.running > 0 && moving.bounded && moving.pauses === 0, JSON.stringify(moving));
+      await awaitPhase(page, 'final');
+      const settled = await state(page);
+      check('motif', `${tag}: complete fallback settles with stable, contained geometry`, settled.fallbackCount === 1 && settled.fallbackVisible && settled.fallbackLoaded && !settled.runtimeVisible && settled.running === 0 && settled.overflow <= 0 && Math.abs(settled.width - moving.width) < 1 && Math.abs(settled.height - moving.height) < 1, JSON.stringify(settled));
+      if (width === 1440 && scheme === 'light') {
+        // Cross the former six-second replay boundary, then exit and re-enter the hero.
+        await page.waitForTimeout(3300);
+        await page.locator('#cars').scrollIntoViewIfNeeded();
+        await page.locator(host).scrollIntoViewIfNeeded();
+        await page.waitForTimeout(300);
+        const stable = await state(page);
+        check('motif', 'finite-once logo never replays after a full former-cycle dwell or viewport re-entry', stable.phase === 'final' && stable.started === 1 && stable.running === 0 && stable.fallbackVisible, JSON.stringify(stable));
+      }
+    } catch (e) { check('motif', `${tag}: quiet-logo lifecycle completed`, false, e.message); }
+    finally { await ctx.close(); }
+  }
+
+  // Fail-open fixtures: source fallback must remain usable without JS, runtime or observer.
+  for (const mode of ['no-javascript', 'runtime-blocked', 'stylesheet-blocked', 'observer-unavailable', 'reduced-motion']) {
+    const ctx = await browser.newContext({ viewport: { width: 390, height: 844 }, colorScheme: 'dark', javaScriptEnabled: mode !== 'no-javascript', reducedMotion: mode === 'reduced-motion' ? 'reduce' : 'no-preference' });
+    await watch(ctx);
+    if (mode === 'runtime-blocked') await ctx.route('**/landometer-motifs.js*', route => route.abort('failed'));
+    if (mode === 'stylesheet-blocked') await ctx.route('**/landometer-motifs.css*', route => route.abort('failed'));
+    if (mode === 'observer-unavailable') await ctx.addInitScript(() => { delete window.IntersectionObserver; });
+    const page = await ctx.newPage();
+    try {
+      await page.goto(BASE, { waitUntil: 'networkidle' });
+      await page.locator(host).scrollIntoViewIfNeeded();
+      await page.waitForFunction(selector => { const img = document.querySelector(selector)?.querySelector('img.hero-logo-fallback'); return img?.complete && img.naturalWidth > 0; }, host);
+      const fallback = await state(page);
+      check('motif', `${mode}: complete source SVG stays visible and no animation starts`, fallback.count === 1 && fallback.fallbackCount === 1 && fallback.fallbackLoaded && fallback.fallbackVisible && !fallback.runtimeVisible && fallback.running === 0 && fallback.started === 0 && fallback.overflow <= 0, JSON.stringify(fallback));
+    } catch (e) { check('motif', `${mode}: complete fallback available`, false, e.message); }
+    finally { await ctx.close(); }
+  }
+
+  // Fresh contexts have no warmed asset cache. Hold one dependency until the source fallback
+  // has been inspected, then release it and require a genuine authored play.
+  for (const dependency of ['landometer-motifs.js', 'landometer-motifs.css']) {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' });
+    await watch(ctx);
+    let release;
+    const held = new Promise(resolve => { release = resolve; });
+    await ctx.route(`**/${dependency}*`, async route => { await held; await route.continue(); });
+    const page = await ctx.newPage();
+    try {
+      await page.goto(BASE, { waitUntil: 'commit' });
+      if (dependency.endsWith('.css')) {
+        // A pending stylesheet can prevent the browser from painting or completing images.
+        // Inspect source DOM here; do not pretend a pre-paint DOM check is a visual pass.
+        await page.waitForFunction(selector => !!document.querySelector(selector)?.querySelector('img.hero-logo-fallback'), host, { timeout: 7000 });
+        const cold = await page.evaluate(selector => {
+          const node = document.querySelector(selector), img = node?.querySelector('img.hero-logo-fallback');
+          return { phase: node?.dataset.logoMotion, src: img?.getAttribute('src'), hidden: img?.hidden, started: window.__heroLogoQaStarts || 0,
+            stylesheetReady: !!document.querySelector('link[href="./assets/lds/build-kit/motif/landometer-motifs.css"]')?.sheet };
+        }, host);
+        check('motif', 'cold stylesheet: exact source-fallback DOM remains declared while stylesheet is pending (pre-paint check)', cold.phase === 'final' && cold.src === './assets/lds/build-kit/motif/svg/logo-quiet.svg' && cold.hidden === false && cold.started === 0 && !cold.stylesheetReady, JSON.stringify(cold));
+      } else {
+        await page.waitForFunction(selector => { const img = document.querySelector(selector)?.querySelector('img.hero-logo-fallback'); return img?.complete && img.naturalWidth > 0; }, host, { timeout: 7000 });
+        const cold = await state(page);
+        check('motif', `cold ${dependency}: source fallback stays complete before the dependency becomes ready`, cold.count === 1 && cold.phase === 'final' && cold.fallbackCount === 1 && cold.fallbackLoaded && cold.fallbackVisible && !cold.runtimeVisible && cold.started === 0, JSON.stringify(cold));
+      }
+      release();
+      await page.locator(host).scrollIntoViewIfNeeded();
+      await awaitPhase(page, 'playing');
+      const ready = await state(page);
+      check('motif', `cold ${dependency}: enhancement starts only after exact runtime and stylesheet readiness`, ready.fallbackLoaded && ready.runtimeVisible && ready.svgCount === 1 && ready.running > 0 && ready.bounded && ready.started === 1, JSON.stringify(ready));
+    } catch (e) { check('motif', `cold ${dependency}: progressive enhancement completed`, false, e.message); }
+    finally { release(); await ctx.close(); }
+  }
+
+  // rem-based text enlargement exercises real Thai content while the 2:1 logo stage stays
+  // fixed by its authored aspect ratio. This is scoped to the changed hero placement.
+  for (const width of [1440, 390]) for (const scale of [1.3, 2]) {
+    const ctx = await browser.newContext({ viewport: { width, height: width === 1440 ? 900 : 844 }, colorScheme: 'light', reducedMotion: 'reduce' });
+    const page = await ctx.newPage();
+    try {
+      await page.goto(BASE, { waitUntil: 'networkidle' });
+      const detail = await page.evaluate(async ({ selector, scale }) => {
+        document.documentElement.style.fontSize = `${16 * scale}px`;
+        await document.fonts.ready;
+        const hero = document.querySelector('.hero'), logo = document.querySelector(selector), text = hero?.firstElementChild;
+        const h = hero.getBoundingClientRect(), l = logo.getBoundingClientRect(), t = text.getBoundingClientRect();
+        const overlap = Math.min(l.right, t.right) > Math.max(l.left, t.left) + 1 && Math.min(l.bottom, t.bottom) > Math.max(l.top, t.top) + 1;
+        return { width: l.width, height: l.height, rootFontPx: parseFloat(getComputedStyle(document.documentElement).fontSize),
+          logoContained: l.left >= h.left && l.right <= h.right + 1 && l.top >= h.top && l.bottom <= h.bottom + 1,
+          heroOverflow: hero.scrollWidth - hero.clientWidth, overlap, fallback: getComputedStyle(logo.querySelector('.hero-logo-fallback')).visibility };
+      }, { selector: host, scale });
+      check('motif', `${width} at ${Math.round(scale * 100)}% text: quiet logo stays proportional and clear of the real Thai hero content`, detail.logoContained && !detail.overlap && detail.heroOverflow <= 1 && Math.abs(detail.width / detail.height - 2) < 0.01 && Math.abs(detail.rootFontPx - 16 * scale) < .1 && detail.fallback === 'visible', JSON.stringify(detail));
+    } catch (e) { check('motif', `${width} at ${Math.round(scale * 100)}% text: hero placement remains usable`, false, e.message); }
+    finally { await ctx.close(); }
+  }
+
+  // Interrupt a real play, then restore eligibility. An interrupted opening is consumed.
+  for (const mode of ['offscreen', 'hidden-document', 'pagehide', 'reduced-motion-change', 'print']) {
+    const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' });
+    await watch(ctx);
+    const page = await ctx.newPage();
+    try {
+      await page.goto(BASE, { waitUntil: 'domcontentloaded' });
+      await page.locator(host).scrollIntoViewIfNeeded();
+      await awaitPhase(page, 'playing');
+      if (mode === 'offscreen') await page.locator('#cars').scrollIntoViewIfNeeded();
+      if (mode === 'hidden-document') await page.evaluate(() => { Object.defineProperty(document, 'visibilityState', { configurable: true, get: () => 'hidden' }); Object.defineProperty(document, 'hidden', { configurable: true, get: () => true }); document.dispatchEvent(new Event('visibilitychange')); });
+      if (mode === 'pagehide') await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pagehide', { persisted: true })));
+      if (mode === 'reduced-motion-change') await page.emulateMedia({ reducedMotion: 'reduce' });
+      if (mode === 'print') { await page.emulateMedia({ media: 'print' }); await page.evaluate(() => dispatchEvent(new Event('beforeprint'))); }
+      await awaitPhase(page, 'final');
+      if (mode === 'hidden-document') await page.evaluate(() => { delete document.visibilityState; delete document.hidden; document.dispatchEvent(new Event('visibilitychange')); });
+      if (mode === 'pagehide') await page.evaluate(() => dispatchEvent(new PageTransitionEvent('pageshow', { persisted: true })));
+      if (mode === 'reduced-motion-change') await page.emulateMedia({ reducedMotion: 'no-preference' });
+      if (mode === 'print') { await page.emulateMedia({ media: 'screen' }); await page.evaluate(() => dispatchEvent(new Event('afterprint'))); }
+      await page.locator(host).scrollIntoViewIfNeeded();
+      await page.waitForTimeout(300);
+      const interrupted = await state(page);
+      check('motif', `${mode}: interruption settles the complete logo and eligibility restoration does not replay`, interrupted.phase === 'final' && interrupted.fallbackVisible && interrupted.fallbackLoaded && !interrupted.runtimeVisible && interrupted.running === 0 && interrupted.started === 1, JSON.stringify(interrupted));
+    } catch (e) { check('motif', `${mode}: interrupted opening settles`, false, e.message); }
+    finally { await ctx.close(); }
+  }
+}
+
 async function browserChecks() {
   let pw;
   try { pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright'); } catch (e) { check('browser', 'playwright available', false, e.message); return; }
@@ -185,7 +359,17 @@ async function browserChecks() {
     if (!response.ok() || bytes.length !== asset.bytes || crypto.createHash('sha256').update(bytes).digest('hex') !== asset.sha256 || !acceptedMime.includes(mime)) deliveryBad.push(`${asset.path}: HTTP ${response.status()}, ${mime}, ${bytes.length} bytes`);
   }
   check('identity', 'served identity assets match the reviewed bytes and MIME (first-party only)', !deliveryBad.length, deliveryBad.slice(0, 4).join(' | '));
+  const quietDeliveryBad = [];
+  for (const [file, hash] of quietAssets) {
+    const response = await assetContext.request.get(new URL(file, BASE).href), bytes = await response.body();
+    const mime = (response.headers()['content-type'] || '').split(';')[0];
+    const expected = file.endsWith('.svg') ? ['image/svg+xml'] : file.endsWith('.css') ? ['text/css'] : ['text/javascript', 'application/javascript'];
+    if (!response.ok() || crypto.createHash('sha256').update(bytes).digest('hex') !== hash || !expected.includes(mime)) quietDeliveryBad.push(`${file}: ${response.status()} ${mime}`);
+  }
+  check('motif', 'served quiet-logo runtime, CSS and fallback retain the exact hashes and MIME', !quietDeliveryBad.length, quietDeliveryBad.join(' | '));
   await assetContext.close();
+  await heroLogoChecks(browser);
+  if (args.includes('--motif-only')) { await browser.close(); return; }
   const ROUTES = ['', '?v=demand', '?v=demand&m=tier', '?v=demand&a=180101', '?v=demand&lvl=lao&a=04180102&b=04180102-00001', '?v=supply', '?v=supply&a=180606', '?v=supply&lvl=lao&a=04180102', '?v=demand&lvl=lao&a=04180102&m=tier', '?v=opportunity', '?v=shortlist', '?v=requests', '?v=sources', '?v=unknown&a=zzz&b=1'];
   const MATRIX = [{ scheme: 'light', w: 1440, h: 900 }, { scheme: 'dark', w: 1440, h: 900 }, { scheme: 'light', w: 390, h: 844 }, { scheme: 'dark', w: 768, h: 1024 }];
   for (const m of MATRIX) {
@@ -277,8 +461,8 @@ async function browserChecks() {
   check('evidence', 'every overview number carries dataset · source · date · boundary', stamps.length === 6 && stamps.every(Boolean), `${stamps.filter(Boolean).length}/${stamps.length}`);
   const carsInfo = await page.evaluate(() => { const s = document.querySelector('#cars .evidence')?.textContent || ''; return { stamp: ['ชุดข้อมูล', 'แหล่ง', 'วันที่', 'ขอบเขต'].every(w => s.includes(w)), cues: document.querySelectorAll('#cars .cue-legend svg').length, rows: document.querySelectorAll('#cars .stackbars li').length, table: document.querySelectorAll('#cars table')[0]?.querySelectorAll('tbody tr').length, labels: [...document.querySelectorAll('#cars table td')].every(td => td.dataset.label), claims: document.querySelectorAll('#cars .claim').length }; });
   check('evidence', 'new-registration section: four-part stamp, five shape cues, table alternative with labelled cells, labelled claims', carsInfo.stamp && carsInfo.cues === 5 && carsInfo.rows === 7 && carsInfo.table === 7 && carsInfo.labels && carsInfo.claims >= 6, JSON.stringify(carsInfo));
-  const motif = await page.evaluate(() => { const f = document.querySelector('.lds-motif-frame'); return { state: f?.dataset.motifState, err: f?.dataset.motifError || '' }; });
-  check('motif', 'hero motif mounts on the declared atmosphere ground (no MOTIF-06 refusal)', ['mounted', 'fallback', 'checked'].includes(motif.state) && !motif.err, JSON.stringify(motif));
+  const motif = await page.evaluate(() => { const f = document.querySelector('.hero-motif[data-asset-id="landometer.logo.quiet"]'); return { count: document.querySelectorAll('.hero-motif[data-asset-id="landometer.logo.quiet"]').length, state: f?.dataset.logoMotion, surface: f?.dataset.hostSurface, mode: f?.dataset.motionMode }; });
+  check('motif', 'hero quiet logo uses the declared allowed atmosphere carrier and finite-once owner selection', motif.count === 1 && ['playing', 'final'].includes(motif.state) && motif.surface === 'atmosphere.measure.deep' && motif.mode === 'finite_once', JSON.stringify(motif));
   const firstTab = await page.evaluate(() => { document.activeElement.blur(); return null; }).then(() => page.keyboard.press('Tab')).then(() => page.evaluate(() => ({ cls: document.activeElement.className, outline: getComputedStyle(document.activeElement).outlineStyle, visible: document.activeElement.getBoundingClientRect().height > 0 })));
   check('keyboard', 'first Tab reaches a visible skip link with a focus outline', /skip-link/.test(firstTab.cls) && firstTab.outline !== 'none' && firstTab.visible, JSON.stringify(firstTab));
   await page.click('#cars [data-cars-group="12"]'); await page.waitForTimeout(300);
@@ -411,8 +595,9 @@ async function browserChecks() {
 }
 
 if (!args.includes('--static-only')) await browserChecks();
+check('release', 'runtime and QA source bytes remain unchanged throughout this verification run', sourceFiles.every(file => sourceFingerprint.files[file] && exists(file) && sha(file) === sourceFingerprint.files[file]));
 const failed = results.filter(r => !r.ok);
-const summary = { label: LABEL, base: BASE, ranAt: new Date().toISOString(), passed: results.length - failed.length, failed: failed.length, results };
+const summary = { label: LABEL, base: BASE, ranAt: new Date().toISOString(), sourceFingerprint, passed: results.length - failed.length, failed: failed.length, results };
 const out = opt('--write'); if (out) { fs.mkdirSync(path.dirname(path.resolve(out)), { recursive: true }); fs.writeFileSync(path.resolve(out), JSON.stringify(summary, null, 2) + '\n'); }
 for (const r of results) console.log(`${r.ok ? 'PASS' : 'FAIL'}  [${r.group}] ${r.name}${r.ok || !r.detail ? '' : `  — ${r.detail}`}`);
 console.log(`\n${summary.passed} passed · ${summary.failed} failed · ${LABEL} ${BASE}`);

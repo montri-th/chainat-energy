@@ -1,0 +1,113 @@
+{
+  "documentId": "chainat-yolk-quiet-logo-motion-2026-10-19",
+  "updatedOn": "2026-10-19",
+  "scope": "Bounded hero follow-up after UI v2 source 2428835a12de3ffc95829676d98b602668c8be0f. Data, model, navigation, favicon and share identity are unchanged.",
+  "ownerInstruction": "Remove the animation pause button and replace the dial with animated Landometer Logo quiet.",
+  "authority": {
+    "base": "LDS 0.9.7",
+    "motifRelease": "1.2.1",
+    "assetId": "landometer.logo.quiet",
+    "assetFamily": "landometer.motif.v3",
+    "immutableSource": "https://github.com/montri-th/motif/tree/57eeb7c953dc8b45fe6fe97f1251467d09b0b199",
+    "vendorBytesEdited": false
+  },
+  "carrier": {
+    "job": "animated_brand_opening",
+    "beat": "opening",
+    "surface": "atmosphere.measure.deep",
+    "variant": "quiet",
+    "ink": "default sky; no override",
+    "aspectRatio": "2:1",
+    "decorative": true
+  },
+  "lifecycle": {
+    "owner": "js/hero-logo.js",
+    "mode": "finite_once",
+    "authoredEndMs": 3360,
+    "finishAtMs": 3400,
+    "pauseControl": false,
+    "replay": false,
+    "loop": false,
+    "eligibility": {
+      "intersectionRatio": 0.14,
+      "bottomRootMargin": "-12%",
+      "documentVisible": true,
+      "reducedMotion": false,
+      "print": false,
+      "runtimeSvgAndStylesheetReady": true
+    },
+    "interruptions": [
+      "offscreen",
+      "document hidden",
+      "pagehide",
+      "beforeprint",
+      "print media",
+      "reduced motion enabled"
+    ],
+    "afterFinishOrInterruption": "Exact complete final SVG remains visible; no replay on re-entry or theme changes.",
+    "fallback": "Exact final logo-quiet.svg is visible in source HTML, no JavaScript, failed runtime/CSS, unsupported observer, reduced motion and print.",
+    "conformanceBoundary": "Artifact-local finite-once owner selection. The repeating LDS MotifFrame and its mandatory pause-controller contract are not mounted; this does not change the shared library contract."
+  },
+  "files": [
+    {
+      "path": "index.html",
+      "bytes": 34692,
+      "sha256": "c477554797adbc43cf14bc1677e429200ecb9491b623368831af8a2f9157f2e8"
+    },
+    {
+      "path": "styles.css",
+      "bytes": 44542,
+      "sha256": "3a3a65b69762be24ef4f746bf6f0a8cb8fd933c0636fb2f7d02b7e5fc12ec04e"
+    },
+    {
+      "path": "js/hero-logo.js",
+      "bytes": 2347,
+      "sha256": "5be174eee83ad9608030bf09049bcb806d4bf3a0d1692eb42670a65b12546ced"
+    },
+    {
+      "path": "assets/lds/build-kit/motif/landometer-motifs.js",
+      "bytes": 17845,
+      "sha256": "3a5caef7918a85885b61dd53e049ea8bf2b0a3cea508f587bb14970bfe6deaf2"
+    },
+    {
+      "path": "assets/lds/build-kit/motif/landometer-motifs.css",
+      "bytes": 11190,
+      "sha256": "7cc2deb475a8d6e4af331407b2b4b741716c458a8ce885e2fb2859374b93912e"
+    },
+    {
+      "path": "assets/lds/build-kit/motif/svg/logo-quiet.svg",
+      "bytes": 1979,
+      "sha256": "5b6798cdb6c3ada246286e6ce3386644f383c4f987a267e5c5db392809403e14"
+    }
+  ],
+  "verification": {
+    "automatedReport": "quiet-logo-browser-checks.json",
+    "visualReview": {
+      "tool": "CUA",
+      "viewports": [
+        320,
+        360,
+        390,
+        1440
+      ],
+      "themes": [
+        "light",
+        "dark"
+      ],
+      "observed": "Complete quiet logo, no pause button, no hero text overlap or horizontal page overflow."
+    },
+    "automatedResult": {
+      "passed": 123,
+      "failed": 0,
+      "ranAt": "2026-10-18T18:09:53.817Z",
+      "reportSha256": "c60613544a6d11a59c68cafb17fcf97dbbafd13cb86a451d7d67c7950f77eec6",
+      "origin": "http://127.0.0.1:60302/",
+      "scope": "Local Chromium: current runtime + unchanged data/model/routes, exact served motif hashes/MIME, finite once, eight hero viewport/theme fixtures, no replay, fallback failure modes, cold dependency readiness, 130/200% text placement and interruption lifecycle. No production/auth/full-accessibility attestation."
+    }
+  },
+  "previousReleaseEvidence": {
+    "path": "release-evidence.json",
+    "status": "retained UI v2 snapshot; does not attest this hero follow-up"
+  },
+  "handoffArchiveBoundary": "The previously delivered Drive v2 archive is a sealed snapshot of source 2428835a12de3ffc95829676d98b602668c8be0f; this follow-up is available from the repository and live URL."
+}
