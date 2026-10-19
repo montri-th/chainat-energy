@@ -1,0 +1,791 @@
+{
+  "label": "local",
+  "base": "http://127.0.0.1:64937/",
+  "ranAt": "2026-10-19T03:34:08.437Z",
+  "sourceFingerprint": {
+    "algorithm": "sha256",
+    "files": {
+      "index.html": "e3b4155fc5eb4b78fb7f88e552814e347c0906e52e4aed99d6dbf40920d9e8db",
+      "styles.css": "5809542656b1ac77e21f2dcf2f4e08dd047400c3dedff76d510b40323e472f44",
+      "js/map.js": "c54f0f21568630e524b8aff758e1b03580d685b0c09c3dd9fd3425529aab1cdf",
+      "js/basemaps.js": "14725c7a44728c734224514277d717c64049cb832f15ff665fe364dd1dd7956f",
+      "js/hero-logo.js": "5be174eee83ad9608030bf09049bcb806d4bf3a0d1692eb42670a65b12546ced",
+      "assets/lds/build-kit/motif/landometer-motifs.js": "3a5caef7918a85885b61dd53e049ea8bf2b0a3cea508f587bb14970bfe6deaf2",
+      "assets/lds/build-kit/motif/landometer-motifs.css": "7cc2deb475a8d6e4af331407b2b4b741716c458a8ce885e2fb2859374b93912e",
+      "assets/lds/build-kit/motif/svg/logo-quiet.svg": "5b6798cdb6c3ada246286e6ce3386644f383c4f987a267e5c5db392809403e14",
+      "scripts/qa.mjs": "357d5b9fb01a501cc78be9c2d6cb1173a113407cb87f42299829191e0042a67b"
+    }
+  },
+  "passed": 128,
+  "failed": 0,
+  "results": [
+    {
+      "group": "files",
+      "name": "required files present",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "data",
+      "name": "8 districts · 53 tambons · 59 LAOs",
+      "ok": true,
+      "detail": "8/53/59"
+    },
+    {
+      "group": "data",
+      "name": "one building file per LAO and totals match meta",
+      "ok": true,
+      "detail": "59 files · 177647 vs meta 177647"
+    },
+    {
+      "group": "data",
+      "name": "building index covers every LAO",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "data",
+      "name": "modelled electricity sums back to the plan total (±0.01%)",
+      "ok": true,
+      "detail": "model 632404902 · plan 632404905"
+    },
+    {
+      "group": "data",
+      "name": "supply registers: 203 fuel · 18 controlled · 69 projects",
+      "ok": true,
+      "detail": "203/18/69"
+    },
+    {
+      "group": "data",
+      "name": "solar pumping: 58 rows · 103 systems · 360.04 kW parsed from W, kW and system counts",
+      "ok": true,
+      "detail": "58 rows · 103 systems · 360.04 kW"
+    },
+    {
+      "group": "data",
+      "name": "tambon pump capacity sums to the project total",
+      "ok": true,
+      "detail": "360.04 vs 360.04"
+    },
+    {
+      "group": "data",
+      "name": "modelled vehicles are whole numbers and sum to the DLT total at tambon, LAO and district level",
+      "ok": true,
+      "detail": "176445 · 176445 · 176445 vs 176445"
+    },
+    {
+      "group": "data",
+      "name": "district values equal the sum of their tambons",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "cars",
+      "name": "monthly registrations: one row of five engine counts per month for every vehicle type",
+      "ok": true,
+      "detail": "80 months 2020-01–2026-08 · 1,2,3,12,13,14,17"
+    },
+    {
+      "group": "cars",
+      "name": "June 2026 passenger cars (รย.1) total 78, as shown on the CityMETER: Cars page",
+      "ok": true,
+      "detail": "78"
+    },
+    {
+      "group": "cars",
+      "name": "benchmark: 77 provinces, rank and median recompute from the rows, Chainat window equals its monthly sums",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "cars",
+      "name": "low-count provinces follow the stated rule and the rank without them recomputes",
+      "ok": true,
+      "detail": "นนทบุรี,ปทุมธานี,สมุทรปราการ "
+    },
+    {
+      "group": "cars",
+      "name": "e-motorcycles registered Jan 2020–Feb 2026 equal the DLT stock at 28 Feb 2026 (monthly values are new registrations)",
+      "ok": true,
+      "detail": "{\"type\":\"12\",\"engine\":\"ELECTRIC\",\"registered\":638,\"from\":\"2020-01\",\"to\":\"2026-02\",\"stock\":638,\"stockAsOf\":\"2026-02-28\"}"
+    },
+    {
+      "group": "data",
+      "name": "every project photo exists and matches its SHA-256",
+      "ok": true,
+      "detail": "64 photos · 0 missing/mismatched"
+    },
+    {
+      "group": "privacy",
+      "name": "no phone numbers in published supply or cars data",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "privacy",
+      "name": "no 13-digit numbers outside juristic registration fields",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "privacy",
+      "name": "no per-site coordinates in supply or cars data",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "privacy",
+      "name": "individual operators carry no registration number",
+      "ok": true,
+      "detail": "0"
+    },
+    {
+      "group": "privacy",
+      "name": "no price or quotation text in published files",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "privacy",
+      "name": "no credentials or tokens in published files",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "colour",
+      "name": "no literal hex colours in scripts (all colours resolve from LDS tokens)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "colour",
+      "name": "no ungoverned colour functions in our CSS/JS",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "colour",
+      "name": "only on-deep identity inks are literal in CSS (#FFFFFF #F1F4EF #182327)",
+      "ok": true,
+      "detail": "#FFFFFF #F1F4EF #182327"
+    },
+    {
+      "group": "colour",
+      "name": "LUT41 light and dark tokens are identical for every family used",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "colour",
+      "name": "engine categories use landometer-series-10-v8 soft fills, light and dark (DATAVIZ-05)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "page",
+      "name": "noindex, color-scheme and two theme-color metas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "identity",
+      "name": "identity assets have exact bytes, hashes and artifact-scoped permission",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "identity",
+      "name": "all six exact approved portfolio icons are linked and retain actual PNG dimensions",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "identity",
+      "name": "web manifest binds the scoped 192 and 512 maskable icons with relative app URLs",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "identity",
+      "name": "social preview metadata binds the truthful Chainat 1200×630 asset",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "page",
+      "name": "owner-selected quiet logo is finite-once with an exact visible source fallback and no pause control",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "page",
+      "name": "exact motif runtime loads with the artifact finite-once controller; repeating wrappers are not loaded",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "motif",
+      "name": "quiet logo runtime, CSS and final SVG retain the exact approved release 1.2.1 bytes",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "identity",
+      "name": "served identity assets match the reviewed bytes and MIME (first-party only)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "motif",
+      "name": "served quiet-logo runtime, CSS and fallback retain the exact hashes and MIME",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "motif",
+      "name": "light 1440: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "light 1440: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "finite-once logo never replays after a full former-cycle dwell or viewport re-entry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 1440: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 1440: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "light 320: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":240,\"height\":120,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "light 320: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":240,\"height\":120,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 320: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":240,\"height\":120,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 320: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":240,\"height\":120,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "light 360: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":280,\"height\":140,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "light 360: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":280,\"height\":140,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 360: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":280,\"height\":140,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 360: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":280,\"height\":140,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "light 390: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "light 390: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 390: exact quiet logo performs one real, bounded authored animation",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "dark 390: complete fallback settles with stable, contained geometry",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "no-javascript: complete source SVG stays visible and no animation starts",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":0,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":0}"
+    },
+    {
+      "group": "motif",
+      "name": "runtime-blocked: complete source SVG stays visible and no animation starts",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":0,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":0}"
+    },
+    {
+      "group": "motif",
+      "name": "stylesheet-blocked: complete source SVG stays visible and no animation starts",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":0}"
+    },
+    {
+      "group": "motif",
+      "name": "observer-unavailable: complete source SVG stays visible and no animation starts",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":0}"
+    },
+    {
+      "group": "motif",
+      "name": "reduced-motion: complete source SVG stays visible and no animation starts",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":310,\"height\":155,\"overflow\":0,\"pauses\":0,\"started\":0}"
+    },
+    {
+      "group": "motif",
+      "name": "cold landometer-motifs.js: source fallback stays complete before the dependency becomes ready",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":0,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":1424,\"height\":304,\"overflow\":0,\"pauses\":0,\"started\":0}"
+    },
+    {
+      "group": "motif",
+      "name": "cold landometer-motifs.js: enhancement starts only after exact runtime and stylesheet readiness",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "cold stylesheet: exact source-fallback DOM remains declared while stylesheet is pending (pre-paint check)",
+      "ok": true,
+      "detail": "{\"phase\":\"final\",\"src\":\"./assets/lds/build-kit/motif/svg/logo-quiet.svg\",\"hidden\":false,\"started\":0,\"stylesheetReady\":false}"
+    },
+    {
+      "group": "motif",
+      "name": "cold landometer-motifs.css: enhancement starts only after exact runtime and stylesheet readiness",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"playing\",\"runtimeVisible\":true,\"fallbackVisible\":false,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":21,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "1440 at 130% text: quiet logo stays proportional and clear of the real Thai hero content",
+      "ok": true,
+      "detail": "{\"width\":296.71875,\"height\":148.359375,\"rootFontPx\":20.8,\"logoContained\":true,\"heroOverflow\":0,\"overlap\":false,\"fallback\":\"visible\"}"
+    },
+    {
+      "group": "motif",
+      "name": "1440 at 200% text: quiet logo stays proportional and clear of the real Thai hero content",
+      "ok": true,
+      "detail": "{\"width\":296.71875,\"height\":148.359375,\"rootFontPx\":32,\"logoContained\":true,\"heroOverflow\":0,\"overlap\":false,\"fallback\":\"visible\"}"
+    },
+    {
+      "group": "motif",
+      "name": "390 at 130% text: quiet logo stays proportional and clear of the real Thai hero content",
+      "ok": true,
+      "detail": "{\"width\":310,\"height\":155,\"rootFontPx\":20.8,\"logoContained\":true,\"heroOverflow\":0,\"overlap\":false,\"fallback\":\"visible\"}"
+    },
+    {
+      "group": "motif",
+      "name": "390 at 200% text: quiet logo stays proportional and clear of the real Thai hero content",
+      "ok": true,
+      "detail": "{\"width\":360,\"height\":180,\"rootFontPx\":32,\"logoContained\":true,\"heroOverflow\":0,\"overlap\":false,\"fallback\":\"visible\"}"
+    },
+    {
+      "group": "motif",
+      "name": "offscreen: interruption settles the complete logo and eligibility restoration does not replay",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "hidden-document: interruption settles the complete logo and eligibility restoration does not replay",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "pagehide: interruption settles the complete logo and eligibility restoration does not replay",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "reduced-motion-change: interruption settles the complete logo and eligibility restoration does not replay",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "motif",
+      "name": "print: interruption settles the complete logo and eligibility restoration does not replay",
+      "ok": true,
+      "detail": "{\"count\":1,\"runtimeCount\":1,\"svgCount\":1,\"fallbackCount\":1,\"phase\":\"final\",\"runtimeVisible\":false,\"fallbackVisible\":true,\"fallbackLoaded\":true,\"kind\":\"logo\",\"quiet\":true,\"autoplay\":\"false\",\"running\":0,\"bounded\":true,\"width\":296.71875,\"height\":148.359375,\"overflow\":0,\"pauses\":0,\"started\":1}"
+    },
+    {
+      "group": "layout",
+      "name": "1440×900: all three map views use the viewport with a matched canvas, readable credits and clear controls",
+      "ok": true,
+      "detail": "demand 909×657 @186 | supply 909×657 @186 | opportunity 909×657 @186"
+    },
+    {
+      "group": "layout",
+      "name": "1728×920: all three map views use the viewport with a matched canvas, readable credits and clear controls",
+      "ok": true,
+      "detail": "demand 1197×677 @187 | supply 1197×677 @187 | opportunity 1197×677 @187"
+    },
+    {
+      "group": "layout",
+      "name": "768×1024: all three map views use the viewport with a matched canvas, readable credits and clear controls",
+      "ok": true,
+      "detail": "demand 742×633 @236 | supply 742×633 @236 | opportunity 742×633 @236"
+    },
+    {
+      "group": "layout",
+      "name": "390×844: all three map views use the viewport with a matched canvas, readable credits and clear controls",
+      "ok": true,
+      "detail": "demand 364×490 @310 | supply 364×490 @310 | opportunity 364×490 @310"
+    },
+    {
+      "group": "layout",
+      "name": "short laptop and 900px breakpoint retain a usable map with long breadcrumbs and full satellite credit",
+      "ok": true,
+      "detail": "1366 853×457 @236 | 900 770×556 @231"
+    },
+    {
+      "group": "browser",
+      "name": "light 1440: every route reaches ready=true",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 1440: no horizontal overflow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 1440: direct targets ≥ 44×44 CSS px",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 1440: every view has an h1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 1440: no console errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 1440: every route reaches ready=true",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 1440: no horizontal overflow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 1440: direct targets ≥ 44×44 CSS px",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 1440: every view has an h1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 1440: no console errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 390: every route reaches ready=true",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 390: no horizontal overflow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 390: direct targets ≥ 44×44 CSS px",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 390: every view has an h1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "light 390: no console errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 768: every route reaches ready=true",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 768: no horizontal overflow",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 768: direct targets ≥ 44×44 CSS px",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 768: every view has an h1",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "browser",
+      "name": "dark 768: no console errors",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "choropleth",
+      "name": "every metric maps to LUT41 by mid-rank percentile (29 metric×grain)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "choropleth",
+      "name": "a unique maximum always reaches the top LUT sample (index 40); tied maxima share their mid-rank",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "theme",
+      "name": "Dark switches body to LDS canvas dark (#11191D)",
+      "ok": true,
+      "detail": "{\"attr\":\"dark\",\"bg\":\"rgb(17, 25, 29)\",\"lut\":\"#25659A\"}"
+    },
+    {
+      "group": "theme",
+      "name": "Light switches body to LDS canvas light (#F6F7F3)",
+      "ok": true,
+      "detail": "{\"attr\":\"light\",\"bg\":\"rgb(246, 247, 243)\"}"
+    },
+    {
+      "group": "theme",
+      "name": "analytical LUT HEX identical in both themes",
+      "ok": true,
+      "detail": "#25659A vs #25659A"
+    },
+    {
+      "group": "evidence",
+      "name": "every overview number carries dataset · source · date · boundary",
+      "ok": true,
+      "detail": "6/6"
+    },
+    {
+      "group": "evidence",
+      "name": "new-registration section: four-part stamp, five shape cues, table alternative with labelled cells, labelled claims",
+      "ok": true,
+      "detail": "{\"stamp\":true,\"cues\":5,\"rows\":7,\"table\":7,\"labels\":true,\"claims\":9}"
+    },
+    {
+      "group": "motif",
+      "name": "hero quiet logo uses the declared allowed atmosphere carrier and finite-once owner selection",
+      "ok": true,
+      "detail": "{\"count\":1,\"state\":\"playing\",\"surface\":\"atmosphere.measure.deep\",\"mode\":\"finite_once\"}"
+    },
+    {
+      "group": "keyboard",
+      "name": "first Tab reaches a visible skip link with a focus outline",
+      "ok": true,
+      "detail": "{\"cls\":\"skip-link\",\"outline\":\"solid\",\"visible\":true}"
+    },
+    {
+      "group": "keyboard",
+      "name": "vehicle group buttons switch the chart and keep focus on the pressed button",
+      "ok": true,
+      "detail": "{\"pressed\":\"true\",\"focus\":\"12\",\"title\":\"จักรยานยนต์ (รย.12) ที่จดทะเบียนใหม่ในแต่ละปี แยกเชื้อเพลิง\"}"
+    },
+    {
+      "group": "evidence",
+      "name": "no-benchmark notes are true per group (all types: compare by type · trucks: no BEV registered)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "map",
+      "name": "non-map alternative lists all 53 tambons",
+      "ok": true,
+      "detail": "53"
+    },
+    {
+      "group": "map",
+      "name": "building permalink opens the building card with breadcrumbs",
+      "ok": true,
+      "detail": "{\"card\":true,\"crumbs\":4,\"url\":\"?v=demand&lvl=lao&a=04180102&b=04180102-00001\"}"
+    },
+    {
+      "group": "states",
+      "name": "measured zero has its own legend row and is shown as 0 (not blank)",
+      "ok": true,
+      "detail": "{\"legend\":true,\"zeroLabel\":true}"
+    },
+    {
+      "group": "supply",
+      "name": "source photo gallery shows all 64 project photos",
+      "ok": true,
+      "detail": "64"
+    },
+    {
+      "group": "states",
+      "name": "vehicle table cells declare value state and are not clipped",
+      "ok": true,
+      "detail": "13 cells"
+    },
+    {
+      "group": "evidence",
+      "name": "per-household electricity shows the province ratio (~152), not a sum",
+      "ok": true,
+      "detail": "จังหวัดชัยนาท · ทั้งพื้นที่ 152 kWh ต่อครัวเรือนต่อเดือน · แบบจำลอง"
+    },
+    {
+      "group": "yolk",
+      "name": "only Demand members enter the opportunity queue",
+      "ok": true,
+      "detail": "{\"n\":36,\"demand\":36}"
+    },
+    {
+      "group": "yolk",
+      "name": "tier notes follow the active conditions (2 on → 2 tiers)",
+      "ok": true,
+      "detail": "{\"1\":\"ผ่านครบ 2 เงื่อนไข\",\"2\":\"ผ่าน 1 จาก 2 เงื่อนไข\"}"
+    },
+    {
+      "group": "history",
+      "name": "Back restores the previous view and its metric",
+      "ok": true,
+      "detail": "{\"url\":\"?v=demand&m=pop\",\"title\":\"ประชากร\"}"
+    },
+    {
+      "group": "keyboard",
+      "name": "focus stays on the metric select after the panel re-renders",
+      "ok": true,
+      "detail": "metric-select"
+    },
+    {
+      "group": "keyboard",
+      "name": "a building card opens from the non-map building list with the keyboard",
+      "ok": true,
+      "detail": "{\"url\":\"?v=demand&a=180101&b=04180102-02413\",\"card\":true}"
+    },
+    {
+      "group": "basemap",
+      "name": "analysis is the default and makes no provider tile requests",
+      "ok": true,
+      "detail": "0 synthetic requests"
+    },
+    {
+      "group": "basemap",
+      "name": "all four styles preserve the map, camera, criteria, URL, membership and exact analytical paints",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "basemap",
+      "name": "late errors from a removed provider generation cannot replace the current style",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "basemap",
+      "name": "colour toggle changes visibility only, restoring identical data HEX and list access",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "basemap",
+      "name": "theme changes retain exact analytical source colors and Demand members",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "basemap",
+      "name": "Auto follows OS appearance for provider styling while exact analytical colors stay fixed",
+      "ok": true,
+      "detail": "{\"darkSettled\":true,\"lightSettled\":true,\"dark\":{\"choice\":\"auto\",\"attr\":null,\"mediaDark\":true,\"effective\":\"dark\",\"roadBrightness\":0.72},\"light\":{\"choice\":\"auto\",\"attr\":null,\"mediaDark\":false,\"effective\":\"light\",\"roadBrightness\":1},\"fillsUnchanged\":true,\"tiersUnchanged\":true}"
+    },
+    {
+      "group": "basemap",
+      "name": "provider failure keeps the same analytical map/list and exposes retry",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "basemap",
+      "name": "manual retry restores the selected provider with camera, criteria and data intact",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "group": "release",
+      "name": "runtime and QA source bytes remain unchanged throughout this verification run",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

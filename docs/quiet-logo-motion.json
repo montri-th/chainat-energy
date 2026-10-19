@@ -109,5 +109,7 @@
     "path": "release-evidence.json",
     "status": "retained UI v2 snapshot; does not attest this hero follow-up"
   },
-  "handoffArchiveBoundary": "The previously delivered Drive v2 archive is a sealed snapshot of source 2428835a12de3ffc95829676d98b602668c8be0f; this follow-up is available from the repository and live URL."
+  "handoffArchiveBoundary": "The previously delivered Drive v2 archive is a sealed snapshot of source 2428835a12de3ffc95829676d98b602668c8be0f; this follow-up is available from the repository and live URL.",
+  "scopeStatus": "Retained quiet-logo release snapshot of source 1510798aec2cd5228882a0f44e1eca333dc6918e. Its index/styles hashes attest that earlier layout; the exact logo runtime/fallback/lifecycle remain in use.",
+  "subsequentLayoutFollowUp": "docs/map-layout.json"
 }

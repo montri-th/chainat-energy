@@ -5,7 +5,7 @@ import { initBasemaps } from './basemaps.js';
 
 let map = null, ready = null, markers = [], hoverCode = null, pick = () => {}, is3d = true, current = { level: 'tambon', area: null, district: null };
 const EMPTY = { type: 'FeatureCollection', features: [] };
-const NARROW = matchMedia('(max-width: 899px)');
+const NARROW = matchMedia('(max-width: 1099px)');
 const PHONE = matchMedia('(max-width: 599px)');
 const T = () => ({
   bg: token('--surface-alt'), land: token('--surface-card'), casing: token('--map-casing'), line: token('--map-boundary'),

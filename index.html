@@ -142,20 +142,25 @@
       <section id="view-map" class="view workspace" hidden>
         <div class="map-card">
           <div class="map-head">
-            <div><p class="map-kicker" id="map-kicker">ความต้องการพลังงาน</p><h1 id="map-title">กำลังโหลดแผนที่</h1><p class="map-sub" id="map-sub"></p></div>
-            <div class="segmented" role="group" aria-label="ระดับพื้นที่บนแผนที่"><button type="button" data-level="tambon" aria-pressed="true">ตำบล</button><button type="button" data-level="lao" aria-pressed="false">อปท.</button></div>
+            <div class="map-heading"><p class="map-kicker sr-only" id="map-kicker">ความต้องการพลังงาน</p><h1 id="map-title">กำลังโหลดแผนที่</h1><p class="map-sub" id="map-sub"></p></div>
           </div>
-          <nav class="drill" id="drill" aria-label="ระดับพื้นที่ที่เลือก"></nav>
-          <div class="map-settings" aria-label="การแสดงแผนที่">
-            <div class="map-settings-controls"><label for="basemap-select">พื้นหลัง <select id="basemap-select"><option value="analysis">พื้นวิเคราะห์</option><option value="simplified">ถนนแบบเรียบ</option><option value="detailed">ถนนละเอียด</option><option value="satellite">ดาวเทียม 2021 · 10 ม.</option></select></label><label class="map-colour-toggle"><input type="checkbox" id="map-area-colours" checked> แสดงสีพื้นที่</label><button type="button" class="btn btn-small" id="basemap-retry" hidden>ลองโหลดพื้นหลังอีกครั้ง</button></div>
-            <p id="basemap-status" role="status">พื้นวิเคราะห์ · สีพื้นที่แสดงค่าตัวชี้วัด</p>
-            <p id="basemap-attrib">พื้นวิเคราะห์ใช้ขอบเขต CityMETER</p>
+          <div class="map-toolbar">
+            <div class="map-navigation">
+              <nav class="drill" id="drill" aria-label="ระดับพื้นที่ที่เลือก"></nav>
+              <div class="segmented" role="group" aria-label="ระดับพื้นที่บนแผนที่"><button type="button" data-level="tambon" aria-pressed="true">ตำบล</button><button type="button" data-level="lao" aria-pressed="false">อปท.</button></div>
+            </div>
+            <div class="map-settings" aria-label="การแสดงแผนที่">
+              <div class="map-settings-controls"><label for="basemap-select">พื้นหลัง <select id="basemap-select"><option value="analysis">พื้นวิเคราะห์</option><option value="simplified">ถนนแบบเรียบ</option><option value="detailed">ถนนละเอียด</option><option value="satellite">ดาวเทียม 2021 · 10 ม.</option></select></label><label class="map-colour-toggle"><input type="checkbox" id="map-area-colours" checked> แสดงสีพื้นที่</label><button type="button" class="btn btn-small" id="basemap-retry" hidden>ลองโหลดพื้นหลังอีกครั้ง</button></div>
+            </div>
           </div>
           <div class="map-wrap">
             <div id="map" role="region" aria-label="แผนที่จังหวัดชัยนาท เลือกพื้นที่หรืออาคารได้ ข้อมูลชุดเดียวกันอ่านได้ในแผงรายละเอียด"></div>
             <div class="map-tools"><button type="button" class="icon" id="zoom-in" aria-label="ขยายแผนที่">+</button><button type="button" class="icon" id="zoom-out" aria-label="ย่อแผนที่">−</button><button type="button" id="map-3d" aria-pressed="false">3D</button><button type="button" id="map-reset">ทั้งจังหวัด</button></div>
             <figure class="lds-map-legend map-legend" id="map-legend"></figure>
-            <p class="map-attrib" id="map-attrib"></p>
+          </div>
+          <div class="map-notes">
+            <div class="map-context"><p id="basemap-status" role="status">พื้นวิเคราะห์ · แสดงสีพื้นที่</p><p id="basemap-attrib">พื้นวิเคราะห์ใช้ขอบเขต CityMETER</p></div>
+            <details class="map-source"><summary>ข้อมูลแผนที่</summary><p class="map-attrib" id="map-attrib"></p></details>
           </div>
         </div>
         <aside class="panel" id="panel" aria-label="รายละเอียดและรายการพื้นที่"></aside>

@@ -26,7 +26,7 @@
     "dataReadOn": "2026-10-18",
     "engine": "Yolk สพจ. เดโม 0.1",
     "sourceBaselineCommit": "c913c8061164973bf259f7fff983d245f97b3494",
-    "currentReleaseReceipt": "docs/quiet-logo-motion.json for the 2026-10-19 bounded hero follow-up; docs/release-evidence.json retains the preceding UI v2 snapshot; private v2 handoff is an immutable earlier snapshot.",
+    "currentReleaseReceipt": "docs/map-layout.json for the 2026-10-19 map workspace follow-up; docs/quiet-logo-motion.json and docs/release-evidence.json retain preceding snapshots; private v2 handoff is an immutable earlier snapshot.",
     "doNotConfuseDataAndUiRelease": true,
     "inputIdentity": {
       "data/meta.json": {

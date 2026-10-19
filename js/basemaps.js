@@ -44,7 +44,7 @@ export function initBasemaps(map) {
     map.setLayoutProperty('units-fill', 'visibility', state.areaColours ? 'visible' : 'none');
     for (const id of ['units-zero', 'units-dash', 'units-strong']) map.setLayoutProperty(id, 'visibility', state.areaColours ? 'visible' : 'none');
     retry.hidden = !failed;
-    const note = state.areaColours ? 'สีพื้นที่ยังแสดงค่าตัวชี้วัด ปิดสีเพื่อดูพื้นหลังได้' : 'ปิดสีพื้นที่อยู่ ค่าตัวชี้วัดและเกณฑ์ยังเดิม';
+    const note = state.areaColours ? 'แสดงสีพื้นที่' : 'ปิดสีพื้นที่ · ค่าตัวชี้วัดและเกณฑ์ยังเดิม';
     status.textContent = failed ? `โหลดพื้นหลังไม่สำเร็จ ใช้พื้นวิเคราะห์ชั่วคราว · ${note}` : `${loading ? 'กำลังโหลด ' : ''}${BASEMAPS[active].label} · ${note}`;
     const osm = '<a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a>';
     credit.innerHTML = active === 'analysis' ? 'พื้นวิเคราะห์ใช้ขอบเขต CityMETER ไม่มีภาพถ่ายดาวเทียม' : active === 'satellite'

@@ -1,6 +1,15 @@
 # QA · CityMETER: Yolk โหมดสำนักงานพลังงานจังหวัด
 
-## Quiet logo follow-up · 19 ต.ค. 2569
+## Map layout follow-up · 19 ต.ค. 2569
+
+- ผลตรวจสุดท้าย **128/128 ผ่าน** · core 11 และ server 4 ผ่าน · [ผลดิบพร้อม source fingerprint](map-layout-browser-checks.json) · [สัญญา layout และแหล่งหลักฐาน](map-layout.json)
+- ลดพื้นที่เหนือแผนที่ด้วยหัวเรื่องกระชับและแถบเครื่องมือร่วม ย้ายเครดิตไว้ใต้ canvas และให้แผงรายละเอียดอยู่ใต้แผนที่เมื่อจอแคบกว่า 1100px กติกาหน้าอื่นยังใช้ breakpoint เดิม
+- ที่ viewport 1728×920 เดิม canvas 1149×577 เริ่ม y326; ใหม่ประมาณ 1197×677 เริ่ม y187 พื้นที่เพิ่มประมาณ **22%** เป็นการวัด CSS pixels บนจอเดียวกัน ไม่ใช่เปอร์เซ็นต์ที่รับประกันทุกอุปกรณ์
+- 5 geometry gates รวม Demand/Supply/Opportunity ที่ 1440/1728/768/390px และกรณีแล็ปท็อป 1366×768 + 900px พร้อม breadcrumb อาคารและเครดิตดาวเทียมยาว ตรวจ actual renderer/container, panel/notes overlap, visible credit และ page overflow
+- ตรวจภาพจริงผ่าน CUA ในธีมสว่าง/มืดบนมือถือ แท็บเล็ต จอแล็ปท็อป จอใหญ่ และภาพดาวเทียมจริงหนึ่งกรณี; ชุดอัตโนมัติใช้ภาพ provider จำลอง ไม่โหลด tile จำนวนมาก
+- ไม่เปลี่ยนรอบข้อมูล สูตร เกณฑ์ หรือข้อมูลทะเบียน และไม่อ้าง native-device/full accessibility audit ผล UI และ quiet-logo รุ่นก่อนด้านล่างเป็น historical snapshots
+
+## Quiet logo follow-up · 19 ต.ค. 2569 (snapshot ก่อนปรับผังแผนที่)
 
 - เปลี่ยน hero จาก dial เป็น `landometer.logo.quiet` และนำปุ่มหยุดออกตามคำขอเจ้าของงาน ใช้ lifecycle เล่นครั้งเดียว 3.36 วินาที แล้วค้าง SVG ต้นฉบับที่ 3.4 วินาที ดู [motion contract](quiet-logo-motion.json)
 - ผลตรวจบนเครื่อง **123/123 ผ่าน** · core 11 และ portable server 4 ผ่าน · [ผลดิบพร้อม hash ของ runtime และชุดตรวจ](quiet-logo-browser-checks.json)

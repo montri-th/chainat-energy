@@ -1,10 +1,10 @@
 {
   "generatedOn": "2026-10-19",
-  "uiRelease": "chainat-yolk-ui-2026-10-19-v2-quiet-logo",
+  "uiRelease": "chainat-yolk-map-layout-2026-10-19",
   "dataRelease": "cnt-energy-2026-10-18-r2",
   "scope": "Every tracked source file in this repository snapshot except this manifest itself. This is source inventory; HTTP URL/MIME/byte parity is verified separately in the release handoff. Historical build/QA records retain their dates and source scope.",
   "hashAlgorithm": "SHA-256",
-  "count": 220,
+  "count": 222,
   "files": [
     {
       "path": ".env.example",
@@ -28,8 +28,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 16421,
-      "sha256": "b3c28346d3fd81bb82dfb7d6d622f237bd31d72fc7c542490aabd1fc34fb2ae5"
+      "bytes": 16848,
+      "sha256": "74d8e6f1ff93816b585641a474248a17d8152351c7381665b9c05f26396cdd77"
     },
     {
       "path": "assets/identity/chainat-energy-share-7856ad154cb5.jpg",
@@ -563,8 +563,8 @@
     },
     {
       "path": "contracts/product-contract.json",
-      "bytes": 37069,
-      "sha256": "bdb21772cff88824f0ea32ee6893fbd86c960addfb555acf64bdd608d087b05d"
+      "bytes": 37085,
+      "sha256": "00e1c67c55adb4427c0dc88e97fe29b30461d4c7c3febfbf2321b027f196e86e"
     },
     {
       "path": "contracts/production-records.schema.json",
@@ -953,8 +953,8 @@
     },
     {
       "path": "docs/QA.md",
-      "bytes": 14224,
-      "sha256": "caf2786e4a35ba84b22a7b0d0872332026293dd43659ecfe588140aee1cf5720"
+      "bytes": 16573,
+      "sha256": "795f97b1a5ce42215dda96cc46864837b909a7401867598010d838dfa654bf57"
     },
     {
       "path": "docs/browser-checks.json",
@@ -972,14 +972,24 @@
       "sha256": "f21bf44fbeca69e8834c621c0575a051cda47b870cb320dc7a29c1a8ea8181d1"
     },
     {
+      "path": "docs/map-layout-browser-checks.json",
+      "bytes": 34424,
+      "sha256": "5213c24f5eb64ff76dbdc7ccf48713db3a5ed5702c7508d98570dca44683d04e"
+    },
+    {
+      "path": "docs/map-layout.json",
+      "bytes": 4403,
+      "sha256": "9310de7a377a4d7642d3abe5bb8f9a443dc85193e9e03fd1ebea03de7686eeb0"
+    },
+    {
       "path": "docs/quiet-logo-browser-checks.json",
       "bytes": 32931,
       "sha256": "c60613544a6d11a59c68cafb17fcf97dbbafd13cb86a451d7d67c7950f77eec6"
     },
     {
       "path": "docs/quiet-logo-motion.json",
-      "bytes": 4295,
-      "sha256": "ac5254ca464937b979b8e603bf4249b07578c1b7e5d3964c28af24432b6d6924"
+      "bytes": 4567,
+      "sha256": "c080dcef0e47ffa2ce9fbde0e3f1b68918a808ac8255dc0153e89bbff5e0cc6f"
     },
     {
       "path": "docs/release-evidence.json",
@@ -1003,8 +1013,8 @@
     },
     {
       "path": "index.html",
-      "bytes": 34692,
-      "sha256": "c477554797adbc43cf14bc1677e429200ecb9491b623368831af8a2f9157f2e8"
+      "bytes": 34971,
+      "sha256": "e3b4155fc5eb4b78fb7f88e552814e347c0906e52e4aed99d6dbf40920d9e8db"
     },
     {
       "path": "js/app.js",
@@ -1013,8 +1023,8 @@
     },
     {
       "path": "js/basemaps.js",
-      "bytes": 6346,
-      "sha256": "bce27791b9db75cfe18f2e144d1af234037d2e3a8770beddb632babeb1051d48"
+      "bytes": 6222,
+      "sha256": "14725c7a44728c734224514277d717c64049cb832f15ff665fe364dd1dd7956f"
     },
     {
       "path": "js/core.js",
@@ -1038,8 +1048,8 @@
     },
     {
       "path": "js/map.js",
-      "bytes": 15119,
-      "sha256": "cf16cba0eee4f45cd541151ef469dd1fce642e28690b9b463845f1bdf2f5453e"
+      "bytes": 15120,
+      "sha256": "c54f0f21568630e524b8aff758e1b03580d685b0c09c3dd9fd3425529aab1cdf"
     },
     {
       "path": "js/views.js",
@@ -1068,8 +1078,8 @@
     },
     {
       "path": "scripts/qa.mjs",
-      "bytes": 61142,
-      "sha256": "6150d6be74b164eb7b04226c8ac970d3d95fa617b1c008fab6911efa857c06f7"
+      "bytes": 67408,
+      "sha256": "357d5b9fb01a501cc78be9c2d6cb1173a113407cb87f42299829191e0042a67b"
     },
     {
       "path": "scripts/run-qa.mjs",
@@ -1093,8 +1103,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 44542,
-      "sha256": "3a3a65b69762be24ef4f746bf6f0a8cb8fd933c0636fb2f7d02b7e5fc12ec04e"
+      "bytes": 45488,
+      "sha256": "5809542656b1ac77e21f2dcf2f4e08dd047400c3dedff76d510b40323e472f44"
     },
     {
       "path": "vendor/maplibre-gl/4.7.1/LICENSE.txt",

@@ -1,0 +1,97 @@
+{
+  "documentId": "chainat-yolk-map-layout-2026-10-19",
+  "updatedOn": "2026-10-19",
+  "baselineSourceSha": "1510798aec2cd5228882a0f44e1eca333dc6918e",
+  "scope": "Larger map canvas through a compact header, grouped spatial/display toolbar, footer attribution, and responsive panel placement.",
+  "ownerRequest": "เพิ่มขนาดแผนที่ให้ใหญ่ขึ้น และจัดพื้นที่ว่างให้ดีขึ้น",
+  "layout": {
+    "desktopFromCssPx": 1100,
+    "desktopPanelWidth": "clamp(340px, 28vw, 400px)",
+    "workspaceHeight": "100dvh minus topbar, with 100vh fallback",
+    "header": "Title and subtitle share a row where space permits; module context remains screen-reader readable.",
+    "toolbar": "Breadcrumbs and area-level buttons grouped together; basemap and area-colour controls wrap as one display group.",
+    "map": "Persistent existing MapLibre instance; actual canvas grows into recovered space. No new fit/zoom action on resize.",
+    "footer": "Provider attribution and basemap status stay visible. Dataset/version details remain available in native disclosure.",
+    "below1100": "Full-width map followed by details panel in document flow; narrow cooperative gestures use the same breakpoint.",
+    "phone": "Legend remains below the map; controls retain 44px targets."
+  },
+  "preserved": {
+    "dataRelease": "cnt-energy-2026-10-18-r2",
+    "dataAndCalculationChanged": false,
+    "coordinateImportOrPublishingChanged": false,
+    "criteriaAndManualSelectionsRetained": true,
+    "quietLogoLifecycleChanged": false
+  },
+  "runtimeFiles": [
+    {
+      "path": "index.html",
+      "bytes": 34971,
+      "sha256": "e3b4155fc5eb4b78fb7f88e552814e347c0906e52e4aed99d6dbf40920d9e8db"
+    },
+    {
+      "path": "styles.css",
+      "bytes": 45488,
+      "sha256": "5809542656b1ac77e21f2dcf2f4e08dd047400c3dedff76d510b40323e472f44"
+    },
+    {
+      "path": "js/map.js",
+      "bytes": 15120,
+      "sha256": "c54f0f21568630e524b8aff758e1b03580d685b0c09c3dd9fd3425529aab1cdf"
+    },
+    {
+      "path": "js/basemaps.js",
+      "bytes": 6222,
+      "sha256": "14725c7a44728c734224514277d717c64049cb832f15ff665fe364dd1dd7956f"
+    }
+  ],
+  "verification": {
+    "report": "map-layout-browser-checks.json",
+    "visual": "CUA: 390 and 768 dark, 1366x768 dark, 900 light/dark with four-level building breadcrumb and real satellite attribution, 1440 light and 1728 light/dark. The map-only stacked layout retains the existing navigation at 900px. No header-control overlap observed.",
+    "mechanicalLayoutScan": "Impeccable layout detector: no findings before or after implementation.",
+    "scopeLimit": "Browser preview and layout review; not a native-device or full accessibility audit.",
+    "automatedResult": {
+      "passed": 128,
+      "failed": 0,
+      "ranAt": "2026-10-19T03:34:08.437Z",
+      "origin": "http://127.0.0.1:64937/",
+      "reportSha256": "5213c24f5eb64ff76dbdc7ccf48713db3a5ed5702c7508d98570dca44683d04e",
+      "scope": "Local Chromium: all previous123 checks plus5 aggregated geometry gates across three map views, desktop/phone/tablet, short laptop, long building breadcrumb and full synthetic-provider satellite credit. Native-device/full accessibility coverage is not claimed."
+    }
+  },
+  "history": {
+    "quietLogoReceipt": "quiet-logo-motion.json (retained prior release snapshot)",
+    "uiV2Receipt": "release-evidence.json (retained prior release snapshot)",
+    "privateDriveV2Archive": "Immutable snapshot of source 2428835a12de3ffc95829676d98b602668c8be0f; current changes are available from repository/live URL."
+  },
+  "measuredComparison": {
+    "before": {
+      "map": {
+        "height": 576.890625,
+        "width": 1149,
+        "x": 121,
+        "y": 326.109375
+      },
+      "theme": "auto",
+      "viewport": {
+        "height": 920,
+        "width": 1728
+      }
+    },
+    "after": {
+      "map": {
+        "height": 676.484375,
+        "width": 1197,
+        "x": 117,
+        "y": 186.515625
+      },
+      "theme": "dark",
+      "viewport": {
+        "height": 920,
+        "width": 1728
+      }
+    },
+    "canvasAreaIncreasePercent": 22.162640251647314,
+    "unit": "CSS pixels",
+    "scope": "Same 1728×920 viewport, opportunity view, analysis basemap. Local updated layout versus published baseline source 1510798. Exact font/device dimensions can vary."
+  }
+}

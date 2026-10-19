@@ -5,6 +5,7 @@
 //   BASE_URL=https://montri-th.github.io/chainat-energy/ npm run qa -- --label live
 //
 // Options: --write <file.json> saves the results · --shots <dir> saves screenshots · --static-only skips the browser.
+// --layout-only runs the bounded map-workspace geometry checks without the other browser fixtures.
 // Playwright is resolved from PLAYWRIGHT_MODULE (path to playwright/index.mjs) or the "playwright" package.
 // A pass here is evidence for the listed checks only. It is not an accessibility, LDS or data-truth certificate.
 import fs from 'node:fs';
@@ -173,7 +174,7 @@ const quietAssets = [
   ['assets/lds/build-kit/motif/landometer-motifs.css', '7cc2deb475a8d6e4af331407b2b4b741716c458a8ce885e2fb2859374b93912e'],
   ['assets/lds/build-kit/motif/svg/logo-quiet.svg', '5b6798cdb6c3ada246286e6ce3386644f383c4f987a267e5c5db392809403e14']
 ];
-const sourceFiles = ['index.html', 'styles.css', 'js/hero-logo.js', ...quietAssets.map(([file]) => file), 'scripts/qa.mjs'];
+const sourceFiles = ['index.html', 'styles.css', 'js/map.js', 'js/basemaps.js', 'js/hero-logo.js', ...quietAssets.map(([file]) => file), 'scripts/qa.mjs'];
 const sourceFingerprint = { algorithm: 'sha256', files: Object.fromEntries(sourceFiles.map(file => [file, exists(file) ? sha(file) : null])) };
 check('motif', 'quiet logo runtime, CSS and final SVG retain the exact approved release 1.2.1 bytes',
   quietAssets.every(([file, hash]) => exists(file) && sha(file) === hash));
@@ -344,12 +345,94 @@ async function heroLogoChecks(browser) {
   }
 }
 
+// The workspace budget is tested against the real Thai headings, controls and provider
+// credits. The map renderer must follow its container after the compact layout settles.
+async function mapLayoutChecks(browser) {
+  const matrix = [
+    { width: 1440, height: 900, scheme: 'light' },
+    { width: 1728, height: 920, scheme: 'dark' },
+    { width: 768, height: 1024, scheme: 'light' },
+    { width: 390, height: 844, scheme: 'dark' }
+  ];
+  const geometry = page => page.evaluate(() => {
+    const rect = selector => {
+      const el = document.querySelector(selector), r = el?.getBoundingClientRect();
+      return r ? { x: r.x, y: r.y, right: r.right, bottom: r.bottom, width: r.width, height: r.height } : null;
+    };
+    const workspace = rect('#view-map'), card = rect('.map-card'), map = rect('#map'), canvas = rect('#map canvas'), panel = rect('#panel'), notes = rect('.map-notes'), credit = rect('#basemap-attrib'), tools = rect('.map-tools'), legend = rect('#map-legend');
+    const visibleCredit = document.querySelector('#basemap-attrib');
+    return { workspace, card, map, canvas, panel, notes, credit, tools, legend,
+      creditVisible: !!visibleCredit && getComputedStyle(visibleCredit).visibility !== 'hidden' && getComputedStyle(visibleCredit).display !== 'none',
+      creditText: visibleCredit?.textContent || '', overflow: document.documentElement.scrollWidth - innerWidth,
+      width: innerWidth, height: innerHeight };
+  });
+  const ready = async page => {
+    await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 45000 });
+    await page.evaluate(async () => { await document.fonts.ready; await new Promise(resolve => requestAnimationFrame(() => requestAnimationFrame(resolve))); });
+    await page.waitForFunction(() => {
+      const map = document.getElementById('map'), canvas = map?.querySelector('canvas');
+      return canvas && Math.abs(canvas.clientWidth - map.clientWidth) <= 1 && Math.abs(canvas.clientHeight - map.clientHeight) <= 1;
+    }, null, { timeout: 5000 });
+  };
+  const problems = (g, { compact = false } = {}) => {
+    const bad = [], desktop = g.width >= 1100;
+    const sameSize = g.map && g.canvas && Math.abs(g.map.width - g.canvas.width) <= 1 && Math.abs(g.map.height - g.canvas.height) <= 1;
+    if (!sameSize) bad.push('renderer/container size');
+    if (g.overflow > 0) bad.push(`horizontal overflow +${g.overflow}`);
+    if (!g.map || g.map.height < (desktop && !compact ? .7 * g.workspace.height : 340)) bad.push(`map height ${Math.round(g.map?.height || 0)}`);
+    if (desktop && (g.map.bottom > g.height + 1 || g.map.y < 63 || g.panel.bottom > g.height + 1 || g.panel.x < g.map.right - 1)) bad.push('desktop viewport/panel containment');
+    if (!desktop && g.panel.y < g.card.bottom - 1) bad.push('stacked panel overlap');
+    if (g.notes && g.map && g.notes.y < g.map.bottom - 1) bad.push('notes overlap map');
+    if (!g.creditVisible || !g.creditText.trim() || !g.notes || g.credit.x < g.notes.x - 1 || g.credit.right > g.notes.right + 1) bad.push('provider credit visibility/containment');
+    if (g.width < 600 && (g.legend.y < g.map.bottom - 1 || g.tools.right > g.map.right + 1 || g.tools.bottom > g.map.bottom + 1)) bad.push('phone legend/tools overlap');
+    return bad;
+  };
+  for (const view of matrix) {
+    const ctx = await browser.newContext({ viewport: { width: view.width, height: view.height }, colorScheme: view.scheme, reducedMotion: 'reduce' });
+    const page = await ctx.newPage(), bad = [], sizes = [];
+    try {
+      for (const route of ['demand', 'supply', 'opportunity']) {
+        await page.goto(`${BASE}?v=${route}`, { waitUntil: 'networkidle' });
+        await ready(page);
+        const g = await geometry(page);
+        bad.push(...problems(g).map(p => `${route}: ${p}`));
+        sizes.push(`${route} ${Math.round(g.map.width)}×${Math.round(g.map.height)} @${Math.round(g.map.y)}`);
+      }
+      check('layout', `${view.width}×${view.height}: all three map views use the viewport with a matched canvas, readable credits and clear controls`, !bad.length, [...bad, ...sizes].join(' | '));
+    } catch (e) { check('layout', `${view.width}×${view.height}: map workspace geometry completed`, false, e.message); }
+    finally { await ctx.close(); }
+  }
+
+  // Exercise the crowded desktop breakpoint and short laptop with a long building
+  // breadcrumb and full satellite attribution, using synthetic tiles rather than imagery.
+  const crowdedBad = [], crowdedSizes = [];
+  for (const viewport of [{ width: 1366, height: 768 }, { width: 900, height: 900 }]) {
+    const ctx = await browser.newContext({ viewport, reducedMotion: 'reduce' });
+    await ctx.route(/^https:\/\/(?:tile\.openstreetmap\.org|wmts\.terrascope\.be)\//, route => route.fulfill({ status: 200, contentType: 'image/png', body: syntheticTile() }));
+    const page = await ctx.newPage();
+    try {
+      await page.goto(`${BASE}?v=demand&lvl=lao&a=04180102&b=04180102-00001`, { waitUntil: 'networkidle' });
+      await ready(page);
+      await page.selectOption('#basemap-select', 'satellite');
+      await page.waitForFunction(() => document.querySelector('#basemap-attrib')?.textContent.includes('ESA WorldCover'), null, { timeout: 5000 });
+      await ready(page);
+      const g = await geometry(page);
+      crowdedBad.push(...problems(g, { compact: true }).map(p => `${viewport.width}: ${p}`));
+      if (!g.creditText.includes('2021') || !g.creditText.includes('10 ม.')) crowdedBad.push(`${viewport.width}: satellite date/resolution missing`);
+      crowdedSizes.push(`${viewport.width} ${Math.round(g.map.width)}×${Math.round(g.map.height)} @${Math.round(g.map.y)}`);
+    } catch (e) { crowdedBad.push(`${viewport.width}: ${e.message}`); }
+    finally { await ctx.close(); }
+  }
+  check('layout', 'short laptop and 900px breakpoint retain a usable map with long breadcrumbs and full satellite credit', !crowdedBad.length, [...crowdedBad, ...crowdedSizes].join(' | '));
+}
+
 async function browserChecks() {
   let pw;
   try { pw = await import(process.env.PLAYWRIGHT_MODULE || 'playwright'); } catch (e) { check('browser', 'playwright available', false, e.message); return; }
   const { chromium } = pw;
   // Use Playwright's version-matched full Chromium in headless mode; no machine-specific path.
   const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM_EXECUTABLE || chromium.executablePath(), headless: true, args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
+  if (args.includes('--layout-only')) { await mapLayoutChecks(browser); await browser.close(); return; }
   const assetContext = await browser.newContext();
   const deliveryBad = [];
   for (const asset of identity.assets) {
@@ -370,6 +453,7 @@ async function browserChecks() {
   await assetContext.close();
   await heroLogoChecks(browser);
   if (args.includes('--motif-only')) { await browser.close(); return; }
+  await mapLayoutChecks(browser);
   const ROUTES = ['', '?v=demand', '?v=demand&m=tier', '?v=demand&a=180101', '?v=demand&lvl=lao&a=04180102&b=04180102-00001', '?v=supply', '?v=supply&a=180606', '?v=supply&lvl=lao&a=04180102', '?v=demand&lvl=lao&a=04180102&m=tier', '?v=opportunity', '?v=shortlist', '?v=requests', '?v=sources', '?v=unknown&a=zzz&b=1'];
   const MATRIX = [{ scheme: 'light', w: 1440, h: 900 }, { scheme: 'dark', w: 1440, h: 900 }, { scheme: 'light', w: 390, h: 844 }, { scheme: 'dark', w: 768, h: 1024 }];
   for (const m of MATRIX) {
