@@ -4,7 +4,7 @@
   "dataRelease": "cnt-energy-2026-10-20-r3",
   "scope": "Every tracked source file in this repository snapshot except this manifest itself. This is source inventory; HTTP URL/MIME/byte parity is verified separately in the release handoff. Historical build/QA records retain their dates and source scope.",
   "hashAlgorithm": "SHA-256",
-  "count": 223,
+  "count": 224,
   "files": [
     {
       "path": ".env.example",
@@ -953,8 +953,8 @@
     },
     {
       "path": "docs/QA.md",
-      "bytes": 26489,
-      "sha256": "013fed58543c6fd68a990e9163c4b1245cacc83452956e8e1aed7cb5dc0594fa"
+      "bytes": 26650,
+      "sha256": "ed480bc652ab5c4c11a6db1d780b684e2053291a8850302c96122e44c50d4a1d"
     },
     {
       "path": "docs/browser-checks.json",
@@ -963,13 +963,18 @@
     },
     {
       "path": "docs/build-record.json",
-      "bytes": 14904,
-      "sha256": "6161da020f5f0007a2b95e9ab8c6bdf200c5ae658b595c34a4a7b2feae5d4555"
+      "bytes": 14973,
+      "sha256": "e2f2d0d1195c11dc696810d754f17f6d88d189bac4e1d7bdfd6c90e9ecf6cb9d"
     },
     {
       "path": "docs/gov-solar-browser-checks.json",
       "bytes": 41133,
       "sha256": "af83ecd4ba9dc62d57732070cec61290c4c8dc48c5aee387a9e669f6ee0bbeba"
+    },
+    {
+      "path": "docs/gov-solar-live-checks.json",
+      "bytes": 41152,
+      "sha256": "459980833a4256874335f4fa3cb129316a9ff946d5ba3e1734d2854e2c438a4b"
     },
     {
       "path": "docs/identity-manifest.json",

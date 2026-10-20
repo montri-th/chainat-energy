@@ -101,7 +101,7 @@
   "conformance": {
     "package": "LDS verify.mjs PASS 9769/9769 on 2026-10-20 (package scope only)",
     "artifact": "check-artifact.mjs (r3, 2026-10-20) PASS for styles.css, icons.css, identity.css and all 8 js files. index.html reports one problem from the official unmodified motif stylesheet: the --lm-wedge color-mix is used only by the full logo variant, and this page renders the quiet variant whose wedge uses currentColor; left unchanged because LDS files must not be edited",
-    "browser": "r3 local 2026-10-20T12:21:23.951Z: scripts/qa.mjs 146 passed, 0 failed on the run-qa.mjs loopback server (docs/gov-solar-browser-checks.json); matrix light 1440, dark 1440, light 390, dark 768 and dark 320 over 16 routes. Live result after deploy: docs/gov-solar-live-checks.json",
+    "browser": "r3 local 2026-10-20T12:21:23.951Z: scripts/qa.mjs 146 passed, 0 failed on the run-qa.mjs loopback server (docs/gov-solar-browser-checks.json); matrix light 1440, dark 1440, light 390, dark 768 and dark 320 over 16 routes. Live 2026-10-20T12:35:31.363Z on d9417d3: 146 passed, 0 failed (docs/gov-solar-live-checks.json); byte parity 223 of 223 files",
     "favicon": "Partly: portfolio icons, web manifest and share image exist since UI v2 (owner selection, docs/identity-manifest.json); FAVICON-01 product-tile conformity is not claimed until a CityMETER tile is approved",
     "notClaimed": [
       "full LDS conformance",
