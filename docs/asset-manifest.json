@@ -953,8 +953,8 @@
     },
     {
       "path": "docs/QA.md",
-      "bytes": 26650,
-      "sha256": "ed480bc652ab5c4c11a6db1d780b684e2053291a8850302c96122e44c50d4a1d"
+      "bytes": 27170,
+      "sha256": "0637510b028cd9df3cd0022cbef8ca469c855005b22343292896aa039809c9b6"
     },
     {
       "path": "docs/browser-checks.json",
@@ -963,8 +963,8 @@
     },
     {
       "path": "docs/build-record.json",
-      "bytes": 14973,
-      "sha256": "e2f2d0d1195c11dc696810d754f17f6d88d189bac4e1d7bdfd6c90e9ecf6cb9d"
+      "bytes": 15105,
+      "sha256": "f7c6e2d374f404e5068b6feb2fcfe6ce274f601e978869eebb1414e49fa01384"
     },
     {
       "path": "docs/gov-solar-browser-checks.json",
