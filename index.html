@@ -176,7 +176,7 @@
 
       <section id="view-requests" class="view" hidden>
         <div class="page">
-          <div class="section-head"><p class="kicker" lang="en">DATA LINKAGE</p><h1 style="font-size:var(--fs-h2)">ข้อมูลที่ต้องขอเชื่อมโยง</h1><p>ตัวเลขความต้องการรายพื้นที่ในเดโมเป็นแบบจำลอง ถ้าสำนักงานได้ข้อมูลสามชุดนี้ แผนที่และคิวสามารถเปลี่ยนไปใช้ค่าจริงได้โดยวิธีใช้งานเหมือนเดิม</p></div>
+          <div class="section-head"><p class="kicker" lang="en">DATA LINKAGE</p><h1 style="font-size:var(--fs-h2)">ข้อมูลที่ต้องขอเชื่อมโยง</h1><p>ตัวเลขความต้องการรายพื้นที่ในเดโมเป็นแบบจำลอง ถ้าสำนักงานได้ข้อมูลชุดที่ 1–3 แผนที่และคิวสามารถเปลี่ยนไปใช้ค่าจริงได้โดยวิธีใช้งานเหมือนเดิม · เมื่อได้ครบ ชุดที่ 4 จะใช้แยกหน่วยงานและกิจการที่ติดโซลาร์รูฟท็อปแล้วออกจากรายการที่จะชวนสำรวจ</p></div>
           <article class="request">
             <div class="request-head"><div><p class="kicker">ชุดที่ 1 · ไฟฟ้า</p><h2 class="request-title">การใช้ไฟฟ้ารายผู้ใช้ไฟ</h2><p class="muted">ขอจาก การไฟฟ้าส่วนภูมิภาค (กฟภ.) · ใช้กับแผนงานที่ 1 และ 3 · แทนค่าแบบจำลองของอาคาร 177,647 หลัง</p></div><span class="status" data-q="evidence">ยังไม่ได้รับข้อมูล</span></div>
             <div class="request-grid">
@@ -196,6 +196,13 @@
             <div class="request-grid">
               <div><h3 class="field-head">ช่องข้อมูล</h3><ul class="fields"><li><span>เดือนที่จดทะเบียน ประเภทรถ เชื้อเพลิง และยี่ห้อ ระดับจังหวัด</span><span class="privacy" data-p="open">มีแล้ว ใน CityMETER: Cars</span></li><li><span>ยอดสะสมแยกเชื้อเพลิง ระดับจังหวัด</span><span class="privacy" data-p="open">มีแล้ว ถึง 28 ก.พ. 2569</span></li><li><span>อำเภอและตำบลตามที่อยู่ผู้ครอบครอง แยกเชื้อเพลิงรายเดือน</span><span class="privacy" data-p="mask">ยังต้องขอ · รวมยอดรายตำบล</span></li><li><span>ชื่อเจ้าของและเลขทะเบียนรถ</span><span class="privacy" data-p="mask">ไม่ขอ ไม่แสดง</span></li></ul></div>
               <div class="table-wrap" id="veh-table"></div>
+            </div>
+          </article>
+          <article class="request">
+            <div class="request-head"><div><p class="kicker">ชุดที่ 4 · โซลาร์รูฟท็อป</p><h2 class="request-title">ผู้ติดตั้งโซลาร์รูฟท็อปรายพื้นที่</h2><p class="muted">ได้รับแล้วบางส่วนเมื่อ 20 ต.ค. 2569: รายชื่อโซลาร์รูฟท็อปของหน่วยงานรัฐ 11 แห่ง ไฟล์ระบุสำนักงาน กกพ. เขต 3 ข้อมูล ณ 11 ก.ย. 2569 ไม่มีที่อยู่ สถานะ หรือวันที่เริ่มจ่ายไฟ (ดูในหน้ากิจการพลังงาน) · แผนระบุโซลาร์รูฟท็อปทั้งจังหวัด 113 แห่ง (หน้า 1) ตัวเลขของแผนกับไฟล์นี้อาจนับคนละกลุ่มและคนละช่วงเวลา จึงไม่นำมาหารเป็นสัดส่วน · แหล่งที่น่าจะมีข้อมูล: สำนักงาน กกพ. เขต 3 (นครสวรรค์) · การไฟฟ้าส่วนภูมิภาค (กฟภ.) · ใช้กับแผนงานที่ 1 และ 3</p></div><span class="status" data-q="evidence">ได้รับบางส่วน</span></div>
+            <div class="request-grid">
+              <div><h3 class="field-head">ช่องข้อมูล</h3><ul class="fields"><li><span>ชื่อหน่วยงานรัฐ กำลังติดตั้ง kVA และ kW</span><span class="privacy" data-p="open">มีแล้ว 11 แห่ง</span></li><li><span>ที่อยู่ ตำบล และพิกัดของจุดติดตั้ง (พิกัดใช้ภายในจนกว่าเจ้าของข้อมูลอนุญาตให้แสดง)</span><span class="privacy" data-p="mask">ยังต้องขอ · แสดงระดับตำบล</span></li><li><span>วันที่แจ้งหรือวันที่เริ่มจ่ายไฟ</span><span class="privacy" data-p="open">ยังต้องขอ · แสดงได้</span></li><li><span>ผู้ติดตั้งที่เป็นนิติบุคคล: ชื่อ ตำบล และกำลังติดตั้ง</span><span class="privacy" data-p="open">ยังต้องขอ · แสดงได้</span></li><li><span>ผู้ติดตั้งที่เป็นบุคคลธรรมดาหรือบ้านอยู่อาศัย (ไม่ขอชื่อ)</span><span class="privacy" data-p="mask">ยังต้องขอ · แสดงยอดรวมรายตำบล</span></li></ul></div>
+              <div><h3 class="field-head">ความถี่และรูปแบบ</h3><p class="muted">ปรับทุกไตรมาส ไฟล์ CSV หรือ Excel ที่มีรหัสหรือชื่อตำบล · เชื่อมกับอาคารด้วยพิกัดหรือที่อยู่</p><h3 class="field-head" style="margin-top:var(--s3)">ใช้ทำอะไร</h3><p class="muted">แยกหน่วยงานและกิจการที่ติดตั้งแล้วออกจากรายการชวนสำรวจ · ติดตามจำนวนโซลาร์รูฟท็อปเทียบกับแผน · ใช้คู่กับมุมมองโซลาร์รูฟท็อปกิจการ และมุมมองอาคารควบคุมและหน่วยงานรัฐ</p></div>
             </div>
           </article>
         </div>

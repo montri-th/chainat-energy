@@ -2,18 +2,34 @@
   "product": "CityMETER: Yolk · โหมดสำนักงานพลังงานจังหวัด",
   "province": "ชัยนาท",
   "release": {
-    "id": "cnt-energy-2026-10-18-r2",
-    "dataRound": "2026-10-18",
+    "id": "cnt-energy-2026-10-20-r3",
+    "dataRound": "2026-10-20",
     "engine": "Yolk สพจ. เดโม 0.1",
     "engineNote": "Same Yolk order and rules as branch-expansion mode (Demand → Supply → opportunity → survey queue), written as in-page JavaScript; it does not call the production engine",
-    "replaces": "cnt-energy-2026-10-18 (commit 0a9da8e)",
+    "replaces": "cnt-energy-2026-10-18-r2 (data); the owner's UI v2 commits f6d0817…72cf134 of 2026-10-19 are kept unchanged",
     "changes": [
-      "New overview section from CityMETER: Cars: monthly registrations by vehicle type, fuel and brand for Chainat (Jan 2020–Aug 2026, province level), yearly stacked bars with a table alternative, top brands of the last 12 months, and the EV share of the last 12 months benchmarked against 77 provinces",
-      "EV charging lens and the DLT data request use the province-level CityMETER: Cars context; district and tambon registrations are still requested from DLT",
-      "district[] in data/areas.json recomputed as sums of tambons (r1 still held vehicles before integer rounding and solar-pump capacity before the W/kW fix; the page shows district names only, so on-screen numbers did not change)",
-      "Population label: CityMETER building info V4 popCount, version not stated by the endpoint (the 2026-09 label used in r1 came from another API and is withdrawn)",
-      "Wording: 'one engine' replaced by 'same order and rules as Yolk' on the page, README and meta",
-      "Independent review before publishing found 2 must-fix and 6 should-fix issues in the new section (a false 'no EVs' note on the all-types view, a charging claim labelled as a data conclusion, low-count benchmark peers, request status, EV-lens wording, 0.0% for non-zero shares, vehicle-type names, a 26-screen table on phones); all fixed and covered by scripts/qa.mjs where testable"
+      "New observed dataset supply.govSolar: 11 government rooftop-solar records whose ERC office column is region 3 (Nakhon Sawan), from a Numbers file received 2026-10-20 that the owner states came from the Chai Nat Provincial Energy Office officer; the file has no title, so \"notified to the ERC\" is read from its columns; file note \"update 11/9/2569\" read as data as of 2026-09-11; total 369.6 kVA",
+      "kW column: 8 rows typed as text in watts (e.g. 15,000.000 for 15 kVA) divided by 1,000; 3 numeric rows kept; total 369.16 kW; kWAC and kWDC are dashes or blank in every row and are not shown",
+      "No address, tambon or coordinates in the file: the district of each record is inferred from the agency name (2 via LAO names, 5 via \"อำเภอ<name>\", 2 via a district name), 2 records are province-only; the list is not mapped, not summed by tambon and not divided by the plan total of 113",
+      "Page: 7th overview KPI (full-width card), supply filter and section listing the agencies by the district read from names, efficiency-lens check line naming those agencies, rooftop-lens check wording, request set 4 (partially received), two sources items (Observed list, Inferred district); evidence stamps show both the model date (18 Oct 2569) and the data release label r3; the shortlist CSV adds a release-id column; request field rows stack below 600 px; at 320 px source notes wrap and the panel and field grids are bounded to the panel width so the metric select no longer widens the demand panel (pre-existing +15 px and +25 px overflow on r2); record labels in the supply panel use a fixed 2:3 label/value split so one long value (an address) no longer collapses every label of that record to zero width (pre-existing on r2 at every width)",
+      "Shortlist records now also keep dataRelease (the release id), as contracts/product-contract.json persistence.savedSnapshotMustRetain requires",
+      "scripts/qa.mjs: new static checks for the r3 dataset, the release id and price or deal-term wording across every published text file; new browser checks for the release id on all six data requests, the 7th KPI on its own full row, the supply section by district (no zero shown where no name matches), the map metrics (17, none reads the list), request set 4 with dates read from data and the sources labels; the viewport matrix adds dark 320 px and the two r3 supply routes; js/map.js must not read the list; request field rows must stack at 320 and 390 px and record labels must keep at least 48 px; the source fingerprint now also covers js/core.js, js/views.js, js/app.js, data/meta.json and data/supply.json",
+      "All other data files and keys are byte-identical to r2; Demand tiers 9/15/12 and queue 28/8/0 unchanged (scripts/check-core.mjs)"
+    ],
+    "history": [
+      {
+        "id": "cnt-energy-2026-10-18-r2",
+        "dataRound": "2026-10-18",
+        "replaces": "cnt-energy-2026-10-18 (commit 0a9da8e)",
+        "changes": [
+          "New overview section from CityMETER: Cars: monthly registrations by vehicle type, fuel and brand for Chainat (Jan 2020–Aug 2026, province level), yearly stacked bars with a table alternative, top brands of the last 12 months, and the EV share of the last 12 months benchmarked against 77 provinces",
+          "EV charging lens and the DLT data request use the province-level CityMETER: Cars context; district and tambon registrations are still requested from DLT",
+          "district[] in data/areas.json recomputed as sums of tambons (r1 still held vehicles before integer rounding and solar-pump capacity before the W/kW fix; the page shows district names only, so on-screen numbers did not change)",
+          "Population label: CityMETER building info V4 popCount, version not stated by the endpoint (the 2026-09 label used in r1 came from another API and is withdrawn)",
+          "Wording: 'one engine' replaced by 'same order and rules as Yolk' on the page, README and meta",
+          "Independent review before publishing found 2 must-fix and 6 should-fix issues in the new section (a false 'no EVs' note on the all-types view, a charging claim labelled as a data conclusion, low-count benchmark peers, request status, EV-lens wording, 0.0% for non-zero shares, vehicle-type names, a 26-screen table on phones); all fixed and covered by scripts/qa.mjs where testable"
+        ]
+      }
     ]
   },
   "designSystem": {
@@ -24,13 +40,15 @@
     "documentSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
     "releaseManifestSha256": "0a936393fc1ab05f8b32110397546b2a87cc26e46f2661a712bdd2debaa58516",
     "signature": "unsigned-owner-approved",
-    "vendoredFiles": "28 files under assets/lds are byte-identical to the 0.9.7 package (checked 2026-10-18)"
+    "vendoredFiles": "29 files under assets/lds are byte-identical to the installed 0.9.7 package, including build-kit/motif/svg/logo-quiet.svg added on 2026-10-19 (checked 2026-10-20)"
   },
   "authority": {
     "request": "Owner instruction 2026-10-18: show the demo the way Yolk works, for the Provincial Energy Office mission, one product for both branch expansion and the energy office; criteria and opportunities follow the Chainat energy action plan 2566–2570 and the office mandate; publish at https://montri-th.github.io/chainat-energy/",
     "publicationBoundary": "Owner decision 2026-10-18: show every field of the office registers, including names of natural persons. Implementation withholds personal phone numbers: 14 project contacts, one number inside a name field and one in an unlabelled column of the controlled-facilities file; the owner can reverse this after the office confirms consent.",
     "notAuthorised": "No prices, quotations, contract terms, sales pipeline, credentials or per-site coordinates are published.",
-    "carsData": "Owner instruction 2026-10-18 21:39: the Department of Land Transport data in CityMETER: Cars (https://landometer.com/v3/citymeter/Central/CNT?d=cars) may be used in this demo; update the site, handoff files and product brief"
+    "carsData": "Owner instruction 2026-10-18 21:39: the Department of Land Transport data in CityMETER: Cars (https://landometer.com/v3/citymeter/Central/CNT?d=cars) may be used in this demo; update the site, handoff files and product brief",
+    "govSolarData": "Owner instruction 2026-10-20 17:08 +07 (chat, with the Numbers file from the Chai Nat Provincial Energy Office officer): add the officer's data, update the web and republish the existing demo URL; update the handoff files and the Product Brief",
+    "govSolarPublication": "All published govSolar fields are agency-level (ประเภทบุคคล หน่วยงานรัฐ in every row); no natural persons, phone numbers, addresses or coordinates exist in the file; the raw file is not published (SHA-256 only)"
   },
   "publication": {
     "repository": "https://github.com/montri-th/chainat-energy",
@@ -45,7 +63,8 @@
       "office registers: 203 fuel operators, 18 controlled factories and buildings, 69 projects (58 solar pumping rows with 103 systems and 360.04 kW, 1 solar PV for a cold room, 7 dryers, 2 biomass stoves, 1 biogas) with 64 photos",
       "DLT registered vehicles by fuel, province level, as of 2026-02-28",
       "CityMETER: Cars monthly vehicle registrations by type, fuel and brand, province level, 2020-01 to 2026-08, read 2026-10-18 from /api/v2/citymeter-v3/vehicles (data/cars.json)",
-      "CityMETER boundaries (8 districts, 53 tambons, 59 LAOs) and 177,647 building footprints"
+      "CityMETER boundaries (8 districts, 53 tambons, 59 LAOs) and 177,647 building footprints",
+      "government rooftop-solar list (supply.govSolar): 11 agencies, ERC office column region 3 in every row, 369.6 kVA, file note update 11/9/2569, received 2026-10-20; that these are notifications to the ERC is read from the columns (the file has no title, status or start date)"
     ],
     "reported": [
       "electricity by PEA customer category 2566 and final energy 2566 from the action plan"
@@ -61,33 +80,41 @@
       "EV (battery electric) share of new registrations in the last 12 months (2025-09 to 2026-08) across the 77 provinces (76 provinces and Bangkok) in CityMETER: Cars, passenger cars (type 1) and motorcycles (type 12), ranked high to low; Nonthaburi, Pathum Thani and Samut Prakan have implausibly low counts (fewer than 1,000 new motorcycles in 12 months) and are flagged, with Chainat's rank shown both with and without them"
     ],
     "inference": [
-      "Monthly CityMETER: Cars values are new registrations, not stock: Chainat e-motorcycles registered Jan 2020–Feb 2026 total 638, equal to the DLT stock of 638 at 28 Feb 2026; national EV registrations Oct 2022–Sep 2023 total 73,308 against 73,341 reported by DLT for fiscal 2023 (Thairath). The CityMETER: Cars page does not state the definition"
+      "Monthly CityMETER: Cars values are new registrations, not stock: Chainat e-motorcycles registered Jan 2020–Feb 2026 total 638, equal to the DLT stock of 638 at 28 Feb 2026; national EV registrations Oct 2022–Sep 2023 total 73,308 against 73,341 reported by DLT for fiscal 2023 (Thairath). The CityMETER: Cars page does not state the definition",
+      "District of each government rooftop-solar record read from the agency name (9 of 11; 2 province-only); not an address"
     ]
   },
   "visualDecisions": {
     "themes": "Auto, Light and Dark from LDS foundation tokens; choice persists per browser; no first-paint flash",
-    "atmosphere": "Overview hero on atmosphere.measure.deep with on-deep inks; dial motif quiet variant declared on that ground; pause control before the frame",
-    "identity": "Governed text identity 'Landometer' in Arvo 700; no unapproved logo candidate",
-    "favicon": "None. The base asset registry has no approved CityMETER product tile, so no substitute is invented. LDS FAVICON-01 treats a missing icon set as a WEBFMT-01 blocker, so the page is not conformant on this point until a tile is approved",
+    "atmosphere": "Overview hero on atmosphere.measure.deep with on-deep inks; since the owner's 2026-10-19 change the hero is the landometer.logo.quiet motif played once (finite_once, no pause control, owner selection recorded in docs/quiet-logo-motion.json)",
+    "identity": "Since UI v2 (2026-10-19): retained Yolk 1.9.13 Landometer logo PNG and portfolio icons with hashes in docs/identity-manifest.json",
+    "favicon": "Since UI v2: the owner-selected portfolio icon set and web manifest (docs/identity-manifest.json, canonicalProductTileClaimed false). No approved canonical CityMETER product tile exists, so FAVICON-01 product-tile conformity is not claimed",
     "choropleth": "Every map metric uses the exact 41-sample LUT by mid-rank percentile, index round(40p); measured zero at index 0 with the zero outline; no-data not filled; same HEX in both themes",
     "tiers": "Yolk tiers use the approved 3-class set of the activity scale (LUT indices 40, 20, 0); ไข่ขาว adds a dashed inset outline because its near-white start is close to the land colour in light theme; opportunity candidates (ชวนสำรวจ) add a heavy inset outline",
     "families": "activity for energy use, count for register counts, density-household for per-household electricity",
     "selection": "Map selection uses map.selectedStroke and a marker with markerHalo/markerStroke; data fills never change colour on selection",
     "navigation": "No decorative brackets or coloured left rails; visible keyboard focus; 44 px direct targets",
     "queue": "Yolk vocabulary and eligibility: only Demand members (tier 1–3) enter the queue; statuses ชวนสำรวจ / ต้องเพิ่มหลักฐาน / ยังไม่พบสัญญาณ; release stamp shows the criteria preset name",
-    "categories": "Fuel categories in the vehicle chart use landometer-series-10-v8 soft fills (DATAVIZ-05) through --ldm-series-NN-fill-light/dark tokens, theme-specific as LDS defines; stable slots and cues: diesel 01 circle, gasoline 02 square, hybrid 03 triangle, plug-in hybrid 04 diamond, electric 05 cross; every segment has a 1px border.default edge; legend shows the shape cue; a table alternative and an aria label per bar carry the numbers"
+    "categories": "Fuel categories in the vehicle chart use landometer-series-10-v8 soft fills (DATAVIZ-05) through --ldm-series-NN-fill-light/dark tokens, theme-specific as LDS defines; stable slots and cues: diesel 01 circle, gasoline 02 square, hybrid 03 triangle, plug-in hybrid 04 diamond, electric 05 cross; every segment has a 1px border.default edge; legend shows the shape cue; a table alternative and an aria label per bar carry the numbers",
+    "kpiWide": "r3: the 7th overview KPI spans the full grid row (.kpi-wide) so the 3/2/1-column grid has no orphan card; its heading keeps Thai phrases together with .phrase spans"
   },
   "conformance": {
-    "package": "LDS verify.mjs PASS 9769/9769 on 2026-10-18 (package scope only; the package did not change in r2)",
-    "artifact": "check-artifact.mjs (r2) PASS for styles.css and all js files. index.html reports one problem that comes from the official unmodified motif stylesheet (a color-mix that defines the logo-motif wedge, not rendered on this page); left unchanged because LDS files must not be edited",
-    "browser": "scripts/qa.mjs 73/73 locally and 73/73 on https://montri-th.github.io/chainat-energy/ for commit c899707 (2026-10-18 22:36 +07); 179/179 live files byte-identical to docs/asset-manifest.json; results in docs/browser-checks.json and docs/QA.md",
-    "favicon": "Not conformant with FAVICON-01 / WEBFMT-01 until a product tile is approved",
+    "package": "LDS verify.mjs PASS 9769/9769 on 2026-10-20 (package scope only)",
+    "artifact": "check-artifact.mjs (r3, 2026-10-20) PASS for styles.css, icons.css, identity.css and all 8 js files. index.html reports one problem from the official unmodified motif stylesheet: the --lm-wedge color-mix is used only by the full logo variant, and this page renders the quiet variant whose wedge uses currentColor; left unchanged because LDS files must not be edited",
+    "browser": "r3 local 2026-10-20T12:21:23.951Z: scripts/qa.mjs 146 passed, 0 failed on the run-qa.mjs loopback server (docs/gov-solar-browser-checks.json); matrix light 1440, dark 1440, light 390, dark 768 and dark 320 over 16 routes. Live result after deploy: docs/gov-solar-live-checks.json",
+    "favicon": "Partly: portfolio icons, web manifest and share image exist since UI v2 (owner selection, docs/identity-manifest.json); FAVICON-01 product-tile conformity is not claimed until a CityMETER tile is approved",
     "notClaimed": [
       "full LDS conformance",
       "WCAG or colour-vision certification",
       "native iOS/Android or screen-reader testing",
       "truth of modelled consumption",
-      "district or tambon vehicle registrations"
+      "district or tambon vehicle registrations",
+      "district of a government rooftop-solar record beyond what its agency name states",
+      "that the plan total of 113 rooftop sites and the 11 government records share a scope or date"
+    ],
+    "notConformant": [
+      "FAVICON-01 product tile: portfolio icons are used; no approved canonical CityMETER product tile (owner decision pending)",
+      "component.data-table.01 narrow-screen behaviour: styles.css .lds-table.table-keep (lines 469–475) keeps table rows on phones instead of the stacked rows the component defines; recorded here because LDS 0.9.7 has no exception channel"
     ]
   },
   "knownLimitations": [
@@ -95,6 +122,7 @@
     "CityMETER: Cars is province level only; it gives the trend and mix of new registrations, not the vehicles or charging demand of a tambon",
     "Office registers carry no data date and no coordinates",
     "Shortlist is stored in the viewer's browser only",
-    "Static demo: no authentication, database or live connection to CityMETER production"
+    "Static demo: no authentication, database or live connection to CityMETER production",
+    "Government rooftop-solar list has no address, tambon, coordinates or notification date; district is inferred from names and 2 records are province-only"
   ]
 }

@@ -1,7 +1,7 @@
 {
   "sourceBaselineCommit": "c913c8061164973bf259f7fff983d245f97b3494",
-  "dataRelease": "cnt-energy-2026-10-18-r2",
-  "rationale": "Identity/basemap-only release must preserve same-release model decisions; tier and queue memberships are fixed regression fixtures.",
+  "dataRelease": "cnt-energy-2026-10-20-r3",
+  "rationale": "Identity/basemap-only release must preserve same-release model decisions; tier and queue memberships are fixed regression fixtures. r3 (2026-10-20) adds only an observed government rooftop-solar list that no criterion or lens status reads, so the same memberships must hold.",
   "tiers": {
     "180101": null,
     "180102": 1,

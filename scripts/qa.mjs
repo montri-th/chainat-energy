@@ -49,6 +49,33 @@ const planElec = plan.plan.situation.electricity2566.rows.reduce((a, r) => a + r
 const modelElec = areas.tambon.reduce((a, u) => a + Object.values(u.elec || {}).reduce((x, y) => x + (y || 0), 0), 0);
 check('data', 'modelled electricity sums back to the plan total (±0.01%)', Math.abs(modelElec - planElec) / planElec < 1e-4, `model ${Math.round(modelElec)} · plan ${planElec}`);
 check('data', 'supply registers: 203 fuel · 18 controlled · 69 projects', supply.fuel.length === 203 && supply.controlled.length === 18 && supply.projects.length === 69, `${supply.fuel.length}/${supply.controlled.length}/${supply.projects.length}`);
+// r3: government rooftop solar notified to the ERC (office Numbers file, no address or coordinates)
+const gov = supply.govSolar, govBad = [];
+if (!gov) govBad.push('supply.govSolar missing');
+else {
+  const it = gov.items, kva = it.reduce((a, x) => a + x.kva, 0), kw = it.reduce((a, x) => a + x.kw, 0);
+  if (it.length !== 11 || gov.source.records !== 11 || meta.layers.govSolar?.records !== 11) govBad.push(`records ${it.length}/${gov.source.records}/${meta.layers.govSolar?.records}`);
+  if (it.map(x => x.seq).join() !== Array.from({ length: it.length }, (_, i) => i + 1).join()) govBad.push('sequence is not 1…n');
+  if (!it.every(x => x.ownerKind === 'หน่วยงานรัฐ' && x.holder === null)) govBad.push('owner kind or holder');
+  if (Math.abs(kva - gov.totals.kva) > 1e-6 || Math.abs(kva - 369.6) > 1e-6 || Math.abs(kw - gov.totals.kw) > 1e-6) govBad.push(`kVA ${kva} · kW ${kw}`);
+  if (it.filter(x => x.kwFromWatts).length !== 8 || gov.totals.kwFromWatts !== 8) govBad.push('watt rows');
+  for (const x of it) {
+    const raw = parseFloat(String(x.kwRaw).replace(/,/g, '')), a = x.area;
+    if (x.kwFromWatts ? Math.abs(raw / 1000 - x.kw) > 1e-6 || Math.abs(x.kw - x.kva) > 1e-6 : Math.abs(raw - x.kw) > 1e-6) govBad.push(`row ${x.row} kW`);
+    if (['tambon', 'tambonCode', 'lat', 'lon', 'lng', 'address'].some(k => k in x || k in a)) govBad.push(`row ${x.row} carries a tambon, address or coordinate`);
+    if (Object.keys(a).sort().join() !== 'code,district,districtCode,level,method,name') govBad.push(`row ${x.row} area keys ${Object.keys(a).sort().join()}`);
+    if (a.level === 'province' ? a.districtCode !== null : !areas.district.some(d => d.code === a.districtCode && d.name === a.district)) govBad.push(`row ${x.row} district`);
+    if (a.level === 'district' && !x.name.includes(a.district)) govBad.push(`row ${x.row} name lacks its district`);
+    if (a.level === 'lao' && !(areas.lao.some(l => l.code === a.code && l.districtCode === a.districtCode) && x.name.includes(a.name.split(' ').pop()))) govBad.push(`row ${x.row} LAO`);
+    if (a.level === 'province' && areas.district.some(d => x.name.includes(d.name))) govBad.push(`row ${x.row} name has a district but is province-only`);
+  }
+  const counts = ['lao', 'district', 'province'].map(k => it.filter(x => x.area.level === k).length).join();
+  if (counts !== '2,7,2' || counts !== ['lao', 'district', 'province'].map(k => gov.areaCounts[k]).join()) govBad.push(`area levels ${counts}`);
+  if (gov.source.dataNote !== 'update 11/9/2569' || gov.source.dataAsOf !== '2026-09-11' || gov.source.receivedOn !== '2026-10-20') govBad.push('dates');
+}
+check('data', 'government rooftop solar: 11 agencies · 369.6 kVA · kW typed as watts normalised · area only from names (2 LAO · 7 district · 2 province)', !govBad.length, govBad.join(' | '));
+const coreRelease = (read('js/core.js').match(/export const DATA_RELEASE = '([^']+)'/) || [])[1];
+check('release', 'page data release id equals data/meta.json release id', coreRelease && coreRelease === meta.release.id, `${coreRelease} vs ${meta.release.id}`);
 
 const pumps = supply.projects.filter(p => p.technology === 'ระบบสูบน้ำพลังงานแสงอาทิตย์');
 const pumpKw = pumps.reduce((a, p) => a + (p.capacityKw || 0), 0), pumpSystems = pumps.reduce((a, p) => a + (p.systems || 0), 0);
@@ -122,8 +149,21 @@ check('privacy', 'no per-site coordinates in supply or cars data', !hits.coord.l
 const individualsWithReg = supply.fuel.filter(f => f.ownerKind === 'บุคคลธรรมดา' && f.juristicRegNo);
 check('privacy', 'individual operators carry no registration number', !individualsWithReg.length, individualsWithReg.length);
 const publicText = ['index.html', 'js/core.js', 'js/views.js', 'js/app.js', 'js/map.js', 'data/meta.json', 'data/plan.json', 'data/supply.json', 'README.md'].filter(exists).map(f => [f, read(f)]);
-const commercial = publicText.filter(([, t]) => /ใบเสนอราคา|ค่าบริการ|ราคาบริการ|อัตราค่าบริการ/i.test(t)).map(([f]) => f);
-check('privacy', 'no price or quotation text in published files', !commercial.length, commercial.join(', '));
+// every text file GitHub Pages serves from this repo (the whole branch is published), except this checker, vendored and LDS package files, and geometry
+const TEXT_EXT = /\.(html|css|js|mjs|json|md|txt|webmanifest|yml|yaml|svg|csv|example)$/i;
+const SKIP_DIR = /^(\.git|node_modules|test-results|vendor|assets\/lds|data\/geo|data\/buildings)(\/|$)/;
+const listText = (dir = '') => fs.readdirSync(path.join(ROOT, dir), { withFileTypes: true }).flatMap(e => { const rel = dir ? `${dir}/${e.name}` : e.name; if (SKIP_DIR.test(rel)) return []; return e.isDirectory() ? listText(rel) : TEXT_EXT.test(e.name) ? [rel] : []; });
+// exact sentences that state the rule itself (check names in saved receipts, the contract and the build record); nothing else is exempt
+const RULE_STATEMENTS = ['no price or quotation text in published files', 'no contract-term, LOI or sales-pipeline text in published files', 'private commercial terms or LOI', 'No prices, quotations, contract terms, sales pipeline, credentials or per-site coordinates are published.'];
+const pagesText = listText().filter(f => f !== 'scripts/qa.mjs').map(f => [f, RULE_STATEMENTS.reduce((t, r) => t.split(r).join(''), read(f))]);
+const PRICE_TERMS = /ใบเสนอราคา|ใบแจ้งราคา|ค่าบริการ|ราคาบริการ|อัตราค่าบริการ|\bquotation\b/i;
+const DEAL_TERMS = /สัญญาจ้าง|สัญญาซื้อขาย|ร่างสัญญา|มูลค่าสัญญา|\bLOI\b|letter of intent|หนังสือแสดงเจตจำนง|หนังสือแสดงความจำนง|\bMOU\b|บันทึกความเข้าใจ|pipeline|ไปป์ไลน์/i;
+const commercial = pagesText.filter(([, t]) => PRICE_TERMS.test(t)).map(([f, t]) => `${f}: ${t.match(PRICE_TERMS)[0]}`);
+check('privacy', 'no price or quotation text in published files', pagesText.length > 40 && !commercial.length, commercial.join(', ') || `${pagesText.length} files`);
+const dealTerms = pagesText.filter(([, t]) => DEAL_TERMS.test(t)).map(([f, t]) => `${f}: ${t.match(DEAL_TERMS)[0]}`);
+check('privacy', 'no contract-term, LOI or sales-pipeline text in published files', pagesText.length > 40 && !dealTerms.length, dealTerms.join(', ') || `${pagesText.length} files`);
+const mapGov = read('js/map.js').includes('govSolar');
+check('privacy', 'government rooftop list never reaches the map module (no addresses or coordinates to draw)', !mapGov, 'js/map.js references govSolar');
 const secrets = publicText.filter(([, t]) => /(api[_-]?key|secret|token)\s*[:=]\s*['"][A-Za-z0-9_\-]{16,}/i.test(t)).map(([f]) => f);
 check('privacy', 'no credentials or tokens in published files', !secrets.length, secrets.join(', '));
 
@@ -174,7 +214,7 @@ const quietAssets = [
   ['assets/lds/build-kit/motif/landometer-motifs.css', '7cc2deb475a8d6e4af331407b2b4b741716c458a8ce885e2fb2859374b93912e'],
   ['assets/lds/build-kit/motif/svg/logo-quiet.svg', '5b6798cdb6c3ada246286e6ce3386644f383c4f987a267e5c5db392809403e14']
 ];
-const sourceFiles = ['index.html', 'styles.css', 'js/map.js', 'js/basemaps.js', 'js/hero-logo.js', ...quietAssets.map(([file]) => file), 'scripts/qa.mjs'];
+const sourceFiles = ['index.html', 'styles.css', 'js/core.js', 'js/views.js', 'js/app.js', 'js/map.js', 'js/basemaps.js', 'js/hero-logo.js', ...quietAssets.map(([file]) => file), 'data/meta.json', 'data/supply.json', 'scripts/qa.mjs'];
 const sourceFingerprint = { algorithm: 'sha256', files: Object.fromEntries(sourceFiles.map(file => [file, exists(file) ? sha(file) : null])) };
 check('motif', 'quiet logo runtime, CSS and final SVG retain the exact approved release 1.2.1 bytes',
   quietAssets.every(([file, hash]) => exists(file) && sha(file) === hash));
@@ -454,8 +494,8 @@ async function browserChecks() {
   await heroLogoChecks(browser);
   if (args.includes('--motif-only')) { await browser.close(); return; }
   await mapLayoutChecks(browser);
-  const ROUTES = ['', '?v=demand', '?v=demand&m=tier', '?v=demand&a=180101', '?v=demand&lvl=lao&a=04180102&b=04180102-00001', '?v=supply', '?v=supply&a=180606', '?v=supply&lvl=lao&a=04180102', '?v=demand&lvl=lao&a=04180102&m=tier', '?v=opportunity', '?v=shortlist', '?v=requests', '?v=sources', '?v=unknown&a=zzz&b=1'];
-  const MATRIX = [{ scheme: 'light', w: 1440, h: 900 }, { scheme: 'dark', w: 1440, h: 900 }, { scheme: 'light', w: 390, h: 844 }, { scheme: 'dark', w: 768, h: 1024 }];
+  const ROUTES = ['', '?v=demand', '?v=demand&m=tier', '?v=demand&a=180101', '?v=demand&lvl=lao&a=04180102&b=04180102-00001', '?v=supply', '?v=supply&a=180606', '?v=supply&lvl=lao&a=04180102', '?v=demand&lvl=lao&a=04180102&m=tier', '?v=opportunity', '?v=shortlist', '?v=requests', '?v=sources', '?v=unknown&a=zzz&b=1', '?v=supply&a=180201', '?v=supply&d=1805'];
+  const MATRIX = [{ scheme: 'light', w: 1440, h: 900 }, { scheme: 'dark', w: 1440, h: 900 }, { scheme: 'light', w: 390, h: 844 }, { scheme: 'dark', w: 768, h: 1024 }, { scheme: 'dark', w: 320, h: 740 }];
   for (const m of MATRIX) {
     const ctx = await browser.newContext({ viewport: { width: m.w, height: m.h }, colorScheme: m.scheme });
     const page = await ctx.newPage();
@@ -492,8 +532,14 @@ async function browserChecks() {
   // deeper checks on one desktop context
   const ctx = await browser.newContext({ viewport: { width: 1440, height: 900 }, colorScheme: 'light' });
   const page = await ctx.newPage();
+  const releaseSeen = [];
+  const onDataRequest = r => { const u = new URL(r.url()); const m = /\/data\/(meta|areas|supply|plan|vehicles|cars)\.json$/.exec(u.pathname); if (m) releaseSeen.push(`${m[1]}?r=${u.searchParams.get('r')}`); };
+  page.on('request', onDataRequest);
   await page.goto(BASE + '?v=demand', { waitUntil: 'networkidle' });
   await page.waitForFunction(() => document.documentElement.dataset.ready === 'true', null, { timeout: 45000 });
+  page.off('request', onDataRequest);
+  const servedRelease = await page.evaluate(async () => (await import(new URL('js/core.js', document.baseURI).href)).D.meta?.release?.id);
+  check('release', `browser requests all six core data files with ?r=${meta.release.id} and receives that release`, releaseSeen.length === 6 && new Set(releaseSeen.map(s => s.split('?')[0])).size === 6 && releaseSeen.every(s => s.endsWith(`?r=${meta.release.id}`)) && servedRelease === meta.release.id, `${servedRelease} · ${releaseSeen.join(', ')}`);
   const lutResult = await page.evaluate(async () => {
     const core = await import(new URL('js/core.js', document.baseURI).href);
     const out = { metrics: 0, problems: [], spans: [] };
@@ -542,7 +588,10 @@ async function browserChecks() {
   // evidence stamps, non-map alternative, permalink and states
   await page.goto(BASE, { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
   const stamps = await page.$$eval('.kpi', ks => ks.map(k => { const t = k.querySelector('.evidence')?.textContent || ''; return ['ชุดข้อมูล', 'แหล่ง', 'วันที่', 'ขอบเขต'].every(w => t.includes(w)); }));
-  check('evidence', 'every overview number carries dataset · source · date · boundary', stamps.length === 6 && stamps.every(Boolean), `${stamps.filter(Boolean).length}/${stamps.length}`);
+  check('evidence', 'every overview number carries dataset · source · date · boundary (7 including government rooftop solar)', stamps.length === 7 && stamps.every(Boolean), `${stamps.filter(Boolean).length}/${stamps.length}`);
+  const govKpi = await page.evaluate(() => { const k = document.querySelector('.kpi.kpi-wide'); return { value: k?.querySelector('.kpi-value')?.textContent, text: k?.textContent || '', span: k ? getComputedStyle(k).gridColumnStart + '/' + getComputedStyle(k).gridColumnEnd : null }; });
+  const govKpiRow = await page.evaluate(() => { const k = document.querySelector('.kpi.kpi-wide'); const g = k?.parentElement; if (!k || !g) return null; const cs = getComputedStyle(g); const inner = g.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); return { w: Math.round(k.getBoundingClientRect().width), inner: Math.round(inner), last: g.lastElementChild === k }; });
+  check('evidence', 'government rooftop KPI shows 11 agencies · 369.6 kVA with the file date and received date, on its own full row', govKpi.value === '11' && govKpi.text.includes('369.6 kVA') && govKpi.text.includes('11 ก.ย. 2569') && govKpi.text.includes('update 11/9/2569') && govKpi.text.includes('ได้รับ 20 ต.ค. 2569') && govKpi.span === '1/-1' && govKpiRow && Math.abs(govKpiRow.w - govKpiRow.inner) <= 2, JSON.stringify({ ...govKpi, text: undefined, row: govKpiRow }));
   const carsInfo = await page.evaluate(() => { const s = document.querySelector('#cars .evidence')?.textContent || ''; return { stamp: ['ชุดข้อมูล', 'แหล่ง', 'วันที่', 'ขอบเขต'].every(w => s.includes(w)), cues: document.querySelectorAll('#cars .cue-legend svg').length, rows: document.querySelectorAll('#cars .stackbars li').length, table: document.querySelectorAll('#cars table')[0]?.querySelectorAll('tbody tr').length, labels: [...document.querySelectorAll('#cars table td')].every(td => td.dataset.label), claims: document.querySelectorAll('#cars .claim').length }; });
   check('evidence', 'new-registration section: four-part stamp, five shape cues, table alternative with labelled cells, labelled claims', carsInfo.stamp && carsInfo.cues === 5 && carsInfo.rows === 7 && carsInfo.table === 7 && carsInfo.labels && carsInfo.claims >= 6, JSON.stringify(carsInfo));
   const motif = await page.evaluate(() => { const f = document.querySelector('.hero-motif[data-asset-id="landometer.logo.quiet"]'); return { count: document.querySelectorAll('.hero-motif[data-asset-id="landometer.logo.quiet"]').length, state: f?.dataset.logoMotion, surface: f?.dataset.hostSurface, mode: f?.dataset.motionMode }; });
@@ -568,12 +617,75 @@ async function browserChecks() {
   await page.goto(BASE + '?v=supply&m=sup_projects', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
   const zero = await page.evaluate(() => ({ legend: !!document.querySelector('#map-legend [data-state="measured_zero"]'), zeroLabel: [...document.querySelectorAll('.area-list .num')].some(n => n.textContent.trim() === '0') }));
   check('states', 'measured zero has its own legend row and is shown as 0 (not blank)', zero.legend && zero.zeroLabel, JSON.stringify(zero));
+  // r3 government rooftop solar list: district from the agency name only, own four-part stamp, never on the map
+  const govSection = () => page.evaluate(() => {
+    const sec = document.querySelector('#panel section[aria-label="โซลาร์รูฟท็อปของหน่วยงานรัฐ"]');
+    const ev = sec?.querySelector('.evidence')?.textContent || '';
+    return { n: sec ? sec.querySelectorAll('.records > li').length : -1, title: sec?.querySelector('h3')?.textContent || '', stamp: ['ชุดข้อมูล', 'แหล่ง', 'วันที่', 'ขอบเขต'].every(w => ev.includes(w)), text: sec?.textContent || '',
+      pressed: document.querySelector('[data-supply-filter="govSolar"]')?.getAttribute('aria-pressed'), focus: document.activeElement?.dataset?.supplyFilter || null,
+      otherLists: [...document.querySelectorAll('#panel section h3.field')].filter(h => /^(กิจการน้ำมันเชื้อเพลิง|อาคารและโรงงานควบคุม|โครงการพลังงานทดแทน) /.test(h.textContent)).length };
+  });
+  const govCases = [];
+  await page.goto(BASE + '?v=supply', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  await page.focus('[data-supply-filter="govSolar"]'); await page.keyboard.press('Enter'); await page.waitForTimeout(500);
+  const gProv = await govSection(); govCases.push(['province filter', gProv.n === 11 && gProv.title.includes('369.6 kVA') && gProv.stamp && gProv.pressed === 'true' && gProv.focus === 'govSolar' && gProv.otherLists === 0, { n: gProv.n, stamp: gProv.stamp, pressed: gProv.pressed, focus: gProv.focus, otherLists: gProv.otherLists }]);
+  for (const [route, want, extra] of [['?v=supply&a=180201', 4, g => g.title.includes('ชื่อระบุ อ.มโนรมย์ 4 แห่ง รวม 151 kVA') && g.text.includes('ไม่ใช่เฉพาะตำบลที่เลือก')], ['?v=supply&d=1803', 2, g => g.title.includes('ชื่อระบุ อ.วัดสิงห์ 2 แห่ง') && g.text.includes('อำเภออ่านจากชื่อ อปท. ในชื่อหน่วยงาน (เทศบาลตำบล หนองขุ่น)') && g.text.includes('(องค์การบริหารส่วนตำบล มะขามเฒ่า)')], ['?v=supply&d=1805', 0, g => g.title.includes('ไม่มีชื่อที่ระบุ อ.สรรคบุรี') && !/(?<![\d.,])0(?:\.0+)? ?(?:kVA|kW|แห่ง|รายการ)/.test(g.text) && g.text.includes('ไม่ได้แปลว่าอำเภอนี้ไม่มีการติดตั้ง')]]) {
+    await page.goto(BASE + route, { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true'); await page.waitForTimeout(600);
+    const g = await govSection(); govCases.push([route, g.n === want && g.stamp && extra(g), { n: g.n, title: g.title }]);
+  }
+  check('supply', 'government rooftop list follows the district read from names: province 11 · มโนรมย์ 4 · วัดสิงห์ 2 (named by LAO) · สรรคบุรี none named and not shown as 0 kVA; a stamp each; filter keeps keyboard focus', govCases.every(c => c[1]), govCases.filter(c => !c[1]).map(c => `${c[0]} ${JSON.stringify(c[2])}`).join(' | '));
+  const govMap = await page.evaluate(async () => { const core = await import(new URL('js/core.js', document.baseURI).href); return { n: core.METRICS.length, ids: core.METRICS.filter(m => /gov|roof/i.test(m.id + m.label)).map(m => m.id), reads: core.METRICS.filter(m => /govSolar/.test(String(m.get)) || /หน่วยงานรัฐ/.test(m.source || '')).map(m => m.id), tambonKeys: core.D.areas.tambon.filter(u => Object.keys(u.supply || {}).some(k => /gov|roof/i.test(k))).length, check: core.LENSES.find(l => l.id === 'efficiency').eval(core.D.tambonBy.get('180201')).checks.at(-1) }; });
+  check('supply', 'government rooftop list is not a map metric (17 metrics, none reads it, no per-tambon field) and the efficiency lens names the district agencies as a check', govMap.n === 17 && !govMap.ids.length && !govMap.reads.length && !govMap.tambonKeys && govMap.check.includes('อ.มโนรมย์ 4 แห่ง') && govMap.check.includes('ไฟล์ไม่ระบุตำบล'), JSON.stringify(govMap));
   await page.goto(BASE + '?v=sources', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
   const gallery = await page.$$eval('#gallery img', imgs => imgs.length);
   check('supply', 'source photo gallery shows all 64 project photos', gallery === 64, gallery);
+  const srcGov = await page.$$eval('#sources-list > li', lis => lis.map(li => ({ t: li.querySelector('.source-title')?.textContent, l: li.querySelector('.label-pill')?.textContent, d: li.querySelector('.source-note')?.textContent || '' })).filter(x => /โซลาร์รูฟท็อป/.test(x.t)));
+  check('evidence', 'sources separate the observed government rooftop list from the inferred district of each agency', srcGov.length === 2 && srcGov[0].l.includes('Observed') && srcGov[0].d.includes(supply.govSolar.source.sha256.slice(0, 12)) && srcGov[0].d.includes('update 11/9/2569') && srcGov[1].l.includes('Inference') && srcGov[1].d.includes('ไม่ใช่ที่อยู่'), JSON.stringify(srcGov.map(x => [x.t, x.l])));
   await page.goto(BASE + '?v=requests', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
   const veh = await page.$$eval('#veh-table td[data-state]', tds => tds.map(td => ({ s: td.dataset.state, v: td.dataset.value, w: td.scrollWidth <= td.clientWidth + 1 })));
   check('states', 'vehicle table cells declare value state and are not clipped', veh.length > 0 && veh.every(c => c.s && c.v !== undefined && c.w), `${veh.length} cells`);
+  const req4 = await page.evaluate(async ({ count, plan }) => { const core = await import(new URL('js/core.js', document.baseURI).href); const g = core.D.supply.govSolar.source; const a = [...document.querySelectorAll('#view-requests .request')]; const t = a[3]?.textContent || ''; const want = [`ได้รับแล้วบางส่วนเมื่อ ${core.isoTh(g.receivedOn)}`, `รายชื่อโซลาร์รูฟท็อปของหน่วยงานรัฐ ${count} แห่ง`, `ไฟล์ระบุสำนักงาน กกพ. ${g.ercOffice.split(' (')[0]}`, `ข้อมูล ณ ${core.isoTh(g.dataAsOf)}`, `${plan} แห่ง (หน้า 1)`, 'ไม่นำมาหารเป็นสัดส่วน', 'ไม่ขอชื่อ']; const ratio = new RegExp(`${count}\\s*(?:จาก|/|ใน|ต่อ)\\s*${plan}|${(100 * count / plan).toFixed(1)}\\s*%`).test(document.querySelector('main').textContent); return { n: a.length, partial: a[3]?.querySelector('.status')?.textContent, missing: want.filter(w => !t.includes(w)), ratio }; }, { count: supply.govSolar?.items.length, plan: plan.plan.situation.solarRooftop.value });
+  check('evidence', 'request set 4 records the partial receipt (agency count, office, received and data dates read from data) and does not divide by the plan total', req4.n === 4 && req4.partial === 'ได้รับบางส่วน' && !req4.missing.length && !req4.ratio, JSON.stringify(req4));
+  // request field rows on narrow screens: the field text keeps the row width and its label sits below it (no squeezed or zero-width text)
+  const narrowFields = [];
+  for (const w of [320, 390]) {
+    const nctx = await browser.newContext({ viewport: { width: w, height: 800 }, colorScheme: 'dark' });
+    const np = await nctx.newPage();
+    await np.goto(BASE + '?v=requests', { waitUntil: 'networkidle' }); await np.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+    const rows = await np.$$eval('#view-requests .fields li', lis => lis.map(li => { const [a, p] = li.children; const A = a.getBoundingClientRect(), P = p.getBoundingClientRect(); return { text: a.textContent.slice(0, 24), textW: Math.round(A.width), rowW: li.clientWidth, below: P.top >= A.bottom - 1 }; }));
+    narrowFields.push(...rows.filter(r => r.textW < r.rowW * 0.9 || !r.below).map(r => `${w}px ${r.text} text ${r.textW}/${r.rowW}${r.below ? '' : ' label beside'}`));
+    if (!rows.length) narrowFields.push(`${w}px no field rows`);
+    await nctx.close();
+  }
+  check('layout', 'request field rows stack at 320 and 390 px: the text keeps the row width and the disclosure label sits below it', !narrowFields.length, narrowFields.slice(0, 6).join(' | '));
+  // record labels keep a readable column: one long value (an address) must not squeeze every label of that record to zero width
+  const squeezed = [];
+  for (const [w, route] of [[320, '?v=supply&a=180606'], [1440, '?v=supply&a=180606'], [1440, '?v=supply&d=1803']]) {
+    const nctx = await browser.newContext({ viewport: { width: w, height: 900 }, colorScheme: 'light' });
+    const np = await nctx.newPage();
+    await np.goto(BASE + route, { waitUntil: 'networkidle' }); await np.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+    const r = await np.$$eval('#panel .record dl.kv', dls => { const dts = dls.flatMap(dl => [...dl.querySelectorAll('dt')]); return { n: dts.length, narrow: dts.filter(dt => dt.getBoundingClientRect().width < 48).map(dt => `${dt.textContent.slice(0, 16)} ${Math.round(dt.getBoundingClientRect().width)}px`) }; });
+    if (!r.n) squeezed.push(`${w}px ${route}: no record labels`); else if (r.narrow.length) squeezed.push(`${w}px ${route}: ${r.narrow.length}/${r.n} labels narrower than 48 px (${r.narrow.slice(0, 3).join(', ')})`);
+    await nctx.close();
+  }
+  check('layout', 'record labels in the supply panel keep a readable column (≥ 48 px) at 320 and 1440 px, even beside a long address', !squeezed.length, squeezed.join(' | '));
+  // r3: a saved area keeps the data release id, the CSV carries it, and a record saved before r3 says it has none
+  await page.goto(BASE + '?v=opportunity', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  await page.evaluate(() => { try { localStorage.removeItem('cm-yolk-shortlist-v1'); } catch (e) { /* storage blocked */ } });
+  await page.reload({ waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  await page.click('[data-action="save-area"]'); await page.waitForTimeout(300);
+  const savedRec = await page.evaluate(() => { try { return JSON.parse(localStorage.getItem('cm-yolk-shortlist-v1') || '[]'); } catch (e) { return null; } });
+  await page.evaluate(rec => { const legacy = { ...rec, code: rec.code === '180101' ? '180102' : '180101', name: 'รายการทดสอบก่อน r3', release: 'รอบข้อมูล 18 ต.ค. 2569 · เครื่องคิด Yolk สพจ. เดโม 0.1' }; delete legacy.dataRelease; localStorage.setItem('cm-yolk-shortlist-v1', JSON.stringify([rec, legacy])); }, savedRec?.[0] || {});
+  await page.goto(BASE + '?v=shortlist', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
+  const slText = await page.evaluate(() => document.querySelector('#shortlist-body')?.textContent || '');
+  const [csvDl] = await Promise.all([page.waitForEvent('download', { timeout: 10000 }), page.click('#shortlist-export')]);
+  const csvText = fs.readFileSync(await csvDl.path(), 'utf8');
+  const csvRows = csvText.replace(/^﻿/, '').split('\r\n');
+  const slOk = savedRec?.length === 1 && savedRec[0].dataRelease === meta.release.id && savedRec[0].release.startsWith(`รุ่นข้อมูล ${meta.release.label} ออก ${meta.release.dateThai}`)
+    && slText.includes(meta.release.id) && slText.includes('รายการก่อนรอบ r3 ไม่ได้บันทึกรหัสรอบ')
+    && csvRows[0].includes('"รหัสรอบข้อมูล"') && csvRows.length === 3 && csvRows[1].includes(`"${meta.release.id}"`) && csvRows[2].includes('"ไม่ได้บันทึก (รายการก่อนรอบ r3)"');
+  check('shortlist', 'a saved area keeps the release id, the CSV adds a release-id column, and a record saved before r3 is marked as having none', slOk, JSON.stringify({ saved: savedRec?.map(x => [x.code, x.dataRelease, x.release]), csv: csvRows.map(r => r.slice(0, 160)) }));
+  await page.evaluate(() => { try { localStorage.removeItem('cm-yolk-shortlist-v1'); } catch (e) { /* storage blocked */ } });
   // ratio metrics aggregate as a ratio, not a sum
   await page.goto(BASE + '?v=demand&m=elec_hh', { waitUntil: 'networkidle' }); await page.waitForFunction(() => document.documentElement.dataset.ready === 'true');
   const hh = await page.textContent('#map-sub');

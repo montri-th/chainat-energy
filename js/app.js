@@ -1,5 +1,5 @@
 /* Boot, router and interactions. Views are URL-addressable (permalink) and Back/Forward restores them. */
-import { D, S, $, $$, esc, n0, token, loadCore, loadGeo, readURL, writeURL, VIEWS, VIEW_TH, getThemeChoice, setThemeChoice, effectiveTheme, toast, LENSES, DEFAULT_CRITERIA, computeTiers, computeQueue, criteriaRev, shortlist, saveShortlist, percentileLut, lut, QUEUE_TH } from './core.js';
+import { D, S, $, $$, esc, n0, token, releaseLabel, loadCore, loadGeo, readURL, writeURL, VIEWS, VIEW_TH, getThemeChoice, setThemeChoice, effectiveTheme, toast, LENSES, DEFAULT_CRITERIA, computeTiers, computeQueue, criteriaRev, shortlist, saveShortlist, percentileLut, lut, QUEUE_TH } from './core.js';
 import { initMap, mapReady, setUnits, fitTo, setDistrictFocus, setBuildings, buildingsForArea, selectBuilding, flyToBuilding, setPitch3d, get3d, isPitched, zoomBy, resize } from './map.js';
 import { renderOverview, renderCars, renderPanel, renderLegend, toggleLegend, renderMapHead, mapStyles, buildingCard, renderShortlist, renderRequests, renderSources, photoDialog } from './views.js';
 
@@ -116,14 +116,14 @@ function saveArea(code) {
   if (i >= 0) { list.splice(i, 1); saveShortlist(list); toast(`นำ ต.${u.name} ออกจากพื้นที่ที่เล็งไว้`); return; }
   const tiers = computeTiers(S.criteria); const row = computeQueue(S.lenses, tiers).find(r => r.u.code === code);
   const cr = criteriaRev(S.criteria);
-  list.unshift({ code, name: u.name, district: u.district, tier: tiers.res.get(code)?.tier ?? null, lenses: row ? row.results.map(r => ({ id: r.lens.id, short: r.lens.short, status: r.status })) : [], criteria: cr.rev, criteriaName: cr.name, release: `ข้อมูลรอบ ${D.meta.release.dateThai} · เครื่องคิด ${D.meta.release.engine}`, savedAt: new Date().toISOString(), owner: '', next: row?.cands[0]?.task || '' });
+  list.unshift({ code, name: u.name, district: u.district, tier: tiers.res.get(code)?.tier ?? null, lenses: row ? row.results.map(r => ({ id: r.lens.id, short: r.lens.short, status: r.status })) : [], criteria: cr.rev, criteriaName: cr.name, release: `${releaseLabel()} · เครื่องคิด ${D.meta.release.engine}`, dataRelease: D.meta.release.id, savedAt: new Date().toISOString(), owner: '', next: row?.cands[0]?.task || '' });
   if (!saveShortlist(list.slice(0, 60))) toast('เบราว์เซอร์นี้ไม่อนุญาตให้บันทึกถาวร รายการจะอยู่จนกว่าจะปิดหน้านี้'); else toast(`เล็ง ต.${u.name} ไว้แล้ว ดูได้ที่เมนูเล็งไว้`);
 }
 function exportShortlist() {
   const list = shortlist(); if (!list.length) return;
   // quote every cell and neutralise leading = + - @ so typed text cannot run as a spreadsheet formula
   const q = v => { let s = String(v ?? ''); if (/^[=+\-@\t\r]/.test(s)) s = `'${s}`; return `"${s.replace(/"/g, '""')}"`; };
-  const rows = [['ตำบล', 'อำเภอ', 'ระดับไข่แดง', 'มุมมองและสถานะ', 'ผู้รับผิดชอบ', 'งานถัดไป', 'เกณฑ์', 'รอบข้อมูล', 'เล็งเมื่อ'], ...list.map(x => [x.name, x.district, x.tier ? ['', 'ไข่แดงเข้ม', 'ไข่แดง', 'ไข่ขาว'][x.tier] : 'ไม่ผ่านเกณฑ์', (x.lenses || []).map(l => `${l.short}: ${QUEUE_TH[l.status] || l.status}`).join('; '), x.owner, x.next, x.criteriaName || x.criteria, x.release, x.savedAt])];
+  const rows = [['ตำบล', 'อำเภอ', 'ระดับไข่แดง', 'มุมมองและสถานะ', 'ผู้รับผิดชอบ', 'งานถัดไป', 'เกณฑ์', 'รอบข้อมูล', 'รหัสรอบข้อมูล', 'เล็งเมื่อ'], ...list.map(x => [x.name, x.district, x.tier ? ['', 'ไข่แดงเข้ม', 'ไข่แดง', 'ไข่ขาว'][x.tier] : 'ไม่ผ่านเกณฑ์', (x.lenses || []).map(l => `${l.short}: ${QUEUE_TH[l.status] || l.status}`).join('; '), x.owner, x.next, x.criteriaName || x.criteria, x.release, x.dataRelease || 'ไม่ได้บันทึก (รายการก่อนรอบ r3)', x.savedAt])];
   const blob = new Blob(['﻿' + rows.map(r => r.map(q).join(',')).join('\r\n')], { type: 'text/csv;charset=utf-8' });
   const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'chainat-energy-shortlist.csv'; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   toast('ดาวน์โหลดรายการที่เล็งไว้แล้ว');

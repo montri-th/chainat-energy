@@ -20,7 +20,7 @@ const tiers = core.computeTiers(core.DEFAULT_CRITERIA);
 const queue = core.computeQueue(core.DEFAULT_LENSES, tiers);
 const members = t => [...t.res].filter(([, v]) => v.tier).map(([id]) => id).sort();
 
-check('data release and exact input bytes match the approved unchanged snapshot', () => {
+check('data release and exact input bytes match the approved release snapshot in the contract', () => {
   assert.equal(core.DATA_RELEASE, contract.release.dataRelease);
   assert.equal(core.D.meta.release.id, core.DATA_RELEASE);
   assert.equal(fixture.dataRelease, core.DATA_RELEASE);

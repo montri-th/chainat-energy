@@ -1,7 +1,7 @@
 {
   "contractVersion": "2.0.0",
   "documentId": "chainat-energy-yolk-product-contract",
-  "updatedOn": "2026-10-19",
+  "updatedOn": "2026-10-20",
   "status": "prototype_with_proposed_production_route",
   "product": {
     "name": "CityMETER: Yolk · Provincial Energy Office mode",
@@ -14,7 +14,7 @@
     "repo": "https://github.com/montri-th/chainat-energy"
   },
   "authority": {
-    "ownerScope": "Improve web identity, basemaps and developer handoff; publish existing demo URL. No source-register coordinate import in this UI release.",
+    "ownerScope": "Improve web identity, basemaps and developer handoff; publish existing demo URL. No source-register coordinate import in this UI release. 2026-10-20 (owner chat 17:08 +07): add the government rooftop-solar list received from the Chai Nat Provincial Energy Office, update the site and republish the existing demo URL; update handoff files and Product Brief.",
     "base": "LDS 0.9.7",
     "baseDocumentId": "lds-0.9.7-landometer-standalone-r1",
     "baseSha256": "d3085cbc0a50195f1cbf0c77b1d77c0d19b84364daf2948eb367348d65432d96",
@@ -22,24 +22,24 @@
     "productDraftIsApprovedNormative": false
   },
   "release": {
-    "dataRelease": "cnt-energy-2026-10-18-r2",
+    "dataRelease": "cnt-energy-2026-10-20-r3",
     "dataReadOn": "2026-10-18",
     "engine": "Yolk สพจ. เดโม 0.1",
     "sourceBaselineCommit": "c913c8061164973bf259f7fff983d245f97b3494",
-    "currentReleaseReceipt": "docs/map-layout.json for the 2026-10-19 map workspace follow-up; docs/quiet-logo-motion.json and docs/release-evidence.json retain preceding snapshots; private v2 handoff is an immutable earlier snapshot.",
+    "currentReleaseReceipt": "docs/gov-solar-browser-checks.json (local) and docs/gov-solar-live-checks.json (live) for data release r3 on 2026-10-20; docs/map-layout.json, docs/quiet-logo-motion.json and docs/release-evidence.json retain the 2026-10-19 UI snapshots; private v2 handoff is an immutable earlier snapshot.",
     "doNotConfuseDataAndUiRelease": true,
     "inputIdentity": {
       "data/meta.json": {
-        "sha256": "f6d4b87dd56bb562f1242cc51dd36e26a6e021d02f3e1cfc344c259b4026db84",
-        "bytes": 6782
+        "sha256": "b25e8905576a630642d9c62c2c04a312c1dbd672c97cb5d243435359179bbb27",
+        "bytes": 7757
       },
       "data/areas.json": {
         "sha256": "53229c6871b887d405ef593310fc467b4aa59092c2d6bdf51b771392748d584e",
         "bytes": 80609
       },
       "data/supply.json": {
-        "sha256": "10ae38592f3f4a0bacfb10f92bb821f58013b9754b2f6271122171df94764c60",
-        "bytes": 249043
+        "sha256": "cd512c1f23dfec309748cc54cb3fb0f3a17bdb90cc3bec84ec2b747077a8f22a",
+        "bytes": 261727
       },
       "data/plan.json": {
         "sha256": "f862c05295964b22a7269f31203a541d09f16f613f2d50d117284b7fee0bee77",
@@ -57,7 +57,10 @@
         "sha256": "3156e069439d61e3aaa12798d304401bb19d75f5ede9706d19db3ce69fed330f",
         "bytes": 2847
       }
-    }
+    },
+    "officeFileReceivedOn": "2026-10-20",
+    "previousDataRelease": "cnt-energy-2026-10-18-r2",
+    "changeFromPrevious": "r3 adds supply.govSolar (11 observed government rooftop-solar records, no address or coordinates) and meta.layers.govSolar; all other data keys and files are byte-identical to r2; Demand and lens statuses unchanged."
   },
   "currentArchitecture": {
     "artifact": "multi_file_static_site",
@@ -101,7 +104,8 @@
     "authRbac": "not_implemented",
     "auditTrailAndOutbox": "not_implemented",
     "privateMedia": "not_implemented",
-    "masterSheetWrite": "not_authorized_for_this_release"
+    "masterSheetWrite": "not_authorized_for_this_release",
+    "governmentRooftopSolarList": "implemented_static_district_from_agency_name"
   },
   "data": {
     "counts": {
@@ -112,7 +116,9 @@
       "registerFuel": 203,
       "registerControlled": 18,
       "registerProjects": 69,
-      "registerTotal": 290
+      "registerTotal": 290,
+      "govSolarRecords": 11,
+      "govSolarKva": 369.6
     },
     "metrics": [
       {
@@ -378,7 +384,8 @@
       "Cars registrations are province grain only; never distribute provincial EV share to tambons or use as charging-demand observations.",
       "Population/factories/hotel rooms are contextual proxy weights, not official counts or eligibility.",
       "Building energy and area energy are modelled; geometry is source observation, not measured energy.",
-      "District values are calculated from tambon sums except population and source building counts; no silent cross-grain substitution."
+      "District values are calculated from tambon sums except population and source building counts; no silent cross-grain substitution.",
+      "Government rooftop-solar list (supply.govSolar) has no address, tambon or coordinates: district is inferred from the agency name for 9 records (2 via LAO names), 2 are province-only; never place it on the map, sum it into tambon supply, or divide it by the plan total of 113."
     ],
     "cars": {
       "months": 80,

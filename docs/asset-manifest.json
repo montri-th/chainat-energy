@@ -1,10 +1,10 @@
 {
-  "generatedOn": "2026-10-19",
-  "uiRelease": "chainat-yolk-map-layout-2026-10-19",
-  "dataRelease": "cnt-energy-2026-10-18-r2",
+  "generatedOn": "2026-10-20",
+  "uiRelease": "chainat-yolk-r3-gov-solar-2026-10-20",
+  "dataRelease": "cnt-energy-2026-10-20-r3",
   "scope": "Every tracked source file in this repository snapshot except this manifest itself. This is source inventory; HTTP URL/MIME/byte parity is verified separately in the release handoff. Historical build/QA records retain their dates and source scope.",
   "hashAlgorithm": "SHA-256",
-  "count": 222,
+  "count": 223,
   "files": [
     {
       "path": ".env.example",
@@ -28,8 +28,8 @@
     },
     {
       "path": "README.md",
-      "bytes": 16848,
-      "sha256": "74d8e6f1ff93816b585641a474248a17d8152351c7381665b9c05f26396cdd77"
+      "bytes": 22451,
+      "sha256": "1a6a612aaf414c37ed30dc8026a6446f62915d17f8a107d6743b6d951b1f3a23"
     },
     {
       "path": "assets/identity/chainat-energy-share-7856ad154cb5.jpg",
@@ -563,8 +563,8 @@
     },
     {
       "path": "contracts/product-contract.json",
-      "bytes": 37085,
-      "sha256": "00e1c67c55adb4427c0dc88e97fe29b30461d4c7c3febfbf2321b027f196e86e"
+      "bytes": 38156,
+      "sha256": "01c62e3ff9657034434d43e04f6c37c8a3fd0d58cef560112dfc96ae40ff7003"
     },
     {
       "path": "contracts/production-records.schema.json",
@@ -583,8 +583,8 @@
     },
     {
       "path": "data/DATA_QA.md",
-      "bytes": 26531,
-      "sha256": "c2a7d2eea3354ca35d2ffe3cc5853f899878d8e4581b56486db413962261b184"
+      "bytes": 33542,
+      "sha256": "c17b6ef987754abc0609d2cc97fed35040ba4edadb6ed2863d0bc88334036ffc"
     },
     {
       "path": "data/areas.json",
@@ -918,8 +918,8 @@
     },
     {
       "path": "data/meta.json",
-      "bytes": 6782,
-      "sha256": "f6d4b87dd56bb562f1242cc51dd36e26a6e021d02f3e1cfc344c259b4026db84"
+      "bytes": 7757,
+      "sha256": "b25e8905576a630642d9c62c2c04a312c1dbd672c97cb5d243435359179bbb27"
     },
     {
       "path": "data/plan.json",
@@ -928,8 +928,8 @@
     },
     {
       "path": "data/supply.json",
-      "bytes": 249043,
-      "sha256": "10ae38592f3f4a0bacfb10f92bb821f58013b9754b2f6271122171df94764c60"
+      "bytes": 261727,
+      "sha256": "cd512c1f23dfec309748cc54cb3fb0f3a17bdb90cc3bec84ec2b747077a8f22a"
     },
     {
       "path": "data/vehicles.json",
@@ -938,8 +938,8 @@
     },
     {
       "path": "docs/DEVELOPMENT.md",
-      "bytes": 11970,
-      "sha256": "17797ec042942e539f4b1bbc1e495ab250d29ea12fe4b5a07093d62d5314e9d5"
+      "bytes": 13211,
+      "sha256": "8dcf61106b0676dfa5d968cdf3fb0b0e360aacb62e075a39eb919bf46f99fd56"
     },
     {
       "path": "docs/IDENTITY_AND_NAVIGATION.md",
@@ -953,8 +953,8 @@
     },
     {
       "path": "docs/QA.md",
-      "bytes": 16573,
-      "sha256": "795f97b1a5ce42215dda96cc46864837b909a7401867598010d838dfa654bf57"
+      "bytes": 26489,
+      "sha256": "013fed58543c6fd68a990e9163c4b1245cacc83452956e8e1aed7cb5dc0594fa"
     },
     {
       "path": "docs/browser-checks.json",
@@ -963,8 +963,13 @@
     },
     {
       "path": "docs/build-record.json",
-      "bytes": 9465,
-      "sha256": "cf782b84d04207cfe19f05906f61aee172ac4006c114fe5e6d7107d5a4286693"
+      "bytes": 14904,
+      "sha256": "6161da020f5f0007a2b95e9ab8c6bdf200c5ae658b595c34a4a7b2feae5d4555"
+    },
+    {
+      "path": "docs/gov-solar-browser-checks.json",
+      "bytes": 41133,
+      "sha256": "af83ecd4ba9dc62d57732070cec61290c4c8dc48c5aee387a9e669f6ee0bbeba"
     },
     {
       "path": "docs/identity-manifest.json",
@@ -1013,13 +1018,13 @@
     },
     {
       "path": "index.html",
-      "bytes": 34971,
-      "sha256": "e3b4155fc5eb4b78fb7f88e552814e347c0906e52e4aed99d6dbf40920d9e8db"
+      "bytes": 39300,
+      "sha256": "882690ad5f9eb025822c534d703cd61ca5952be33a3337bd919511d711f4b347"
     },
     {
       "path": "js/app.js",
-      "bytes": 16112,
-      "sha256": "9e3183996d78c4e9c1e0253368e689f22713a8f0b8d8fd98d798888f18aee418"
+      "bytes": 16266,
+      "sha256": "d19dc86e4b09d2aeb33832e032692b8b851a808f053351278b4701d965263452"
     },
     {
       "path": "js/basemaps.js",
@@ -1028,8 +1033,8 @@
     },
     {
       "path": "js/core.js",
-      "bytes": 39475,
-      "sha256": "be31c7c11824cfdcf85ae26b654900f6b4342850ce92aa5ce012bb44c1607c28"
+      "bytes": 42165,
+      "sha256": "5ccb1e5e087aed619d2aee0c2491d348120d0661278a09c61421e8717b3f1f86"
     },
     {
       "path": "js/hero-logo.js",
@@ -1053,8 +1058,8 @@
     },
     {
       "path": "js/views.js",
-      "bytes": 69562,
-      "sha256": "6be984f66554a3bf87e2121a1da2cfb7fe1594300d13b18da92992b7a50b9c02"
+      "bytes": 80011,
+      "sha256": "b6747d0b02935e7fa08bfc7cdce23df8c98129e14c2bdb08546b7276f7a28953"
     },
     {
       "path": "package-lock.json",
@@ -1068,18 +1073,18 @@
     },
     {
       "path": "scripts/check-core.mjs",
-      "bytes": 7756,
-      "sha256": "de24825efa057d9a48d685d590c2710f8698c6ae977019793d010b6c41096781"
+      "bytes": 7770,
+      "sha256": "c51cd82a2deb08425b6a77f2fb048d7a689310b47253202c42ba1bf320f8e05d"
     },
     {
       "path": "scripts/fixtures/model-baseline.json",
-      "bytes": 2381,
-      "sha256": "a405d5f5c8d5bdffead59b611c2bdb643b6b9942bcffbdd3f0035539511a6953"
+      "bytes": 2524,
+      "sha256": "e3b03901d1c41b8f477d864c83c190d3d84a3e77e84f29d84f069d4d48df658a"
     },
     {
       "path": "scripts/qa.mjs",
-      "bytes": 67408,
-      "sha256": "357d5b9fb01a501cc78be9c2d6cb1173a113407cb87f42299829191e0042a67b"
+      "bytes": 87018,
+      "sha256": "cae17d63d63c5e6deeec075d2360677af33d58289c2535bb81f31e7147570ed6"
     },
     {
       "path": "scripts/run-qa.mjs",
@@ -1103,8 +1108,8 @@
     },
     {
       "path": "styles.css",
-      "bytes": 45488,
-      "sha256": "5809542656b1ac77e21f2dcf2f4e08dd047400c3dedff76d510b40323e472f44"
+      "bytes": 45843,
+      "sha256": "4c6381473c823872ede8f6f8a9659af8e517a01531268258ebc9da4bc04b67a2"
     },
     {
       "path": "vendor/maplibre-gl/4.7.1/LICENSE.txt",

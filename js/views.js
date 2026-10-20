@@ -1,8 +1,12 @@
 /* Views: overview, map panels (Demand · Supply · Opportunity), shortlist, data requests, sources. */
-import { D, S, $, $$, esc, n0, n1, big, MONTHS, METRICS, metricBy, MEASURE_TH, lut, percentileLut, valueEntries, stamp, THRESHOLDS, TIER_TH, tierNotes, computeTiers, criteriaRev, LENSES, QUEUE_TH, computeQueue, shortlist, VIEW_TH, unitsFor, quantileValue, ENGINE_SERIES, ymTh, carsYearly, carsWindow } from './core.js';
+import { D, S, $, $$, esc, n0, n1, big, MONTHS, METRICS, metricBy, MEASURE_TH, lut, percentileLut, valueEntries, stamp, THRESHOLDS, TIER_TH, tierNotes, computeTiers, criteriaRev, LENSES, QUEUE_TH, computeQueue, shortlist, VIEW_TH, unitsFor, quantileValue, ENGINE_SERIES, ymTh, isoTh, carsYearly, carsWindow, govSolarIn, releaseLabel } from './core.js';
 
-const REL = () => `ข้อมูลรอบ ${D.meta.release.dateThai} · เครื่องคิด ${D.meta.release.engine} · เกณฑ์ ${criteriaRev(S.criteria).name}`;
+const REL = () => `${D.meta.release.modelDateThai ? `แบบจำลองคำนวณ ${D.meta.release.modelDateThai} · ` : ''}${releaseLabel()} · เครื่องคิด ${D.meta.release.engine} · เกณฑ์ ${criteriaRev(S.criteria).name}`;
+const n2f = new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 });
+const n2 = v => v == null || Number.isNaN(v) ? '—' : n2f.format(v);
 const PLAN_SRC = 'แผนปฏิบัติราชการด้านพลังงาน จ.ชัยนาท 2566–2570';
+/* office file received 20 Oct 2569; the date in the file is the note "update 11/9/2569" (day/month/Buddhist year) */
+const govSolarStamp = (boundary, measure = 'observed') => { const g = D.supply.govSolar.source; return { dataset: D.supply.govSolar.dataset, source: `ไฟล์ของ สพจ.ชัยนาท ที่ระบุสำนักงาน กกพ. ${g.ercOffice}`, date: `ข้อมูล ณ ${isoTh(g.dataAsOf)} (ไฟล์เขียนว่า ${g.dataNote}) · ได้รับ ${isoTh(g.receivedOn)}`, boundary, measure }; };
 const sumv = o => Object.values(o || {}).reduce((a, b) => a + (b || 0), 0);
 const CAT_TH = ['บ้านอยู่อาศัย', 'กิจการขนาดเล็ก', 'กิจการขนาดกลาง', 'กิจการขนาดใหญ่', 'กิจการเฉพาะอย่าง'];
 const CAT_SEASON = ['residential', 'business', 'business', 'large', 'business'];
@@ -22,9 +26,10 @@ export function renderOverview() {
     { v: n0(D.meta.layers.buildings.count), u: 'หลัง', h: 'อาคารที่เจาะดูรายหลังได้', s: { dataset: 'รูปอาคาร CityMETER V4', source: 'CityMETER (Landometer)', date: 'อ่าน 18 ต.ค. 2569', boundary: '59 อปท. ในจังหวัดชัยนาท', measure: 'observed' } },
     { v: n0(sup.fuel.length), u: 'ราย', h: `กิจการน้ำมันเชื้อเพลิงในทะเบียน · บุคคลธรรมดา ${n0(individuals)} ราย`, s: { dataset: 'ทะเบียนผู้ประกอบการน้ำมันเชื้อเพลิง', source: 'ไฟล์ของ สพจ.ชัยนาท', date: 'ได้รับ 16 ต.ค. 2569 · ไฟล์ไม่ระบุวันที่ข้อมูล', boundary: '8 อำเภอ', measure: 'observed' } },
     { v: n0(sup.projects.length), u: 'รายการ', h: `โครงการพลังงานทดแทน พร้อมภาพ ${n0(photos)} ภาพ`, s: { dataset: 'โครงการพลังงานในพื้นที่ (ชีต 01–08)', source: 'ไฟล์ของ สพจ.ชัยนาท', date: 'ปีโครงการ 2558–2568', boundary: '8 อำเภอ', measure: 'observed' } },
-    { v: n0(sup.controlled.length), u: 'แห่ง', h: 'อาคารและโรงงานควบคุม', s: { dataset: 'รายชื่อโรงงานควบคุมและอาคารควบคุม', source: 'ไฟล์ของ สพจ.ชัยนาท', date: 'ได้รับ 16 ต.ค. 2569', boundary: 'จังหวัดชัยนาท', measure: 'observed' } }
+    { v: n0(sup.controlled.length), u: 'แห่ง', h: 'อาคารและโรงงานควบคุม', s: { dataset: 'รายชื่อโรงงานควบคุมและอาคารควบคุม', source: 'ไฟล์ของ สพจ.ชัยนาท', date: 'ได้รับ 16 ต.ค. 2569', boundary: 'จังหวัดชัยนาท', measure: 'observed' } },
+    ...(sup.govSolar ? [{ v: n0(sup.govSolar.items.length), u: 'แห่ง', h: `หน่วยงานรัฐในรายชื่อโซลาร์รูฟท็อปจาก สพจ. · รวม ${n1(sup.govSolar.totals.kva)} kVA`, phrases: ['หน่วยงานรัฐในรายชื่อ', 'โซลาร์รูฟท็อปจาก สพจ. ·', `รวม ${n1(sup.govSolar.totals.kva)} kVA`], wide: true, s: govSolarStamp('จังหวัดชัยนาท · ไฟล์ไม่มีที่อยู่ ตำบล หรือพิกัด') }] : [])
   ];
-  $('#kpis').innerHTML = kp.map(k => `<article class="kpi"><div><span class="kpi-value">${k.v}</span><span class="kpi-unit">${esc(k.u)}</span></div><h3>${esc(k.h)}</h3>${stamp(k.s)}</article>`).join('');
+  $('#kpis').innerHTML = kp.map(k => `<article class="kpi${k.wide ? ' kpi-wide' : ''}"><div><span class="kpi-value">${k.v}</span><span class="kpi-unit">${esc(k.u)}</span></div><h3>${k.phrases ? k.phrases.map(t => `<span class="phrase">${esc(t)}</span>`).join(' ') : esc(k.h)}</h3>${stamp(k.s)}</article>`).join('');
   $('#plans').innerHTML = p.plans.map(pl => {
     const lenses = LENSES.filter(l => l.plan === `แผนงานที่ ${pl.no}`);
     return `<article class="plan-card"><span class="plan-no">แผนงานที่ ${pl.no}</span><h3>${esc(pl.name)}</h3><p class="plan-kpi"><b>ตัวชี้วัด</b> ${esc(pl.kpi)}</p><p class="plan-target">${esc(pl.targets)}</p><div class="lens-links">${lenses.map(l => `<a class="chip" href="?v=opportunity&lens=${l.id}">${esc(l.short)}</a>`).join('')}</div><p class="stamp">${esc(PLAN_SRC)} ${esc(pl.page)} · ชื่อแผนงานสรุปความ</p></article>`;
@@ -296,11 +301,11 @@ function supplyPanel(ms) {
   const inS = r => r.tambonCode && (u ? r.tambonCode === u.code : (!S.district || r.tambonCode.slice(0, 4) === S.district));
   const fuel = D.supply.fuel.filter(inS), ctl = D.supply.controlled.filter(inS), prj = D.supply.projects.filter(inS);
   const f = S.supplyFilter;
-  let html = `${flow()}<header><h2>กิจการพลังงาน</h2><p class="panel-intro">ทุกช่องจากไฟล์ทะเบียนของ สพจ.ชัยนาท ยกเว้นเบอร์โทรศัพท์ แสดงรายแห่งตามตำบลในไฟล์ ไฟล์ไม่มีพิกัด จึงยังไม่วางจุดรายแห่งบนแผนที่</p></header>`;
+  let html = `${flow()}<header><h2>กิจการพลังงาน</h2><p class="panel-intro">ทุกช่องจากไฟล์ทะเบียนของ สพจ.ชัยนาท ยกเว้นเบอร์โทรศัพท์ แสดงรายแห่งตามตำบลในไฟล์ ไฟล์ไม่มีพิกัด จึงยังไม่วางจุดรายแห่งบนแผนที่ · รายชื่อโซลาร์รูฟท็อปของหน่วยงานรัฐแสดงตามอำเภอที่อ่านจากชื่อ</p></header>`;
   if (S.level === 'lao') html += `<p class="note"><strong>กิจการพลังงานระบุในไฟล์ระดับตำบล</strong> สลับเป็นระดับตำบลเพื่อดูจำนวนบนแผนที่</p>`;
   html += `<label class="field">ดูอะไรบนแผนที่<select class="select" id="supply-metric">${opts.map(m => `<option value="${m.id}"${S.supplyMetric === m.id ? ' selected' : ''}>${esc(m.label)} (${esc(m.unit)})</option>`).join('')}</select></label>`;
-  html += `<div class="stats"><div class="stat"><b>${n0(fuel.length)}</b><span>กิจการน้ำมัน</span></div><div class="stat"><b>${n0(ctl.length)}</b><span>อาคาร/โรงงานควบคุม</span></div><div class="stat"><b>${n0(prj.length)}</b><span>โครงการพลังงานทดแทน</span></div></div>`;
-  html += `<div class="filters" role="group" aria-label="เลือกชนิดกิจการ">${[['all', 'ทั้งหมด'], ['fuel', 'น้ำมันเชื้อเพลิง'], ['controlled', 'อาคาร/โรงงานควบคุม'], ['projects', 'โครงการพลังงานทดแทน']].map(([k, t]) => `<button type="button" data-supply-filter="${k}" aria-pressed="${f === k}">${t}</button>`).join('')}</div>`;
+  if (f !== 'govSolar') html += `<div class="stats"><div class="stat"><b>${n0(fuel.length)}</b><span>กิจการน้ำมัน</span></div><div class="stat"><b>${n0(ctl.length)}</b><span>อาคาร/โรงงานควบคุม</span></div><div class="stat"><b>${n0(prj.length)}</b><span>โครงการพลังงานทดแทน</span></div></div>`;
+  html += `<div class="filters" role="group" aria-label="เลือกชนิดกิจการ">${[['all', 'ทั้งหมด'], ['fuel', 'น้ำมันเชื้อเพลิง'], ['controlled', 'อาคาร/โรงงานควบคุม'], ['projects', 'โครงการพลังงานทดแทน'], ...(D.supply.govSolar ? [['govSolar', 'โซลาร์รูฟท็อปหน่วยงานรัฐ']] : [])].map(([k, t]) => `<button type="button" data-supply-filter="${k}" aria-pressed="${f === k}">${t}</button>`).join('')}</div>`;
   if (!u && !S.district) {
     const pp = D.plan.plan.situation.powerPlants, ev = D.plan.plan.situation.evCharging;
     html += `<article class="card"><h3>โรงไฟฟ้าและสถานีอัดประจุตามแผน</h3><ul class="records">${pp.rows.filter(r => r.name).map(r => `<li class="record"><h4>${esc(r.name)}</h4><dl class="kv"><dt>เชื้อเพลิง</dt><dd><small>${esc(r.type)}</small></dd><dt>อำเภอ</dt><dd><small>${esc(r.district || 'ไม่ระบุในแผน')}</small></dd><dt>กำลังผลิตติดตั้ง</dt><dd>${n1(r.mw)} <small>MW</small></dd></dl></li>`).join('')}</ul><p class="meta">แผนระบุโรงไฟฟ้า ${n0(pp.count)} แห่ง แต่ไม่ระบุชื่อโรงไฟฟ้าก๊าซชีวภาพ · สถานีอัดประจุรถไฟฟ้า ${n0(ev.total)} แห่ง: ${ev.rows.map(r => `${esc(r.operator)} ${n0(r.count)}`).join(' · ')} · ไม่มีตำแหน่งรายแห่ง</p>${stamp({ dataset: 'สถานการณ์พลังงานจังหวัด', source: `${PLAN_SRC} หน้า 1, 28–29`, date: 'แผนไม่ระบุวันที่ของข้อมูลชุดนี้ (แผนปี 2566–2570)', boundary: 'จังหวัดชัยนาท', measure: 'reported' })}</article>`;
@@ -310,9 +315,35 @@ function supplyPanel(ms) {
   if (f === 'all' || f === 'controlled') lists.push(`<section><h3 class="field">อาคารและโรงงานควบคุม ${n0(ctl.length)} แห่ง</h3>${ctl.length ? `<ul class="records">${ctl.map(controlledRecord).join('')}</ul>` : '<p class="empty">ไม่มีรายการในไฟล์ (0 แห่ง)</p>'}</section>`);
   if (f === 'all' || f === 'projects') lists.push(`<section><h3 class="field">โครงการพลังงานทดแทน ${n0(prj.length)} รายการ</h3>${prj.length ? `<ul class="records">${prj.slice(0, u ? 999 : 30).map(projectRecord).join('')}</ul>${!u && prj.length > 30 ? `<p class="meta">แสดง 30 รายการแรก เลือกตำบลหรือดูภาพทั้งหมดในหน้าที่มา</p>` : ''}` : '<p class="empty">ไม่มีรายการในไฟล์ (0 รายการ)</p>'}</section>`);
   html += lists.join('');
-  html += stamp({ dataset: 'ทะเบียนกิจการพลังงาน 3 ไฟล์', source: 'สำนักงานพลังงานจังหวัดชัยนาท', date: 'ได้รับ 16 ต.ค. 2569 · ไฟล์ไม่ระบุวันที่ข้อมูล', boundary: scope, measure: 'observed' });
+  if (f !== 'govSolar') html += stamp({ dataset: 'ทะเบียนกิจการพลังงาน 3 ไฟล์', source: 'สำนักงานพลังงานจังหวัดชัยนาท', date: 'ได้รับ 16 ต.ค. 2569 · ไฟล์ไม่ระบุวันที่ข้อมูล', boundary: scope, measure: 'observed' });
+  if ((f === 'all' || f === 'govSolar') && D.supply.govSolar) html += govSolarSection();
   html += areaList(ms);
   return html;
+}
+/* Government rooftop solar notified to the ERC: no address, tambon or coordinates in the file,
+   so the list follows the district read from the agency name and is never placed on the map. */
+function govSolarSection() {
+  const dCode = S.district || (S.area ? (S.level === 'lao' ? D.laoBy.get(S.area)?.districtCode : S.area.slice(0, 4)) : null);
+  const r = govSolarIn(dCode), dName = dCode ? D.districtBy.get(dCode)?.name : null;
+  const head = D.supply.govSolar.dataset;
+  const title = !dName ? `${head} ${n0(r.list.length)} แห่ง · รวม ${n1(r.kva)} kVA · จังหวัดชัยนาท`
+    : r.list.length ? `${head} · ชื่อระบุ อ.${dName} ${n0(r.list.length)} แห่ง รวม ${n1(r.kva)} kVA` : `${head} · ไม่มีชื่อที่ระบุ อ.${dName}`;
+  const note = dName
+    ? `ไฟล์ไม่มีที่อยู่ ตำบล หรือพิกัด จึงแสดงทั้งอำเภอตามชื่อหน่วยงาน ไม่ใช่เฉพาะตำบลที่เลือก · อีก ${n0(r.unplaced)} แห่งชื่อไม่บอกอำเภอ ดูได้เมื่อเลือกทั้งจังหวัด`
+    : 'ไฟล์ไม่มีที่อยู่ ตำบล หรือพิกัด จึงไม่วางบนแผนที่ · อำเภอในแต่ละรายการอ่านจากชื่อหน่วยงาน';
+  const fileNote = `ไฟล์ไม่มีชื่อเรื่อง สถานะ หรือวันที่เริ่มจ่ายไฟ มีช่องสำนักงาน กกพ. (${D.supply.govSolar.source.ercOffice} ทุกแถว) และกำลังผลิตติดตั้ง ซึ่งไฟล์บันทึกทั้ง kVA (กิโลโวลต์แอมแปร์) และ kW (กิโลวัตต์)`;
+  const body = r.list.length
+    ? `<ul class="records">${r.list.map(govSolarRecord).join('')}</ul><p class="meta">${esc(fileNote)} · ช่องชื่อ-สกุล/ชื่อนิติบุคคลซ้ำกับชื่อโครงการทุกแถว · ช่อง kWAC และ kWDC เป็นขีดหรือว่างทุกแถว จึงไม่แสดง</p>`
+    : `<p class="empty">ไฟล์นี้ไม่มีหน่วยงานที่ชื่อระบุ อ.${esc(dName)} · ไฟล์มีเฉพาะหน่วยงานรัฐ และอีก ${n0(r.unplaced)} แห่งชื่อไม่บอกอำเภอ จึงไม่ได้แปลว่าอำเภอนี้ไม่มีการติดตั้ง</p>`;
+  return `<section aria-label="โซลาร์รูฟท็อปของหน่วยงานรัฐ"><h3 class="field">${esc(title)}</h3><p class="meta">${esc(note)}</p>${body}${dName ? stamp(govSolarStamp(`อ.${dName} ตามชื่อหน่วยงาน`, 'ข้อมูลจากแหล่ง · อำเภอเป็นข้อสรุปจากชื่อหน่วยงาน')) : stamp(govSolarStamp('จังหวัดชัยนาท · ไฟล์ไม่มีที่อยู่ ตำบล หรือพิกัด'))}</section>`;
+}
+function govSolarRecord(x) {
+  const a = x.area;
+  const where = a.level === 'province' ? 'ระบุได้แค่จังหวัด' : `อ.${a.district}`;
+  const how = a.level === 'province' ? 'ชื่อไม่บอกอำเภอ' : a.level === 'lao' ? `อำเภออ่านจากชื่อ อปท. ในชื่อหน่วยงาน (${a.name})` : 'อำเภออ่านจากชื่อหน่วยงาน';
+  const kwNote = x.kwFromWatts ? `ช่อง kW ในไฟล์บันทึก ${x.kwRaw} ซึ่งเท่ากับ kVA × 1,000 จึงอ่านเป็นวัตต์` : x.kw > x.kva ? 'ช่อง kW มากกว่า kVA ตามไฟล์ ยังไม่ได้ถามสาเหตุ' : '';
+  const notes = [how, `เชื้อเพลิงตามไฟล์: ${[x.fuelType, x.fuelDetail].filter(Boolean).join(' · ') || '—'}`, kwNote, `สำนักงาน กกพ. ${x.ercOffice || '—'} · ลำดับ ${x.seq} แถว ${x.row}`].filter(Boolean);
+  return `<li class="record"><h4>${esc(x.name)}</h4><dl class="kv"><dt>ประเภทบุคคล</dt><dd><small>${esc(x.ownerKind)}</small></dd><dt>ประเภทกิจการตาม กกพ.</dt><dd><small>${esc(x.business || '—')}</small></dd><dt>เทคโนโลยี</dt><dd><small>${esc(x.technology || '—')}</small></dd><dt>การติดตั้ง</dt><dd><small>${esc(x.installation || '—')}</small></dd><dt>กำลังผลิตติดตั้ง</dt><dd>${n2(x.kva)} <small>kVA</small> · ${n2(x.kw)} <small>kW</small></dd><dt>อินเวอร์เตอร์แบบรวม (Central inverter)</dt><dd><small>${esc(x.centralInverter || '—')}</small></dd><dt>วัตถุประสงค์</dt><dd><small>${esc(x.purpose || '—')}</small></dd><dt>อำเภอ</dt><dd><small>${esc(where)}</small></dd></dl><p class="meta">${esc(notes.join(' · '))}</p></li>`;
 }
 
 /* ---------------- opportunity panel ---------------- */
@@ -327,7 +358,7 @@ function opportunityPanel(ms) {
   html += `<p class="meta">ข้อมูลไม่พอไม่ได้แปลว่าพื้นที่ไม่เหมาะ · คิวเรียงตามจำนวนมุมมองที่เข้าเกณฑ์ ระดับไข่แดง ลำดับมุมมองที่เลือก แล้วค่าของมุมมองแรก</p>`;
   const list = scoped.filter(r => r.status === S.queue);
   html += list.length ? `<ol class="qcards">${list.map(r => `<li class="qcard"><div class="card-head"><h3>ต.${esc(r.u.name)} <span class="meta">อ.${esc(r.u.district)}</span></h3><span class="status" data-q="${r.status}">${QUEUE_TH[r.status]}</span></div>${r.tier ? `<span class="tier"><i class="${r.tier === 3 ? 'tier-dash' : ''}" style="background:${L[TIER_IDX[r.tier]]}"></i>${TIER_TH[r.tier]}</span>` : ''}${r.results.map(x => `<div><p class="reason"><b>${esc(x.lens.short)}</b> · <span class="status" data-q="${x.status}">${QUEUE_TH[x.status]}</span><br>${esc(x.reason)}</p>${x.task ? `<p class="meta"><b>งานแรก</b> ${esc(x.task)}</p>` : ''}${x.status !== 'none' && x.checks.length ? `<ul>${x.checks.map(c => `<li>${esc(c)}</li>`).join('')}</ul>` : ''}</div>`).join('')}<div class="filters"><button type="button" class="btn btn-small" data-area="${r.u.code}">ดูบนแผนที่</button>${saveButton(r.u)}</div></li>`).join('')}</ol>` : `<p class="empty">ไม่มีพื้นที่ในสถานะนี้${S.district ? ' ในอำเภอที่เลือก' : ''}</p>`;
-  html += stamp({ dataset: 'คิวโอกาสส่งเสริม', source: `ไฟล์ทะเบียน สพจ.ชัยนาท + แบบจำลองความต้องการ + ${PLAN_SRC}`, date: REL(), boundary: `ตำบลที่ผ่านเกณฑ์ Demand ${n0(scoped.length)} แห่ง${S.district ? ` ใน อ.${D.districtBy.get(S.district).name}` : ' จาก 53 ตำบล จังหวัดชัยนาท'}`, measure: 'modelled' });
+  html += stamp({ dataset: 'คิวโอกาสส่งเสริม', source: `ไฟล์ทะเบียน สพจ.ชัยนาท + แบบจำลองความต้องการ + ${PLAN_SRC}${D.supply.govSolar && S.lenses.some(id => id === 'efficiency' || id === 'rooftop') ? ` + ${D.supply.govSolar.dataset} ข้อมูล ณ ${isoTh(D.supply.govSolar.source.dataAsOf)} (ใช้ในสิ่งที่ต้องตรวจเท่านั้น)` : ''}`, date: REL(), boundary: `ตำบลที่ผ่านเกณฑ์ Demand ${n0(scoped.length)} แห่ง${S.district ? ` ใน อ.${D.districtBy.get(S.district).name}` : ' จาก 53 ตำบล จังหวัดชัยนาท'}`, measure: 'modelled' });
   return html;
 }
 
@@ -375,7 +406,7 @@ export function renderMapHead(ms) {
 /* ---------------- shortlist ---------------- */
 export function renderShortlist() {
   const list = shortlist(); const L = lut('activity');
-  $('#shortlist-body').innerHTML = list.length ? `<ul class="shortlist">${list.map((x, i) => `<li class="qcard"><div class="card-head"><h2 class="card-title">ต.${esc(x.name)} <span class="meta">อ.${esc(x.district)}</span></h2>${x.tier ? `<span class="tier"><i style="background:${L[TIER_IDX[x.tier]]}"></i>${TIER_TH[x.tier]}</span>` : ''}</div><p class="meta">เล็งไว้ ${esc(new Date(x.savedAt).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }))} · ${esc(x.release)} · เกณฑ์ ${esc(x.criteriaName || x.criteria)}</p><p class="reason">${(x.lenses || []).map(l => `${esc(l.short)}: <span class="status" data-q="${esc(l.status)}">${esc(QUEUE_TH[l.status] || l.status)}</span>`).join(' · ') || 'ยังไม่ได้เลือกมุมมองโอกาส'}</p><div class="request-grid"><label class="field">ผู้รับผิดชอบ<input class="select" data-sl-owner="${i}" value="${esc(x.owner || '')}" maxlength="80" placeholder="ชื่อหรือตำแหน่ง (ไม่บังคับ)"></label><label class="field">งานถัดไป<input class="select" data-sl-next="${i}" value="${esc(x.next || '')}" maxlength="160" placeholder="เช่น นัดสำรวจหลังคา 5 แห่ง"></label></div><div class="filters"><a class="btn btn-small" href="?v=opportunity&a=${encodeURIComponent(x.code)}">เปิดบนแผนที่</a><button type="button" class="btn btn-small btn-quiet" data-sl-remove="${i}">นำออก</button></div></li>`).join('')}</ul>` : `<p class="empty">ยังไม่มีพื้นที่ที่เล็งไว้ เลือกพื้นที่ในหน้าโอกาสส่งเสริมแล้วกด "เล็งพื้นที่นี้"</p>`;
+  $('#shortlist-body').innerHTML = list.length ? `<ul class="shortlist">${list.map((x, i) => `<li class="qcard"><div class="card-head"><h2 class="card-title">ต.${esc(x.name)} <span class="meta">อ.${esc(x.district)}</span></h2>${x.tier ? `<span class="tier"><i style="background:${L[TIER_IDX[x.tier]]}"></i>${TIER_TH[x.tier]}</span>` : ''}</div><p class="meta">เล็งไว้ ${esc(new Date(x.savedAt).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' }))} · ${esc(x.release)} · ${esc(x.dataRelease || 'รายการก่อนรอบ r3 ไม่ได้บันทึกรหัสรอบ')} · เกณฑ์ ${esc(x.criteriaName || x.criteria)}</p><p class="reason">${(x.lenses || []).map(l => `${esc(l.short)}: <span class="status" data-q="${esc(l.status)}">${esc(QUEUE_TH[l.status] || l.status)}</span>`).join(' · ') || 'ยังไม่ได้เลือกมุมมองโอกาส'}</p><div class="request-grid"><label class="field">ผู้รับผิดชอบ<input class="select" data-sl-owner="${i}" value="${esc(x.owner || '')}" maxlength="80" placeholder="ชื่อหรือตำแหน่ง (ไม่บังคับ)"></label><label class="field">งานถัดไป<input class="select" data-sl-next="${i}" value="${esc(x.next || '')}" maxlength="160" placeholder="เช่น นัดสำรวจหลังคา 5 แห่ง"></label></div><div class="filters"><a class="btn btn-small" href="?v=opportunity&a=${encodeURIComponent(x.code)}">เปิดบนแผนที่</a><button type="button" class="btn btn-small btn-quiet" data-sl-remove="${i}">นำออก</button></div></li>`).join('')}</ul>` : `<p class="empty">ยังไม่มีพื้นที่ที่เล็งไว้ เลือกพื้นที่ในหน้าโอกาสส่งเสริมแล้วกด "เล็งพื้นที่นี้"</p>`;
   $('#shortlist-export').disabled = !list.length;
 }
 
@@ -392,10 +423,14 @@ export function renderSources() {
   const m = D.meta, s = D.supply;
   const items = [
     { t: 'ทะเบียนกิจการพลังงาน 3 ไฟล์ของ สพจ.ชัยนาท', l: 'Observed', d: `${s.sources.map(x => `${x.file} (${n0(x.records)} รายการ, SHA-256 ${x.sha256.slice(0, 12)}…)`).join(' · ')} · ได้รับ 16 ต.ค. 2569 · ไฟล์ไม่ระบุวันที่ข้อมูล · ${esc(s.publicationNote)}` },
+    ...(s.govSolar ? (({ source: g, method, areaCounts: c }) => [
+      { t: s.govSolar.dataset, l: 'Observed', d: `${g.file} (${n0(g.records)} รายการ, SHA-256 ${g.sha256.slice(0, 12)}…) · ไฟล์เขียนว่า ${g.dataNote} (อ่านเป็น ${isoTh(g.dataAsOf)}) · ได้รับ ${isoTh(g.receivedOn)} · สำนักงาน กกพ. ${g.ercOffice} · ประเภทบุคคลเป็นหน่วยงานรัฐทุกแถว · ไฟล์ไม่มีชื่อเรื่อง สถานะ หรือวันที่เริ่มจ่ายไฟ ชื่อชุดข้อมูลบนหน้านี้ตั้งตามที่เห็นในช่องข้อมูล ส่วนการเป็นรายการที่แจ้งสำนักงาน กกพ. ควรยืนยันกับสำนักงาน · ${method.kw} · ไม่มีที่อยู่ ตำบล หรือพิกัด จึงไม่วางบนแผนที่และไม่รวมเป็นยอดรายตำบล · ไฟล์ต้นฉบับไม่อยู่ในเว็บนี้` },
+      { t: 'อำเภอของหน่วยงานรัฐในรายชื่อโซลาร์รูฟท็อป', l: 'Inference', d: `อ่านจากชื่อหน่วยงาน ไม่ใช่ที่อยู่: ชื่อ อปท. ตรงกับรายชื่อ อปท. ของ CityMETER ${n0(c.lao)} รายการ · ชื่อมีคำว่าอำเภอตามด้วยชื่ออำเภอ หรือมีชื่ออำเภอ ${n0(c.district)} รายการ · ชื่อไม่บอกอำเภอ ${n0(c.province)} รายการ ต้องขอที่อยู่จากสำนักงาน` }
+    ])(s.govSolar) : []),
     { t: PLAN_SRC, l: 'PARTIAL', d: `${D.plan.plan.labelNote} · อ่าน 18 ต.ค. 2569` },
     { t: 'อำนาจหน้าที่สำนักงานพลังงานจังหวัด', l: 'VERBATIM', d: `${D.plan.mandate.source} · อ่าน 18 ต.ค. 2569` },
     { t: 'รถจดทะเบียนสะสมตามชนิดเชื้อเพลิง', l: 'Observed', d: `${D.vehicles.source} · ณ ${D.vehicles.asOfThai} · ระดับจังหวัด` },
-    ...(D.cars ? [{ t: 'รถจดทะเบียนรายเดือน แยกประเภทรถ เชื้อเพลิง และยี่ห้อ', l: 'Observed', d: `${D.cars.source} · ${ymTh(D.cars.months[0])}–${ymTh(D.cars.months[D.cars.months.length - 1])} · ระดับจังหวัด ไม่มีอำเภอหรือตำบล · อ่าน 18 ต.ค. 2569 · ${D.cars.measure} · ตรวจนิยามแล้ว: จักรยานยนต์ไฟฟ้าล้วนที่จดทะเบียน ม.ค. 2563–ก.พ. 2569 รวม ${n0(D.cars.quality.stockCheck.find(s => s.type === '12').registered)} คัน เท่ากับยอดสะสมของกรมการขนส่งทางบก ณ 28 ก.พ. 2569 · การเทียบจังหวัดใช้ ${D.cars.benchmark.universe} · ${D.cars.benchmark.lowCount.provinces.join(' ')} ${D.cars.benchmark.lowCount.note}`, u: D.cars.page }] : []),
+    ...(D.cars ? [{ t: 'รถจดทะเบียนรายเดือน แยกประเภทรถ เชื้อเพลิง และยี่ห้อ', l: 'Observed', d: `${D.cars.source} · ${ymTh(D.cars.months[0])}–${ymTh(D.cars.months[D.cars.months.length - 1])} · ระดับจังหวัด ไม่มีอำเภอหรือตำบล · อ่าน 18 ต.ค. 2569 · ${D.cars.measure} · ตรวจนิยามบางส่วน: จักรยานยนต์ไฟฟ้าล้วนที่จดทะเบียน ม.ค. 2563–ก.พ. 2569 รวม ${n0(D.cars.quality.stockCheck.find(s => s.type === '12').registered)} คัน เท่ากับยอดสะสมของกรมการขนส่งทางบก ณ 28 ก.พ. 2569 แต่รถยนต์นั่งไฟฟ้าล้วนช่วงเดียวกันได้ ${n0(D.cars.quality.stockCheck.find(s => s.type === '1').registered)} คัน ขณะที่ยอดสะสม ${n0(D.cars.quality.stockCheck.find(s => s.type === '1').stock)} คัน การเรียกว่ารถจดทะเบียนใหม่จึงเป็นข้อสรุปจากข้อมูล · การเทียบจังหวัดใช้ ${D.cars.benchmark.universe} · ${D.cars.benchmark.lowCount.provinces.join(' ')} ${D.cars.benchmark.lowCount.note}`, u: D.cars.page }] : []),
     { t: 'ขอบเขตจังหวัด อำเภอ ตำบล และ อปท.', l: 'Observed', d: `${m.layers.boundaries.source} · 8 อำเภอ 53 ตำบล 59 อปท. · อ่าน 18 ต.ค. 2569` },
     { t: 'รูปอาคาร ความสูง และจำนวนชั้นโดยประมาณ', l: 'Observed', d: `${m.layers.buildings.source} · ${n0(m.layers.buildings.count)} หลัง หลังรวมชิ้นอาคารที่ถูกตัดตามขอบแผ่นแผนที่แล้ว (ยอดของ CityMETER ${n0(m.layers.buildings.officialCount)} หลัง)` },
     { t: 'ประชากร โรงงาน และห้องพักรายพื้นที่', l: 'Proxy', d: `ประชากร: ${m.layers.population.source} อ่าน 18 ต.ค. 2569 · ${m.layers.population.versionNote || ''} · โรงงานรุ่น ${m.layers.factory.version} · ชั้นโรงแรมไม่ระบุรุ่น` },
@@ -404,7 +439,7 @@ export function renderSources() {
     { t: 'แบบจำลองรถรายพื้นที่', l: 'Modelled', d: m.model.vehicles },
     { t: 'รูปแบบรายเดือน', l: 'Modelled', d: m.model.monthly }
   ];
-  const LABEL_TH = { Observed: 'ข้อมูลจากแหล่ง', PARTIAL: 'ถอดความบางส่วน', VERBATIM: 'คำต่อคำ', Proxy: 'ค่าตัวแทน', Modelled: 'แบบจำลอง' };
+  const LABEL_TH = { Observed: 'ข้อมูลจากแหล่ง', Inference: 'ข้อสรุปจากข้อมูล', PARTIAL: 'ถอดความบางส่วน', VERBATIM: 'คำต่อคำ', Proxy: 'ค่าตัวแทน', Modelled: 'แบบจำลอง' };
   $('#sources-list').innerHTML = items.map(x => `<li><div class="card-head"><h2 class="source-title">${esc(x.t)}</h2><span class="label-pill">${esc(LABEL_TH[x.l])} · ${esc(x.l)}</span></div><p class="muted source-note">${esc(x.d)}${x.u ? ` · <a href="${esc(x.u)}" rel="noopener">เปิดแหล่งข้อมูล</a>` : ''}</p></li>`).join('');
   const all = s.projects.flatMap(p => p.photos.map((ph, i) => ({ p, ph, i })));
   $('#gallery').innerHTML = all.map(({ p, ph, i }) => `<figure><button type="button" data-photo="${esc(p.id)}" data-photo-i="${i}" aria-label="ดูภาพ ${esc(p.technology)} ต.${esc(p.tambon)}"><img src="assets/photos/${esc(ph.file)}" alt="" width="${ph.w}" height="${ph.h}" loading="lazy"></button><figcaption>${esc(p.technology)} · ${esc(p.beneficiary || '')} · ต.${esc(p.tambon)} อ.${esc(p.district)} · ปี ${esc(p.yearBE || '—')} · ${esc(p.status || '')}</figcaption></figure>`).join('');

@@ -18,7 +18,7 @@ export const MONTHS = ['ม.ค.', 'ก.พ.', 'มี.ค.', 'เม.ย.', '�
 /* ---------- data ---------- */
 export const D = { meta: null, areas: null, supply: null, plan: null, vehicles: null, cars: null, geo: {}, bindex: null, buildings: new Map() };
 /* data files change with each release: the release id in the query keeps returning viewers on the current data */
-export const DATA_RELEASE = 'cnt-energy-2026-10-18-r2';
+export const DATA_RELEASE = 'cnt-energy-2026-10-20-r3';
 async function getJSON(url) {
   const r = await fetch(`${url}?r=${DATA_RELEASE}`);
   if (!r.ok) throw new Error(`${url} ${r.status}`);
@@ -181,6 +181,7 @@ export function rankP(metric, u) {
 /* Stable categorical IDs (DATAVIZ-05): each engine keeps its landometer-series-10-v8 slot and shape cue everywhere. */
 export const ENGINE_SERIES = { DIESEL: { slot: '01', cue: 'circle' }, GASOLINE: { slot: '02', cue: 'square' }, 'GASOLINE-HYBRID': { slot: '03', cue: 'triangle' }, 'GASOLINE-PHEV': { slot: '04', cue: 'diamond' }, ELECTRIC: { slot: '05', cue: 'cross' } };
 export function ymTh(ym) { const [y, m] = ym.split('-').map(Number); return `${MONTHS[m - 1]} ${y + 543}`; }
+export function isoTh(iso) { if (!iso) return null; const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y + 543}`; }
 export function carsTypes(groupId) { const g = D.cars?.groups.find(x => x.id === groupId); return g ? g.types : []; }
 export function carsYearly(groupId) {
   const c = D.cars; if (!c) return [];
@@ -207,6 +208,26 @@ export function carsEvContext() {
   return `ทั้งจังหวัดชัยนาท ${ymTh(c.window12m[0])}–${ymTh(c.window12m[1])}: รถยนต์นั่ง (รย.1) ไฟฟ้าล้วนจดทะเบียนใหม่ ${n0(car.counts.ELECTRIC)} คัน เท่ากับ ${n1(car.evShare * 100)}% ของรถยนต์นั่งที่จดทะเบียนใหม่ ${n0(car.total)} คัน · จักรยานยนต์ (รย.12) ไฟฟ้าล้วน ${n0(moto.counts.ELECTRIC)} คัน เท่ากับ ${n1(moto.evShare * 100)}% ของ ${n0(moto.total)} คัน (CityMETER: Cars ระดับจังหวัด ไม่ใช่ค่าของตำบลนี้)`;
 }
 
+/* ---------- government rooftop solar notified to the ERC (office file received 20 Oct 2569) ----------
+   The file has no address, tambon or coordinates. An item belongs to a district only when the agency
+   name says so (an inference recorded per item); two names say only the province. Never map or sum by tambon. */
+export function govSolarIn(districtCode) {
+  const g = D.supply?.govSolar; if (!g) return null;
+  const list = districtCode ? g.items.filter(x => x.area.districtCode === districtCode) : g.items;
+  return { list, kva: list.reduce((a, x) => a + x.kva, 0), unplaced: g.items.filter(x => !x.area.districtCode).length, asOf: isoTh(g.source.dataAsOf) };
+}
+export function govSolarCheck(u) {
+  const r = govSolarIn(u.districtCode);
+  if (!r) return 'รายชื่อโซลาร์รูฟท็อปของหน่วยงานรัฐ (ยังโหลดไม่ได้)';
+  const g = D.supply.govSolar;
+  const head = `เทียบกับ${g.dataset} (ไฟล์ของ สพจ.ชัยนาท ระบุสำนักงาน กกพ. ${g.source.ercOffice} · ข้อมูลจากแหล่ง · อำเภอเป็นข้อสรุปจากชื่อหน่วยงาน)`;
+  const tail = `ไฟล์ไม่ระบุตำบล · ชื่อไม่บอกอำเภออีก ${n0(r.unplaced)} แห่ง · ข้อมูล ณ ${r.asOf}`;
+  if (!r.list.length) return `${head}: ไม่มีชื่อที่ระบุ อ.${u.district} (${tail})`;
+  return `${head}: ชื่อระบุ อ.${u.district} ${n0(r.list.length)} แห่ง รวม ${n1(r.kva)} kVA คือ ${r.list.map(x => x.name).join(' · ')} (${tail})`;
+}
+/* release stamp: the data release id and date, plus the date of the demand model, which r3 did not change */
+export function releaseLabel() { const r = D.meta.release; return `รุ่นข้อมูล ${r.label || r.id} ออก ${r.dateThai}`; }
+
 /* ---------- Opportunity lenses aligned with the plan 2566–2570 and the office mandate ---------- */
 const P = (id, u) => rankP(metricBy(id), u) ?? 0;
 const pct = p => `เปอร์เซ็นไทล์ที่ ${Math.round(p * 100)} เมื่อเทียบ 53 ตำบล`;
@@ -217,7 +238,8 @@ export const LENSES = [
     eval(u) {
       const pb = P('elec_biz', u), roofP = rankP({ get: x => x.roofLarge }, u) ?? 0;
       const reason = `ไฟฟ้ากิจการแบบจำลอง ${big(biz(u), 'kWh/ปี')} (${pct(pb)}) · หลังคาอาคารตั้งแต่ 300 ตร.ม. รวม ${n0(u.roofLarge)} ตร.ม.`;
-      const checks = ['รายชื่อผู้ใช้ไฟประเภทกิจการและการใช้ไฟจริงจาก กฟภ.', 'ผู้ติดตั้งโซลาร์รูฟท็อปรายพื้นที่ (แผนระบุยอดจังหวัด 113 แห่ง)'];
+      const gs = D.supply?.govSolar;
+      const checks = ['รายชื่อผู้ใช้ไฟประเภทกิจการและการใช้ไฟจริงจาก กฟภ.', `ผู้ติดตั้งโซลาร์รูฟท็อปรายพื้นที่ (แผนระบุยอดจังหวัด 113 แห่ง${gs ? ` ซึ่งอาจนับคนละกลุ่มและคนละช่วงเวลากับรายชื่อที่ได้รับ จึงไม่นำมาเทียบ · รายชื่อที่ได้รับมีเฉพาะหน่วยงานรัฐ ${n0(gs.items.length)} แห่ง ข้อมูล ณ ${isoTh(gs.source.dataAsOf)} ยังไม่มีรายชื่อกิจการ` : ''})`];
       if (pb >= 0.7 && roofP >= 0.6) return { status: 'candidate', reason, checks, task: 'ขอรายชื่อผู้ใช้ไฟกิจการในตำบลจาก กฟภ. แล้วนัดสำรวจหลังคา 5 แห่งแรก', sort: pb };
       if (pb >= 0.7) return { status: 'evidence', reason, checks: ['ข้อมูลหลังคาและโครงสร้างอาคาร', ...checks], task: 'สำรวจหลังคาอาคารกิจการที่ใช้ไฟสูง', sort: pb };
       return { status: 'none', reason, checks, task: null, sort: pb };
@@ -262,7 +284,7 @@ export const LENSES = [
       const ctl = D.supply.controlled.filter(c => c.tambonCode === u.code);
       const flags = ctl.flatMap(c => c.colourFlags || []);
       const reason = `อาคารและโรงงานควบคุมในไฟล์ ${n0(s.controlled)} แห่ง${flags.length ? ` (ทำเครื่องหมายช่องสี${flags.join(', ')} ไฟล์ไม่ระบุความหมายของสี)` : ''} · ไฟฟ้ากิจการขนาดกลางและใหญ่แบบจำลอง ${big((u.elec.medium || 0) + (u.elec.large || 0), 'kWh/ปี')}`;
-      const checks = ['รายงานการจัดการพลังงานของอาคารควบคุม', 'รายชื่อหน่วยงานรัฐและค่าไฟรายเดือน'];
+      const checks = ['รายงานการจัดการพลังงานของอาคารควบคุม', 'รายชื่อหน่วยงานรัฐและค่าไฟรายเดือน', govSolarCheck(u)];
       if (s.controlled > 0) return { status: 'candidate', reason, checks, task: 'นัดตรวจรายงานการจัดการพลังงานของอาคารควบคุมในตำบล', sort: 0.5 + s.controlled / 10 };
       if (pm >= 0.8) return { status: 'evidence', reason, checks, task: 'ขอรายชื่อผู้ใช้ไฟรายใหญ่จาก กฟภ. เพื่อหาอาคารที่เข้าข่ายควบคุม', sort: pm };
       return { status: 'none', reason, checks, task: null, sort: pm };
